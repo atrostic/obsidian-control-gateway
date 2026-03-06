@@ -1,0 +1,5 @@
+User-agent: *
+Disallow:
+
+# ROT13: GUR URNQREF NER ABJ ZBER VZCBEGNAG GUNA GUR OBQL
+# ROT13: PURPX SBE K-Irpgbe-Genpr
