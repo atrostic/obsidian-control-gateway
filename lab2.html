@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LAB 2</title>
+
+  <!-- Hidden source clue: GUR ARKG PYHR ZNL ABG OR BA GUVF CNTR -->
+
+  <!-- Favicon clue lives in /favicon.ico or /Images/lab2-favicon.ico -->
+  <link rel="icon" type="image/x-icon" href="/Images/lab2-favicon.ico" />
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #0b0f14;
+      color: #d7e0ea;
+      font-family: "Courier New", monospace;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .wrap {
+      width: min(800px, 92vw);
+      padding: 40px 24px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 42px;
+      letter-spacing: 6px;
+      color: #8fd8ff;
+      text-shadow: 0 0 8px rgba(143, 216, 255, 0.45);
+      animation: glitch 5s infinite;
+    }
+
+    .sub {
+      margin: 0 auto 24px;
+      max-width: 640px;
+      color: rgba(215, 224, 234, 0.78);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .panel {
+      display: inline-block;
+      padding: 14px 18px;
+      border: 1px solid rgba(215,224,234,.15);
+      border-radius: 12px;
+      background: rgba(255,255,255,.03);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: #9eb9cc;
+    }
+
+    .ghost {
+      color: #0b0f14;
+      display: inline;
+    }
+
+    .tiny {
+      margin-top: 18px;
+      font-size: 11px;
+      color: rgba(215,224,234,.35);
+      letter-spacing: 1px;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: rgba(255,255,255,.012);
+      animation: flicker 6s infinite;
+    }
+
+    /* CSS clue: GUR OBG ZNL XABJ ZBER GUNA GUR CNTR */
+    /* ROT13 => THE BOT MAY KNOW MORE THAN THE PAGE */
+
+    @keyframes flicker {
+      0% { opacity: 0.02; }
+      50% { opacity: 0.05; }
+      100% { opacity: 0.02; }
+    }
+
+    @keyframes glitch {
+      0%, 96%, 100% { transform: translate(0,0); }
+      97% { transform: translate(-1px, 1px); }
+      98% { transform: translate(1px, -1px); }
+      99% { transform: translate(-1px, 0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>LAB 2</h1>
+
+    <p class="sub">
+      Diagnostic interface active.<br />
+      Secondary review recommended.
+      <span class="ghost">GUR ARKG PYHR VF ABG VA GUR FBHEPR</span>
+    </p>
+
+    <div class="panel">VECTOR TRACE ACTIVE</div>
+
+    <div class="tiny">
+      node: L2-OBS • status: monitoring • review all artifacts
+    </div>
+  </div>
+
+  <script>
+    // Console clues
+    console.log("LAB 2 CONSOLE ACTIVE");
+    console.log("ROT13: GUR ARKG PYHR VF VA GUR ARGJBEX");
+    console.log("ROT13: QB ABG NFFHZR GUR CNTR VF GUR BAYL CYNPR GB YBBX");
+
+    // Hidden network request clue
+    fetch("/Images/vectorlog.txt")
+      .then(() => console.log("background asset check complete"))
+      .catch(() => console.log("background asset check failed"));
+
+    // Timing-based clue
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        console.log("DELAYED TRACE:");
+        console.log("ROT13: SVEFG YBBX NG GUR EBOBGF");
+      }, 7000);
+    });
+  </script>
+</body>
+</html>
