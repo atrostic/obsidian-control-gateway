@@ -666,12 +666,12 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "obsidian-node-status-v5";
+    const STORAGE_KEY = "obsidian-node-status-v6";
 
     // Fill these in later. Leave as "" to disable verification for that node.
     const CORRECT_ANSWERS = {
       "node-a": "haggis",
-      "node-b": "",
+      "node-b": "4",
       "node-c": "",
       "node-d": "",
       "node-e": "",
@@ -688,6 +688,24 @@
 
     function normalizeValue(value) {
       return value.trim().toLowerCase();
+    }
+
+    function normalizeNumberWord(value) {
+      const map = {
+        "zero": "0",
+        "one": "1",
+        "two": "2",
+        "three": "3",
+        "four": "4",
+        "five": "5",
+        "six": "6",
+        "seven": "7",
+        "eight": "8",
+        "nine": "9"
+      };
+
+      const v = value.trim().toLowerCase();
+      return map[v] || v;
     }
 
     function loadState() {
@@ -766,8 +784,12 @@
 
         verifyButton.addEventListener("click", () => {
           const currentState = loadState();
-          const enteredValue = normalizeValue(input.value);
-          const correctValue = normalizeValue(CORRECT_ANSWERS[nodeId] || "");
+
+          let enteredValue = normalizeValue(input.value);
+          enteredValue = normalizeNumberWord(enteredValue);
+
+          let correctValue = normalizeValue(CORRECT_ANSWERS[nodeId] || "");
+          correctValue = normalizeNumberWord(correctValue);
 
           currentState[nodeId] = currentState[nodeId] || { value: "", resolved: false };
           currentState[nodeId].value = input.value;
