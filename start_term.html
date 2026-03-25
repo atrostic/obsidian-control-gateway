@@ -141,7 +141,8 @@
     }
 
     .terminal-log,
-    .progress-panel {
+    .progress-panel,
+    .reconstruction-panel {
       border: 1px solid var(--border);
       background: linear-gradient(180deg, rgba(10,23,10,0.9), rgba(5,10,5,0.95));
       padding: 14px;
@@ -167,7 +168,8 @@
       color: var(--text-bright);
     }
 
-    .progress-title {
+    .progress-title,
+    .section-title {
       margin: 0 0 12px;
       color: var(--text-dim);
       font-size: 13px;
@@ -198,7 +200,8 @@
       transition: width 0.2s ease;
     }
 
-    .grid-wrap {
+    .grid-wrap,
+    .reconstruction-wrap {
       padding: 22px;
     }
 
@@ -248,7 +251,8 @@
       background: linear-gradient(135deg, rgba(156,255,156,0.03), transparent 45%);
     }
 
-    .node.resolved {
+    .node.resolved,
+    .reconstruction-panel.locked {
       border-color: var(--border-active);
       background:
         linear-gradient(180deg, rgba(18, 34, 18, 0.98), rgba(8, 18, 8, 0.99)),
@@ -288,7 +292,8 @@
       background: rgba(120,255,120,0.12);
     }
 
-    .node h2 {
+    .node h2,
+    .reconstruction-panel h2 {
       margin: 0;
       font-size: 22px;
       color: var(--text-bright);
@@ -296,7 +301,8 @@
       text-transform: uppercase;
     }
 
-    .node p {
+    .node p,
+    .reconstruction-description {
       margin: 0;
       color: var(--text-dim);
       font-size: 14px;
@@ -316,7 +322,9 @@
     .node-link,
     .verify-button,
     .toggle-button,
-    .reset-button {
+    .reset-button,
+    .reconstruct-button,
+    .populate-button {
       display: inline-block;
       width: 100%;
       text-decoration: none;
@@ -336,7 +344,9 @@
     .node-link:hover,
     .verify-button:hover,
     .toggle-button:hover,
-    .reset-button:hover {
+    .reset-button:hover,
+    .reconstruct-button:hover,
+    .populate-button:hover {
       background: rgba(167,255,77,0.08);
       border-color: #3f7a3f;
       color: #f0fff0;
@@ -346,7 +356,8 @@
       background: linear-gradient(180deg, rgba(10,22,10,0.96), rgba(6,12,6,0.98));
     }
 
-    .node-input {
+    .node-input,
+    .reconstruction-input {
       width: 100%;
       background: rgba(4, 16, 4, 0.95);
       border: 1px solid var(--border);
@@ -357,28 +368,34 @@
       outline: none;
     }
 
-    .node-input::placeholder {
+    .node-input::placeholder,
+    .reconstruction-input::placeholder {
       color: #4f7a4f;
       text-transform: uppercase;
     }
 
-    .node-input:focus {
+    .node-input:focus,
+    .reconstruction-input:focus {
       border-color: #3f7a3f;
       box-shadow: 0 0 0 1px rgba(130,255,130,0.08) inset;
     }
 
-    .verify-row {
+    .verify-row,
+    .reconstruction-actions {
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 10px;
     }
 
-    .verify-button {
+    .verify-button,
+    .reconstruct-button,
+    .populate-button {
       width: auto;
-      min-width: 100px;
+      min-width: 120px;
     }
 
-    .node-feedback {
+    .node-feedback,
+    .reconstruction-feedback {
       min-height: 18px;
       font-size: 12px;
       letter-spacing: 0.08em;
@@ -386,12 +403,48 @@
       color: var(--text-dim);
     }
 
-    .node-feedback.success {
+    .node-feedback.success,
+    .reconstruction-feedback.success {
       color: var(--warn);
     }
 
-    .node-feedback.error {
+    .node-feedback.error,
+    .reconstruction-feedback.error {
       color: var(--danger);
+    }
+
+    .reconstruction-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+      margin-bottom: 14px;
+    }
+
+    .reconstruction-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .reconstruction-field label {
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .assembly-preview {
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      background: rgba(4, 16, 4, 0.9);
+      color: var(--text-bright);
+      font-size: 14px;
+      line-height: 1.7;
+      min-height: 72px;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
     .footer {
@@ -440,7 +493,8 @@
     }
 
     @media (max-width: 1100px) {
-      .node-grid {
+      .node-grid,
+      .reconstruction-grid {
         grid-template-columns: repeat(2, minmax(220px, 1fr));
       }
 
@@ -450,15 +504,19 @@
     }
 
     @media (max-width: 640px) {
-      .node-grid {
+      .node-grid,
+      .reconstruction-grid {
         grid-template-columns: 1fr;
       }
 
-      .verify-row {
+      .verify-row,
+      .reconstruction-actions {
         grid-template-columns: 1fr;
       }
 
-      .verify-button {
+      .verify-button,
+      .reconstruct-button,
+      .populate-button {
         width: 100%;
       }
     }
@@ -659,6 +717,61 @@
       </div>
     </main>
 
+    <section class="reconstruction-wrap">
+      <div class="reconstruction-panel" id="reconstructionPanel">
+        <h2>Reconstruction Console</h2>
+        <p class="reconstruction-description">
+          Consolidate all recovered fragments and attempt final destination assembly. Stored node entries may be imported automatically.
+        </p>
+
+        <div class="reconstruction-grid">
+          <div class="reconstruction-field">
+            <label for="final-a">Fragment A</label>
+            <input class="reconstruction-input" id="final-a" data-final-id="node-a" type="text" placeholder="Fragment A" />
+          </div>
+          <div class="reconstruction-field">
+            <label for="final-b">Fragment B</label>
+            <input class="reconstruction-input" id="final-b" data-final-id="node-b" type="text" placeholder="Fragment B" />
+          </div>
+          <div class="reconstruction-field">
+            <label for="final-c">Fragment C</label>
+            <input class="reconstruction-input" id="final-c" data-final-id="node-c" type="text" placeholder="Fragment C" />
+          </div>
+          <div class="reconstruction-field">
+            <label for="final-d">Fragment D</label>
+            <input class="reconstruction-input" id="final-d" data-final-id="node-d" type="text" placeholder="Fragment D" />
+          </div>
+          <div class="reconstruction-field">
+            <label for="final-e">Fragment E</label>
+            <input class="reconstruction-input" id="final-e" data-final-id="node-e" type="text" placeholder="Fragment E" />
+          </div>
+          <div class="reconstruction-field">
+            <label for="final-f">Fragment F</label>
+            <input class="reconstruction-input" id="final-f" data-final-id="node-f" type="text" placeholder="Fragment F" />
+          </div>
+          <div class="reconstruction-field">
+            <label for="final-g">Fragment G</label>
+            <input class="reconstruction-input" id="final-g" data-final-id="node-g" type="text" placeholder="Fragment G" />
+          </div>
+          <div class="reconstruction-field">
+            <label for="final-h">Fragment H</label>
+            <input class="reconstruction-input" id="final-h" data-final-id="node-h" type="text" placeholder="Fragment H" />
+          </div>
+        </div>
+
+        <div class="reconstruction-actions">
+          <button class="populate-button" id="populateButton" type="button">Import Saved Entries</button>
+          <button class="reconstruct-button" id="reconstructButton" type="button">Lock Reconstruction</button>
+        </div>
+
+        <div class="reconstruction-feedback" id="reconstructionFeedback" aria-live="polite"></div>
+
+        <div class="assembly-preview" id="assemblyPreview">
+&gt; assembly preview unavailable
+        </div>
+      </div>
+    </section>
+
     <footer class="footer">
       <div>&gt; advisory: recovered fragments may appear unrelated until properly assembled</div>
       <div>&gt; directive: resolve all eight nodes before attempting interception</div>
@@ -666,11 +779,30 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "obsidian-node-status-v3";
+    const STORAGE_KEY = "obsidian-node-status-v4";
+    const FINAL_STORAGE_KEY = "obsidian-final-reconstruction-v1";
 
     // Fill these in later. Leave as "" to disable verification for that node.
     const CORRECT_ANSWERS = {
       "node-a": "haggis",
+      "node-b": "",
+      "node-c": "",
+      "node-d": "",
+      "node-e": "",
+      "node-f": "",
+      "node-g": "",
+      "node-h": ""
+    };
+
+    // Optional final verification. Leave all blank to disable.
+    // Example use later:
+    // {
+    //   "node-a": "haggis",
+    //   "node-b": "touchy",
+    //   ...
+    // }
+    const FINAL_SEQUENCE = {
+      "node-a": "",
       "node-b": "",
       "node-c": "",
       "node-d": "",
@@ -686,6 +818,13 @@
     const progressFillEl = document.getElementById("progressFill");
     const resetAllButton = document.getElementById("resetAllButton");
 
+    const reconstructionPanel = document.getElementById("reconstructionPanel");
+    const finalInputs = Array.from(document.querySelectorAll(".reconstruction-input"));
+    const reconstructionFeedback = document.getElementById("reconstructionFeedback");
+    const assemblyPreview = document.getElementById("assemblyPreview");
+    const populateButton = document.getElementById("populateButton");
+    const reconstructButton = document.getElementById("reconstructButton");
+
     function normalizeValue(value) {
       return value.trim().toLowerCase();
     }
@@ -700,6 +839,18 @@
 
     function saveState(state) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadFinalState() {
+      try {
+        return JSON.parse(localStorage.getItem(FINAL_STORAGE_KEY)) || {};
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function saveFinalState(state) {
+      localStorage.setItem(FINAL_STORAGE_KEY, JSON.stringify(state));
     }
 
     function setNodeResolved(node, isResolved) {
@@ -718,6 +869,11 @@
       feedback.className = `node-feedback${type ? " " + type : ""}`;
     }
 
+    function setReconstructionFeedback(message, type = "") {
+      reconstructionFeedback.textContent = message;
+      reconstructionFeedback.className = `reconstruction-feedback${type ? " " + type : ""}`;
+    }
+
     function updateProgress() {
       const resolvedNodes = nodes.filter(node => node.classList.contains("resolved"));
       const resolvedCount = resolvedNodes.length;
@@ -726,6 +882,34 @@
       resolvedCountEl.textContent = resolvedCount;
       progressPercentEl.textContent = percent;
       progressFillEl.style.width = `${percent}%`;
+    }
+
+    function updateAssemblyPreview() {
+      const values = finalInputs.map(input => input.value.trim());
+      const filledCount = values.filter(Boolean).length;
+
+      if (!filledCount) {
+        assemblyPreview.textContent = "> assembly preview unavailable";
+        return;
+      }
+
+      const previewLines = [
+        "> reconstruction buffer loaded",
+        `> fragments present: ${filledCount}/8`,
+        `> a:${values[0] || "___"}  b:${values[1] || "___"}  c:${values[2] || "___"}  d:${values[3] || "___"}`,
+        `> e:${values[4] || "___"}  f:${values[5] || "___"}  g:${values[6] || "___"}  h:${values[7] || "___"}`
+      ];
+
+      assemblyPreview.textContent = previewLines.join("\n");
+    }
+
+    function persistFinalInputs() {
+      const state = {};
+      finalInputs.forEach(input => {
+        state[input.dataset.finalId] = input.value;
+      });
+      saveFinalState(state);
+      updateAssemblyPreview();
     }
 
     function initializeNodes() {
@@ -781,7 +965,6 @@
             return;
           }
 
-          // If no answer is configured yet, just save the entry and leave manual completion in place.
           if (!correctValue) {
             saveState(currentState);
             setFeedback(node, "Entry saved", "");
@@ -821,18 +1004,99 @@
       updateProgress();
     }
 
+    function initializeReconstruction() {
+      const finalState = loadFinalState();
+
+      finalInputs.forEach(input => {
+        const key = input.dataset.finalId;
+        input.value = finalState[key] || "";
+        input.addEventListener("input", () => {
+          persistFinalInputs();
+          reconstructionPanel.classList.remove("locked");
+          setReconstructionFeedback("");
+        });
+      });
+
+      updateAssemblyPreview();
+    }
+
+    populateButton.addEventListener("click", () => {
+      const nodeState = loadState();
+
+      finalInputs.forEach(input => {
+        const key = input.dataset.finalId;
+        input.value = nodeState[key]?.value || "";
+      });
+
+      persistFinalInputs();
+      setReconstructionFeedback("Saved node entries imported", "success");
+    });
+
+    reconstructButton.addEventListener("click", () => {
+      const entered = {};
+      let hasBlank = false;
+
+      finalInputs.forEach(input => {
+        const key = input.dataset.finalId;
+        entered[key] = input.value.trim();
+        if (!entered[key]) {
+          hasBlank = true;
+        }
+      });
+
+      persistFinalInputs();
+
+      if (hasBlank) {
+        reconstructionPanel.classList.remove("locked");
+        setReconstructionFeedback("Incomplete reconstruction buffer", "error");
+        return;
+      }
+
+      const configuredFinalValues = Object.values(FINAL_SEQUENCE).filter(v => normalizeValue(v));
+      const finalVerificationEnabled = configuredFinalValues.length > 0;
+
+      if (!finalVerificationEnabled) {
+        reconstructionPanel.classList.add("locked");
+        setReconstructionFeedback("Reconstruction locked", "success");
+        return;
+      }
+
+      const allCorrect = Object.keys(FINAL_SEQUENCE).every(key => {
+        return normalizeValue(FINAL_SEQUENCE[key] || "") === normalizeValue(entered[key] || "");
+      });
+
+      if (allCorrect) {
+        reconstructionPanel.classList.add("locked");
+        setReconstructionFeedback("Final reconstruction accepted", "success");
+      } else {
+        reconstructionPanel.classList.remove("locked");
+        setReconstructionFeedback("Reconstruction mismatch detected", "error");
+      }
+    });
+
     resetAllButton.addEventListener("click", () => {
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(FINAL_STORAGE_KEY);
+
       nodes.forEach(node => {
         const input = node.querySelector(".node-input");
         input.value = "";
         setNodeResolved(node, false);
         setFeedback(node, "");
       });
+
+      finalInputs.forEach(input => {
+        input.value = "";
+      });
+
+      reconstructionPanel.classList.remove("locked");
+      setReconstructionFeedback("");
+      updateAssemblyPreview();
       updateProgress();
     });
 
     initializeNodes();
+    initializeReconstruction();
   </script>
 </body>
 </html>
