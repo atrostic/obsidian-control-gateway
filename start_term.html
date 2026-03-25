@@ -221,7 +221,7 @@
       flex-direction: column;
       gap: 14px;
       padding: 18px;
-      min-height: 250px;
+      min-height: 330px;
       border: 1px solid var(--border);
       background:
         linear-gradient(180deg, rgba(10, 23, 10, 0.95), rgba(5, 11, 5, 0.98));
@@ -296,19 +296,12 @@
       text-transform: uppercase;
     }
 
-    .node-meta {
-      color: var(--text-dim);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
     .node p {
       margin: 0;
       color: var(--text-dim);
       font-size: 14px;
       line-height: 1.6;
-      flex-grow: 1;
+      flex-grow: 0;
     }
 
     .node-actions {
@@ -317,9 +310,11 @@
       gap: 10px;
       position: relative;
       z-index: 1;
+      margin-top: auto;
     }
 
     .node-link,
+    .verify-button,
     .toggle-button,
     .reset-button {
       display: inline-block;
@@ -339,6 +334,7 @@
     }
 
     .node-link:hover,
+    .verify-button:hover,
     .toggle-button:hover,
     .reset-button:hover {
       background: rgba(167,255,77,0.08);
@@ -350,9 +346,52 @@
       background: linear-gradient(180deg, rgba(10,22,10,0.96), rgba(6,12,6,0.98));
     }
 
-    .node.resolved .toggle-button {
-      background: rgba(120,255,120,0.12);
-      border-color: #4f8a4f;
+    .node-input {
+      width: 100%;
+      background: rgba(4, 16, 4, 0.95);
+      border: 1px solid var(--border);
+      color: var(--text-bright);
+      padding: 11px 12px;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .node-input::placeholder {
+      color: #4f7a4f;
+      text-transform: uppercase;
+    }
+
+    .node-input:focus {
+      border-color: #3f7a3f;
+      box-shadow: 0 0 0 1px rgba(130,255,130,0.08) inset;
+    }
+
+    .verify-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+    }
+
+    .verify-button {
+      width: auto;
+      min-width: 100px;
+    }
+
+    .node-feedback {
+      min-height: 18px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .node-feedback.success {
+      color: var(--warn);
+    }
+
+    .node-feedback.error {
+      color: var(--danger);
     }
 
     .footer {
@@ -414,6 +453,14 @@
       .node-grid {
         grid-template-columns: 1fr;
       }
+
+      .verify-row {
+        grid-template-columns: 1fr;
+      }
+
+      .verify-button {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -434,8 +481,8 @@
       <div class="bootline">Initializing hostile asset recovery environment...</div>
       <h1 class="title glitch" data-text="System Access Matrix">System Access Matrix</h1>
       <div class="subtitle">
-        Distributed destination data has been split across independent recovery nodes. Reconstruct all classified fragments,
-        recover both ordering keys, and resolve the final physical access target.
+        Distributed recovery fragments have been isolated across multiple system nodes. Resolve each node, preserve all outputs,
+        and reconstruct the concealed destination sequence.
       </div>
     </header>
 
@@ -444,8 +491,8 @@
         <span class="line">&gt; boot sequence .................... <span class="ok">complete</span></span>
         <span class="line">&gt; fragment isolation ............... <span class="ok">complete</span></span>
         <span class="line">&gt; route masking .................... <span class="ok">enabled</span></span>
-        <span class="line">&gt; destination fragments ............ <span class="attention">8 detected</span></span>
-        <span class="line">&gt; ordering controls ................ <span class="attention">2 required</span></span>
+        <span class="line">&gt; recovery nodes ................... <span class="attention">8 detected</span></span>
+        <span class="line">&gt; sequence state ................... <span class="attention">obscured</span></span>
         <span class="line cursor">&gt; awaiting operator input</span>
       </div>
 
@@ -453,9 +500,7 @@
         <h2 class="progress-title">Recovery Status</h2>
         <div class="progress-stats">
           <div>Resolved Nodes: <span id="resolvedCount">0</span> / 8</div>
-          <div>Word Fragments: <span id="wordResolved">0</span> / 3</div>
-          <div>Numeric Fragments: <span id="numberResolved">0</span> / 3</div>
-          <div>Ordering Keys: <span id="keyResolved">0</span> / 2</div>
+          <div>System Recovery: <span id="progressPercent">0</span>%</div>
           <div class="progress-bar" aria-hidden="true">
             <div class="progress-fill" id="progressFill"></div>
           </div>
@@ -468,152 +513,182 @@
       <h2 class="grid-title">Available Access Nodes</h2>
 
       <div class="node-grid">
-        <section class="node" data-node-id="node-a" data-node-group="word">
+        <section class="node" data-node-id="node-a">
           <div class="node-head">
             <div class="node-tag">Node A</div>
             <div class="node-state">Pending</div>
           </div>
           <h2>Origin</h2>
-          <div class="node-meta">Fragment Class: Word</div>
-          <p>
-            Audit upstream source records and recover the first classified lexical fragment from the acquisition chain.
-          </p>
+          <p>Audit upstream source records and recover the concealed fragment embedded near the point of initial transfer.</p>
           <div class="node-actions">
             <a class="node-link" href="origin.html">Initialize Node</a>
-            <button class="toggle-button" type="button">Mark Completed</button>
+            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <div class="verify-row">
+              <button class="verify-button" type="button">Verify</button>
+              <button class="toggle-button" type="button">Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite"></div>
           </div>
         </section>
 
-        <section class="node" data-node-id="node-b" data-node-group="word">
+        <section class="node" data-node-id="node-b">
           <div class="node-head">
             <div class="node-tag">Node B</div>
             <div class="node-state">Pending</div>
           </div>
           <h2>Stability</h2>
-          <div class="node-meta">Fragment Class: Word</div>
-          <p>
-            Review volatility markers and isolate the surviving lexical fragment retained after classification loss.
-          </p>
+          <p>Review the disruption field and isolate the retained fragment that remains after volatility filtering.</p>
           <div class="node-actions">
             <a class="node-link" href="stability.html">Initialize Node</a>
-            <button class="toggle-button" type="button">Mark Completed</button>
+            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <div class="verify-row">
+              <button class="verify-button" type="button">Verify</button>
+              <button class="toggle-button" type="button">Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite"></div>
           </div>
         </section>
 
-        <section class="node" data-node-id="node-c" data-node-group="word">
+        <section class="node" data-node-id="node-c">
           <div class="node-head">
             <div class="node-tag">Node C</div>
             <div class="node-state">Pending</div>
           </div>
           <h2>Function</h2>
-          <div class="node-meta">Fragment Class: Word</div>
-          <p>
-            Restore support architecture and identify the final lexical fragment required for route reconstruction.
-          </p>
+          <p>Restore auxiliary support pathways and extract the fragment required to continue route reconstruction.</p>
           <div class="node-actions">
             <a class="node-link" href="function.html">Initialize Node</a>
-            <button class="toggle-button" type="button">Mark Completed</button>
+            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <div class="verify-row">
+              <button class="verify-button" type="button">Verify</button>
+              <button class="toggle-button" type="button">Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite"></div>
           </div>
         </section>
 
-        <section class="node" data-node-id="node-d" data-node-group="number">
+        <section class="node" data-node-id="node-d">
           <div class="node-head">
             <div class="node-tag">Node D</div>
             <div class="node-state">Pending</div>
           </div>
           <h2>Infrastructure</h2>
-          <div class="node-meta">Fragment Class: Numeric</div>
-          <p>
-            Inspect hardened physical assets for embedded routing values hidden within the backbone layer.
-          </p>
+          <p>Inspect hardened physical assets for embedded recovery data hidden within the backbone layer.</p>
           <div class="node-actions">
             <a class="node-link" href="infrastructure.html">Initialize Node</a>
-            <button class="toggle-button" type="button">Mark Completed</button>
+            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <div class="verify-row">
+              <button class="verify-button" type="button">Verify</button>
+              <button class="toggle-button" type="button">Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite"></div>
           </div>
         </section>
 
-        <section class="node" data-node-id="node-e" data-node-group="number">
+        <section class="node" data-node-id="node-e">
           <div class="node-head">
             <div class="node-tag">Node E</div>
             <div class="node-state">Pending</div>
           </div>
           <h2>Scale</h2>
-          <div class="node-meta">Fragment Class: Numeric</div>
-          <p>
-            Resolve nested holdings and determine the correct asset count required to continue the recovery sequence.
-          </p>
+          <p>Resolve nested holdings and determine the valid output concealed within recursive containment.</p>
           <div class="node-actions">
             <a class="node-link" href="scale.html">Initialize Node</a>
-            <button class="toggle-button" type="button">Mark Completed</button>
+            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <div class="verify-row">
+              <button class="verify-button" type="button">Verify</button>
+              <button class="toggle-button" type="button">Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite"></div>
           </div>
         </section>
 
-        <section class="node" data-node-id="node-f" data-node-group="number">
+        <section class="node" data-node-id="node-f">
           <div class="node-head">
             <div class="node-tag">Node F</div>
             <div class="node-state">Pending</div>
           </div>
           <h2>Access</h2>
-          <div class="node-meta">Fragment Class: Numeric</div>
-          <p>
-            Reassemble terminal credentials and recover the final numeric fragment for physical environment entry.
-          </p>
+          <p>Reassemble terminal credentials and recover the gated fragment required for physical environment entry.</p>
           <div class="node-actions">
             <a class="node-link" href="access.html">Initialize Node</a>
-            <button class="toggle-button" type="button">Mark Completed</button>
+            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <div class="verify-row">
+              <button class="verify-button" type="button">Verify</button>
+              <button class="toggle-button" type="button">Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite"></div>
           </div>
         </section>
 
-        <section class="node" data-node-id="node-g" data-node-group="key">
+        <section class="node" data-node-id="node-g">
           <div class="node-head">
             <div class="node-tag">Node G</div>
             <div class="node-state">Pending</div>
           </div>
-          <h2>Lexical Order Key</h2>
-          <div class="node-meta">Control Class: Ordering</div>
-          <p>
-            Recover the sequencing directive that determines the correct arrangement of the recovered word fragments.
-          </p>
+          <h2>Sequence</h2>
+          <p>Recover the hidden directive that governs how isolated fragments must be arranged before use.</p>
           <div class="node-actions">
-            <a class="node-link" href="lexical-order.html">Initialize Node</a>
-            <button class="toggle-button" type="button">Mark Completed</button>
+            <a class="node-link" href="sequence.html">Initialize Node</a>
+            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <div class="verify-row">
+              <button class="verify-button" type="button">Verify</button>
+              <button class="toggle-button" type="button">Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite"></div>
           </div>
         </section>
 
-        <section class="node" data-node-id="node-h" data-node-group="key">
+        <section class="node" data-node-id="node-h">
           <div class="node-head">
             <div class="node-tag">Node H</div>
             <div class="node-state">Pending</div>
           </div>
-          <h2>Numeric Order Key</h2>
-          <div class="node-meta">Control Class: Ordering</div>
-          <p>
-            Recover the sequencing directive that determines the correct arrangement of the recovered numeric fragments.
-          </p>
+          <h2>Priority</h2>
+          <p>Recover the secondary control directive required to finalize the destination reconstruction order.</p>
           <div class="node-actions">
-            <a class="node-link" href="numeric-order.html">Initialize Node</a>
-            <button class="toggle-button" type="button">Mark Completed</button>
+            <a class="node-link" href="priority.html">Initialize Node</a>
+            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <div class="verify-row">
+              <button class="verify-button" type="button">Verify</button>
+              <button class="toggle-button" type="button">Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite"></div>
           </div>
         </section>
       </div>
     </main>
 
     <footer class="footer">
-      <div>&gt; advisory: fragment values may appear unrelated until properly ordered</div>
-      <div>&gt; directive: recover all eight nodes before attempting physical interception</div>
+      <div>&gt; advisory: recovered fragments may appear unrelated until properly assembled</div>
+      <div>&gt; directive: resolve all eight nodes before attempting interception</div>
     </footer>
   </div>
 
   <script>
-    const STORAGE_KEY = "obsidian-node-status-v1";
+    const STORAGE_KEY = "obsidian-node-status-v3";
+
+    // Fill these in later. Leave as "" to disable verification for that node.
+    const CORRECT_ANSWERS = {
+      "node-a": "haggis",
+      "node-b": "",
+      "node-c": "",
+      "node-d": "",
+      "node-e": "",
+      "node-f": "",
+      "node-g": "",
+      "node-h": ""
+    };
 
     const nodes = Array.from(document.querySelectorAll(".node"));
     const resolvedCountEl = document.getElementById("resolvedCount");
-    const wordResolvedEl = document.getElementById("wordResolved");
-    const numberResolvedEl = document.getElementById("numberResolved");
-    const keyResolvedEl = document.getElementById("keyResolved");
+    const progressPercentEl = document.getElementById("progressPercent");
     const progressFillEl = document.getElementById("progressFill");
     const resetAllButton = document.getElementById("resetAllButton");
+
+    function normalizeValue(value) {
+      return value.trim().toLowerCase();
+    }
 
     function loadState() {
       try {
@@ -637,18 +712,19 @@
       toggleButton.setAttribute("aria-pressed", isResolved ? "true" : "false");
     }
 
+    function setFeedback(node, message, type = "") {
+      const feedback = node.querySelector(".node-feedback");
+      feedback.textContent = message;
+      feedback.className = `node-feedback${type ? " " + type : ""}`;
+    }
+
     function updateProgress() {
       const resolvedNodes = nodes.filter(node => node.classList.contains("resolved"));
-      const wordResolved = resolvedNodes.filter(node => node.dataset.nodeGroup === "word").length;
-      const numberResolved = resolvedNodes.filter(node => node.dataset.nodeGroup === "number").length;
-      const keyResolved = resolvedNodes.filter(node => node.dataset.nodeGroup === "key").length;
+      const resolvedCount = resolvedNodes.length;
+      const percent = Math.round((resolvedCount / nodes.length) * 100);
 
-      resolvedCountEl.textContent = resolvedNodes.length;
-      wordResolvedEl.textContent = wordResolved;
-      numberResolvedEl.textContent = numberResolved;
-      keyResolvedEl.textContent = keyResolved;
-
-      const percent = (resolvedNodes.length / nodes.length) * 100;
+      resolvedCountEl.textContent = resolvedCount;
+      progressPercentEl.textContent = percent;
       progressFillEl.style.width = `${percent}%`;
     }
 
@@ -657,18 +733,87 @@
 
       nodes.forEach(node => {
         const nodeId = node.dataset.nodeId;
-        const isResolved = Boolean(state[nodeId]);
         const toggleButton = node.querySelector(".toggle-button");
+        const verifyButton = node.querySelector(".verify-button");
+        const input = node.querySelector(".node-input");
 
+        const savedValue = state[nodeId]?.value || "";
+        const isResolved = Boolean(state[nodeId]?.resolved);
+
+        input.value = savedValue;
         setNodeResolved(node, isResolved);
+
+        if (isResolved) {
+          setFeedback(node, "Accepted", "success");
+        }
+
+        input.addEventListener("input", () => {
+          const currentState = loadState();
+          currentState[nodeId] = currentState[nodeId] || { value: "", resolved: false };
+          currentState[nodeId].value = input.value;
+          saveState(currentState);
+
+          if (!node.classList.contains("resolved")) {
+            setFeedback(node, "");
+          }
+        });
+
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            verifyButton.click();
+          }
+        });
+
+        verifyButton.addEventListener("click", () => {
+          const currentState = loadState();
+          const enteredValue = normalizeValue(input.value);
+          const correctValue = normalizeValue(CORRECT_ANSWERS[nodeId] || "");
+
+          currentState[nodeId] = currentState[nodeId] || { value: "", resolved: false };
+          currentState[nodeId].value = input.value;
+
+          if (!enteredValue) {
+            currentState[nodeId].resolved = false;
+            saveState(currentState);
+            setNodeResolved(node, false);
+            setFeedback(node, "No entry detected", "error");
+            updateProgress();
+            return;
+          }
+
+          // If no answer is configured yet, just save the entry and leave manual completion in place.
+          if (!correctValue) {
+            saveState(currentState);
+            setFeedback(node, "Entry saved", "");
+            return;
+          }
+
+          if (enteredValue === correctValue) {
+            currentState[nodeId].resolved = true;
+            saveState(currentState);
+            setNodeResolved(node, true);
+            setFeedback(node, "Accepted", "success");
+          } else {
+            currentState[nodeId].resolved = false;
+            saveState(currentState);
+            setNodeResolved(node, false);
+            setFeedback(node, "Invalid entry", "error");
+          }
+
+          updateProgress();
+        });
 
         toggleButton.addEventListener("click", () => {
           const currentState = loadState();
           const nextResolved = !node.classList.contains("resolved");
 
-          currentState[nodeId] = nextResolved;
+          currentState[nodeId] = currentState[nodeId] || { value: "", resolved: false };
+          currentState[nodeId].value = input.value;
+          currentState[nodeId].resolved = nextResolved;
           saveState(currentState);
+
           setNodeResolved(node, nextResolved);
+          setFeedback(node, nextResolved ? "Marked manually" : "");
           updateProgress();
         });
       });
@@ -678,7 +823,12 @@
 
     resetAllButton.addEventListener("click", () => {
       localStorage.removeItem(STORAGE_KEY);
-      nodes.forEach(node => setNodeResolved(node, false));
+      nodes.forEach(node => {
+        const input = node.querySelector(".node-input");
+        input.value = "";
+        setNodeResolved(node, false);
+        setFeedback(node, "");
+      });
       updateProgress();
     });
 
