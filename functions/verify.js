@@ -30,6 +30,7 @@ export async function onRequestPost(context) {
       .replace(/^-|-$/g, "");    // trim leading/trailing hyphens
   };
 
+  // answers blow.  Room is set to 123 - update with real room once checked in
   const ANSWERS = {
     "node-a": "touchy",
     "node-b": "3",
@@ -37,8 +38,8 @@ export async function onRequestPost(context) {
     "node-d": "1",
     "node-e": "toolkit",
     "node-f": "2",
-    "node-g": "function-origin-scale",
-    "node-h": "infrastructure-access-stability"
+    "node-g": "infrastructure-access-stability",
+    "node-h": "function-origin-scale",
   };
 
   const safeNodeId = normalize(nodeId);
