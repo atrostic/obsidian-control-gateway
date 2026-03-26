@@ -32,11 +32,11 @@ export async function onRequestPost(context) {
 
   // answers blow.  Room is set to 123 - update with real room once checked in
   const ANSWERS = {
-    "node-a": "glow",
+    "node-a": "blankets",
     "node-b": "3",
-    "node-c": "jiggle",
+    "node-c": "happy",
     "node-d": "1",
-    "node-e": "pink",
+    "node-e": "factory",
     "node-f": "2",
     "node-g": "infrastructure-access-stability",
     "node-h": "function-origin-scale"
