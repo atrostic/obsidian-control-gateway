@@ -8,6 +8,7 @@
   <style>
     :root {
       --bg: #020402;
+      --panel: #071107;
       --border: #173417;
       --text: #9cff9c;
       --text-dim: #5cab5c;
@@ -22,7 +23,6 @@
       background: linear-gradient(180deg, #010201, #020402);
       color: var(--text);
       font-family: "Courier New", monospace;
-      overflow-x: hidden;
       position: relative;
     }
 
@@ -50,8 +50,8 @@
       max-width: 1000px;
       margin: auto;
       border: 1px solid var(--border);
-      background: #061106;
-      padding: 20px;
+      background: var(--panel);
+      padding: 24px;
       transition: all 0.2s ease;
     }
 
@@ -71,46 +71,25 @@
 
     .hero {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
       align-items: center;
     }
 
     /* IMAGE GLITCH */
     .glitch-img {
       position: relative;
-      overflow: hidden;
       border: 1px solid var(--border);
+      overflow: hidden;
     }
 
     .glitch-img img {
       width: 100%;
       display: block;
-      transition: transform 0.1s ease;
     }
 
     .glitch-img.glitching img {
       animation: imgJitter 0.2s linear 3;
-    }
-
-    .glitch-img.glitching::before,
-    .glitch-img.glitching::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: inherit;
-      mix-blend-mode: screen;
-      pointer-events: none;
-    }
-
-    .glitch-img.glitching::before {
-      background: rgba(255,0,0,0.15);
-      transform: translate(-2px, 0);
-    }
-
-    .glitch-img.glitching::after {
-      background: rgba(0,255,255,0.12);
-      transform: translate(2px, 0);
     }
 
     @keyframes imgJitter {
@@ -122,7 +101,7 @@
     }
 
     h1 {
-      margin: 20px 0 10px;
+      margin: 0 0 12px;
       font-size: 40px;
       color: var(--text-bright);
     }
@@ -138,11 +117,21 @@
       color: var(--accent);
     }
 
-    /* HIDDEN MESSAGE */
+    /* MOM & DAD IMAGE */
+    .family-photo {
+      margin-top: 18px;
+      text-align: center;
+    }
+
+    .family-photo img {
+      width: 180px;
+      border: 1px solid var(--border);
+    }
+
+    /* HIDDEN TEXT */
     .hidden-message {
-      color: #000000;
-      margin-top: 10px;
-      user-select: text;
+      color: #020402; /* EXACT background match */
+      margin-top: 12px;
     }
 
     .begin {
@@ -188,38 +177,45 @@
 
   <div class="hero">
     <div class="glitch-img" id="img1">
-      <img src="images/handsome.jpg" alt="Players" />
+      <img src="images/handsome.jpg" alt="Players">
     </div>
-    <div class="glitch-img" id="img2">
-      <img src="images/momanddad.jpg" alt="Mom and Dad" />
-    </div>
-  </div>
 
-  <h1>Welcome</h1>
+    <div>
+      <h1>Welcome</h1>
 
-  <div class="message">
-    <p>We are so glad you are here.</p>
+      <div class="message">
+        <p>We are so glad you are here.</p>
 
-    <p>
-      This tradition means a lot to us—not just because of the puzzles, but because we get to share it with you.
-    </p>
+        <p>
+          This tradition means a lot to us—not just because of the puzzles,
+          but because we get to share it with you.
+        </p>
 
-    <p>
-      Watching the two of you think, laugh, argue, and solve together is one of our favorite parts of Easter.
-    </p>
+        <p>
+          Watching the two of you think, laugh, argue, and solve together
+          is one of our favorite parts of Easter.
+        </p>
 
-    <p>
-      Be curious. Be persistent. Trust each other. And most importantly—have fun.
-    </p>
+        <p>
+          Be curious. Be persistent. Trust each other. And most importantly—have fun.
+        </p>
 
-    <p>
-      We love you both very much, and we are incredibly proud of you.
-    </p>
+        <p>
+          We love you both very much, and we are incredibly proud of you.
+        </p>
 
-    <div class="signature">— Mom and Dad</div>
+        <div class="signature">— Mom and Dad</div>
 
-    <div class="hidden-message">
-      Not everything is visible at first glance - even red herrings!
+        <div class="family-photo">
+          <div class="glitch-img" id="img2">
+            <img src="images/momanddad.jpg" alt="Mom and Dad">
+          </div>
+        </div>
+
+        <div class="hidden-message">
+          Not everything is visible at first glance - even red herrings!
+        </div>
+      </div>
     </div>
   </div>
 
