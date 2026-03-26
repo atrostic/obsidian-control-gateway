@@ -461,8 +461,7 @@
     }
 
     .node.locked {
-      opacity: 0.72;
-      border-style: dashed;
+      opacity: 0.86;
     }
 
     .node.locked:hover {
@@ -470,21 +469,6 @@
       box-shadow:
         0 0 0 1px rgba(194,255,91,0.04) inset,
         0 0 18px rgba(194,255,91,0.05);
-    }
-
-    .node.locked::before {
-      content: "LOCKED";
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      z-index: 2;
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: #ffb4b4;
-      border: 1px solid rgba(255, 92, 92, 0.38);
-      background: rgba(70, 10, 10, 0.55);
-      padding: 4px 8px;
     }
 
     .node.locked .node-link,
@@ -498,6 +482,59 @@
 
     .node.locked .node-input {
       cursor: not-allowed;
+    }
+
+    .master-lock-overlay {
+      display: none;
+      position: absolute;
+      inset: 68px 18px 18px 18px;
+      z-index: 3;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .node.locked .master-lock-overlay {
+      display: flex;
+    }
+
+    .master-lock-box {
+      width: 100%;
+      max-width: 270px;
+      text-align: center;
+      padding: 18px 16px;
+      border: 1px solid rgba(255, 92, 92, 0.45);
+      background: linear-gradient(180deg, rgba(45, 10, 10, 0.82), rgba(18, 5, 5, 0.90));
+      box-shadow:
+        0 0 0 1px rgba(255, 180, 180, 0.08) inset,
+        0 0 24px rgba(255, 59, 59, 0.14);
+      backdrop-filter: blur(2px);
+    }
+
+    .master-lock-title {
+      color: #ffe3e3;
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .master-lock-copy {
+      color: #d7a3a3;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.5;
+    }
+
+    .node.locked h2,
+    .node.locked p,
+    .node.locked .node-actions {
+      opacity: 0.34;
+    }
+
+    .node.locked .node-head {
+      opacity: 0.92;
     }
 
     .node-head {
@@ -538,6 +575,12 @@
       color: #ffe3e3;
       border-color: rgba(255, 92, 92, 0.35);
       background: rgba(255, 92, 92, 0.08);
+    }
+
+    .node.master-node.locked .node-state {
+      color: #fff0f0;
+      border-color: rgba(255, 92, 92, 0.48);
+      background: rgba(70, 10, 10, 0.58);
     }
 
     .node.master-node.resolved .node-state {
@@ -1100,10 +1143,18 @@
               <div class="node-tag">Master Node Alpha</div>
               <div class="master-badge">Sequence Directive</div>
             </div>
-            <div class="node-state">Pending</div>
+            <div class="node-state">Locked</div>
           </div>
           <h2>Alpha</h2>
           <p>Recover the concealed sequence directive and determine the exact ordered fragment required to align the destination pathway.</p>
+
+          <div class="master-lock-overlay">
+            <div class="master-lock-box">
+              <div class="master-lock-title">Master Node Locked</div>
+              <div class="master-lock-copy">Resolve Nodes A-F to unlock</div>
+            </div>
+          </div>
+
           <div class="node-actions">
             <a class="node-link" href="sequence.html">Initialize Master Node</a>
             <input class="node-input" type="text" placeholder="Enter sequence directive" disabled />
@@ -1121,10 +1172,18 @@
               <div class="node-tag">Master Node Omega</div>
               <div class="master-badge">Priority Directive</div>
             </div>
-            <div class="node-state">Pending</div>
+            <div class="node-state">Locked</div>
           </div>
           <h2>Omega</h2>
           <p>Recover the final location directive and identify the exact reference required to authorize interception.</p>
+
+          <div class="master-lock-overlay">
+            <div class="master-lock-box">
+              <div class="master-lock-title">Master Node Locked</div>
+              <div class="master-lock-copy">Resolve Nodes A-F to unlock</div>
+            </div>
+          </div>
+
           <div class="node-actions">
             <a class="node-link" href="priority.html">Initialize Master Node</a>
             <input class="node-input" type="text" placeholder="Enter priority directive" disabled />
@@ -1146,7 +1205,7 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "obsidian-node-status-v12";
+    const STORAGE_KEY = "obsidian-node-status-v13";
     const MASTER_NODE_IDS = ["node-g", "node-h"];
     const BASE_NODE_IDS = ["node-a", "node-b", "node-c", "node-d", "node-e", "node-f"];
     const FINAL_REDIRECT_URL = "final_step.html";
@@ -1193,7 +1252,13 @@
       const toggleButton = node.querySelector(".toggle-button");
 
       node.classList.toggle("resolved", isResolved);
-      stateBadge.textContent = isResolved ? "Resolved" : "Pending";
+
+      if (node.classList.contains("locked")) {
+        stateBadge.textContent = "Locked";
+      } else {
+        stateBadge.textContent = isResolved ? "Resolved" : "Pending";
+      }
+
       toggleButton.textContent = isResolved ? "Mark Incomplete" : "Mark Completed";
       toggleButton.setAttribute("aria-pressed", isResolved ? "true" : "false");
     }
@@ -1216,6 +1281,7 @@
       const verifyButton = node.querySelector(".verify-button");
       const toggleButton = node.querySelector(".toggle-button");
       const link = node.querySelector(".node-link");
+      const stateBadge = node.querySelector(".node-state");
 
       node.classList.toggle("locked", locked);
 
@@ -1224,6 +1290,14 @@
       toggleButton.disabled = locked;
       link.setAttribute("tabindex", locked ? "-1" : "0");
       link.setAttribute("aria-disabled", locked ? "true" : "false");
+
+      if (node.classList.contains("resolved")) {
+        stateBadge.textContent = "Resolved";
+      } else if (locked) {
+        stateBadge.textContent = "Locked";
+      } else {
+        stateBadge.textContent = "Pending";
+      }
 
       if (locked && !node.classList.contains("resolved")) {
         setFeedback(node, "Awaiting subordinate node completion");
@@ -1511,8 +1585,8 @@
           } finally {
             verifyButton.textContent = "Verify";
             updateMasterLockState();
-            if (!verifyButton.disabled || !node.classList.contains("locked")) {
-              verifyButton.disabled = node.classList.contains("locked");
+            if (!node.classList.contains("locked")) {
+              verifyButton.disabled = false;
             }
           }
         });
