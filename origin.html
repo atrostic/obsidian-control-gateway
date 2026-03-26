@@ -9,13 +9,11 @@
     :root {
       --bg: #020402;
       --panel: #071107;
-      --panel-2: #0a170a;
       --border: #173417;
       --text: #9cff9c;
       --text-dim: #5cab5c;
       --text-bright: #e5ffe5;
       --accent: #a7ff4d;
-      --danger: #ff5c5c;
       --shadow: rgba(80, 255, 80, 0.08);
     }
 
@@ -115,7 +113,6 @@
     h1 {
       margin: 0 0 10px;
       font-size: clamp(28px, 5vw, 44px);
-      line-height: 1.05;
       color: var(--text-bright);
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -151,35 +148,29 @@
     }
 
     .cipher-block {
-      margin: 0;
       white-space: pre-wrap;
       color: var(--text-bright);
       font-size: 18px;
       line-height: 1.9;
-      letter-spacing: 0.03em;
     }
 
     .clue-image {
       border: 1px solid var(--border);
       overflow: hidden;
       margin-bottom: 14px;
-      box-shadow: 0 0 0 1px rgba(130,255,130,0.04) inset;
     }
 
     .clue-image img {
-      display: block;
       width: 100%;
-      height: auto;
+      display: block;
     }
 
     .clue-text {
       color: var(--text-bright);
       font-size: 22px;
-      line-height: 1.4;
+      text-align: center;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      text-align: center;
-      margin-top: 8px;
     }
 
     .footer {
@@ -187,19 +178,6 @@
       padding: 16px 22px 20px;
       color: var(--text-dim);
       font-size: 12px;
-      line-height: 1.7;
-    }
-
-    .hidden-comment {
-      color: transparent;
-      user-select: text;
-      -webkit-user-select: text;
-    }
-
-    .hidden-comment::selection,
-    .hidden-comment::-moz-selection {
-      color: #000000;
-      background: #9cff9c;
     }
 
     @media (max-width: 860px) {
@@ -209,29 +187,34 @@
     }
   </style>
 </head>
+
 <body class="scanlines">
-  <!-- Caesar first. Then what? -->
 
-  <div class="shell">
-    <div class="topbar">
-      <div><span class="status-dot"></span>Recovery Node Active</div>
-      <div>Obsidian Control Gateway // Cipher Pathway</div>
-    </div>
+<!-- Caesar reveals the language. Trithemius reveals the message. -->
 
-    <main class="content">
-      <section class="header-block">
-        <div class="bootline">Parsing archival fragment...</div>
-        <h1>Sequence Fragment</h1>
-        <div class="subtitle">
-          A preserved linguistic artifact has been isolated. External reference material has also been attached.
-          Resolve the transformation path, then determine what the text requires next.
-        </div>
-      </section>
+<div class="shell">
+  <div class="topbar">
+    <div><span class="status-dot"></span>Recovery Node Active</div>
+    <div>Obsidian Control Gateway // Cipher Pathway</div>
+  </div>
 
-      <section class="main-grid">
-        <div class="terminal-panel">
-          <h2 class="panel-title">Recovered Text</h2>
-          <pre class="cipher-block">Vzcrengbe rkpryfhf
+  <main class="content">
+
+    <section class="header-block">
+      <div class="bootline">Parsing archival fragment...</div>
+      <h1>Sequence Fragment</h1>
+      <div class="subtitle">
+        A preserved linguistic artifact has been isolated. External reference material has also been attached.
+        Resolve the transformation path, then determine what the text requires next.
+      </div>
+    </section>
+
+    <section class="main-grid">
+
+      <div class="terminal-panel">
+        <div class="panel-title">Recovered Text</div>
+        <div class="cipher-block">
+Vzcrengbe rkpryfhf
 Rkpryfhf fncvragvffvzhf
 Pbaqvgbe zntahf
 Cvhf vyyhfgengbe
@@ -240,24 +223,29 @@ Qbzvahf cnpvsvphf
 Cnpvsvphf tybevbfhf
 Thoreangbe pbafrehngbe
 Bcgvzhf qbzvahf
-Vyyhfgengbe qbzvangbe</pre>
+Vyyhfgengbe qbzvangbe
+        </div>
+      </div>
+
+      <div class="clue-panel">
+        <div class="panel-title">Attached Reference</div>
+
+        <div class="clue-image">
+          <img src="images/caesar.jpg" alt="Caesar clue">
         </div>
 
-        <div class="clue-panel">
-          <h2 class="panel-title">Attached Reference</h2>
-          <div class="clue-image">
-            <img src="images/caesar.jpg" alt="Caesar clue image" />
-          </div>
-          <div class="clue-text">Then what?</div>
-        </div>
-      </section>
-    </main>
+        <div class="clue-text">Then what?</div>
+      </div>
 
-    <footer class="footer">
-      <div>&gt; advisory: not all transformations yield the final answer directly</div>
-      <div>&gt; directive: identify the method, then identify the next instruction</div>
-      <div class="hidden-comment">ROT13 gets you to Latin. The harder question is what to do with the Latin.</div>
-    </footer>
-  </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div>&gt; advisory: not all transformations yield the final answer directly</div>
+    <div>&gt; directive: identify the method, then identify the next instruction</div>
+  </footer>
+</div>
+
 </body>
 </html>
