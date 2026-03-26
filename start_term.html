@@ -402,7 +402,7 @@
         0 0 0 1px rgba(100,255,100,0.03) inset,
         0 0 20px rgba(0,255,0,0.03);
       position: relative;
-      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, opacity 0.15s ease;
     }
 
     .node:hover {
@@ -458,6 +458,46 @@
       box-shadow:
         0 0 0 1px rgba(255,180,180,0.10) inset,
         0 0 34px rgba(255, 59, 59, 0.18);
+    }
+
+    .node.locked {
+      opacity: 0.72;
+      border-style: dashed;
+    }
+
+    .node.locked:hover {
+      transform: none;
+      box-shadow:
+        0 0 0 1px rgba(194,255,91,0.04) inset,
+        0 0 18px rgba(194,255,91,0.05);
+    }
+
+    .node.locked::before {
+      content: "LOCKED";
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 2;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #ffb4b4;
+      border: 1px solid rgba(255, 92, 92, 0.38);
+      background: rgba(70, 10, 10, 0.55);
+      padding: 4px 8px;
+    }
+
+    .node.locked .node-link,
+    .node.locked .verify-button,
+    .node.locked .toggle-button,
+    .node.locked .node-input {
+      pointer-events: none;
+      opacity: 0.55;
+      filter: grayscale(0.15);
+    }
+
+    .node.locked .node-input {
+      cursor: not-allowed;
     }
 
     .node-head {
@@ -1054,7 +1094,7 @@
           </div>
         </section>
 
-        <section class="node master-node" data-node-id="node-g" data-master-node="true">
+        <section class="node master-node locked" data-node-id="node-g" data-master-node="true">
           <div class="node-head">
             <div>
               <div class="node-tag">Master Node Alpha</div>
@@ -1066,16 +1106,16 @@
           <p>Recover the concealed sequence directive and determine the exact ordered fragment required to align the destination pathway.</p>
           <div class="node-actions">
             <a class="node-link" href="sequence.html">Initialize Master Node</a>
-            <input class="node-input" type="text" placeholder="Enter sequence directive" />
+            <input class="node-input" type="text" placeholder="Enter sequence directive" disabled />
             <div class="verify-row">
-              <button class="verify-button" type="button">Verify</button>
-              <button class="toggle-button" type="button">Mark Completed</button>
+              <button class="verify-button" type="button" disabled>Verify</button>
+              <button class="toggle-button" type="button" disabled>Mark Completed</button>
             </div>
-            <div class="node-feedback" aria-live="polite"></div>
+            <div class="node-feedback" aria-live="polite">Awaiting subordinate node completion</div>
           </div>
         </section>
 
-        <section class="node master-node" data-node-id="node-h" data-master-node="true">
+        <section class="node master-node locked" data-node-id="node-h" data-master-node="true">
           <div class="node-head">
             <div>
               <div class="node-tag">Master Node Omega</div>
@@ -1087,12 +1127,12 @@
           <p>Recover the final location directive and identify the exact reference required to authorize interception.</p>
           <div class="node-actions">
             <a class="node-link" href="priority.html">Initialize Master Node</a>
-            <input class="node-input" type="text" placeholder="Enter priority directive" />
+            <input class="node-input" type="text" placeholder="Enter priority directive" disabled />
             <div class="verify-row">
-              <button class="verify-button" type="button">Verify</button>
-              <button class="toggle-button" type="button">Mark Completed</button>
+              <button class="verify-button" type="button" disabled>Verify</button>
+              <button class="toggle-button" type="button" disabled>Mark Completed</button>
             </div>
-            <div class="node-feedback" aria-live="polite"></div>
+            <div class="node-feedback" aria-live="polite">Awaiting subordinate node completion</div>
           </div>
         </section>
       </div>
@@ -1106,8 +1146,9 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "obsidian-node-status-v11";
+    const STORAGE_KEY = "obsidian-node-status-v12";
     const MASTER_NODE_IDS = ["node-g", "node-h"];
+    const BASE_NODE_IDS = ["node-a", "node-b", "node-c", "node-d", "node-e", "node-f"];
     const FINAL_REDIRECT_URL = "final_step.html";
     const FINAL_COUNTDOWN_SECONDS = 10;
 
@@ -1161,6 +1202,46 @@
       const feedback = node.querySelector(".node-feedback");
       feedback.textContent = message;
       feedback.className = `node-feedback${type ? " " + type : ""}`;
+    }
+
+    function areBaseNodesResolved() {
+      return BASE_NODE_IDS.every(nodeId => {
+        const node = document.querySelector(`.node[data-node-id="${nodeId}"]`);
+        return node && node.classList.contains("resolved");
+      });
+    }
+
+    function setMasterNodeLocked(node, locked) {
+      const input = node.querySelector(".node-input");
+      const verifyButton = node.querySelector(".verify-button");
+      const toggleButton = node.querySelector(".toggle-button");
+      const link = node.querySelector(".node-link");
+
+      node.classList.toggle("locked", locked);
+
+      input.disabled = locked;
+      verifyButton.disabled = locked;
+      toggleButton.disabled = locked;
+      link.setAttribute("tabindex", locked ? "-1" : "0");
+      link.setAttribute("aria-disabled", locked ? "true" : "false");
+
+      if (locked && !node.classList.contains("resolved")) {
+        setFeedback(node, "Awaiting subordinate node completion");
+      } else if (!locked && !node.classList.contains("resolved")) {
+        setFeedback(node, "Master node unlocked");
+      }
+    }
+
+    function updateMasterLockState() {
+      const unlocked = areBaseNodesResolved();
+
+      MASTER_NODE_IDS.forEach(nodeId => {
+        const node = document.querySelector(`.node[data-node-id="${nodeId}"]`);
+        if (!node) return;
+        setMasterNodeLocked(node, !unlocked);
+      });
+
+      return unlocked;
     }
 
     function getMasterResolvedCount() {
@@ -1228,6 +1309,7 @@
     }
 
     function renderSystemState() {
+      const baseUnlocked = updateMasterLockState();
       const masterResolved = getMasterResolvedCount();
       const bothMastersResolved = masterResolved === 2;
 
@@ -1249,6 +1331,7 @@
         terminalLogEl.innerHTML = `
           <span class="line">&gt; boot sequence .................... <span class="ok">complete</span></span>
           <span class="line">&gt; fragment isolation ............... <span class="ok">complete</span></span>
+          <span class="line">&gt; subordinate nodes ............... <span class="ok">resolved</span></span>
           <span class="line">&gt; master node alpha ............... <span class="master">confirmed</span></span>
           <span class="line">&gt; master node omega ............... <span class="master">confirmed</span></span>
           <span class="line">&gt; route masking .................... <span class="alert">collapsing</span></span>
@@ -1273,6 +1356,7 @@
         terminalLogEl.innerHTML = `
           <span class="line">&gt; boot sequence .................... <span class="ok">complete</span></span>
           <span class="line">&gt; fragment isolation ............... <span class="ok">complete</span></span>
+          <span class="line">&gt; subordinate lock state ........... <span class="ok">${baseUnlocked ? "released" : "engaged"}</span></span>
           <span class="line">&gt; route masking .................... <span class="attention">destabilizing</span></span>
           <span class="line">&gt; alpha/omega presence ............. <span class="master">detected</span></span>
           <span class="line">&gt; destination model ................ <span class="attention">partial</span></span>
@@ -1297,6 +1381,7 @@
           <span class="line">&gt; boot sequence .................... <span class="ok">complete</span></span>
           <span class="line">&gt; fragment isolation ............... <span class="ok">complete</span></span>
           <span class="line">&gt; route masking .................... <span class="ok">enabled</span></span>
+          <span class="line">&gt; subordinate lock state ........... <span class="attention">${baseUnlocked ? "released" : "engaged"}</span></span>
           <span class="line">&gt; recovery nodes ................... <span class="attention">8 detected</span></span>
           <span class="line">&gt; sequence state ................... <span class="attention">obscured</span></span>
           <span class="line cursor">&gt; awaiting operator input</span>
@@ -1365,18 +1450,20 @@
           currentState[nodeId].value = input.value;
           saveState(currentState);
 
-          if (!node.classList.contains("resolved")) {
+          if (!node.classList.contains("resolved") && !node.classList.contains("locked")) {
             setFeedback(node, "");
           }
         });
 
         input.addEventListener("keydown", (event) => {
-          if (event.key === "Enter") {
+          if (event.key === "Enter" && !verifyButton.disabled) {
             verifyButton.click();
           }
         });
 
         verifyButton.addEventListener("click", async () => {
+          if (verifyButton.disabled) return;
+
           const currentState = loadState();
           const enteredRaw = input.value;
 
@@ -1422,12 +1509,17 @@
             setFeedback(node, "Verification error", "error");
             updateProgress();
           } finally {
-            verifyButton.disabled = false;
             verifyButton.textContent = "Verify";
+            updateMasterLockState();
+            if (!verifyButton.disabled || !node.classList.contains("locked")) {
+              verifyButton.disabled = node.classList.contains("locked");
+            }
           }
         });
 
         toggleButton.addEventListener("click", () => {
+          if (toggleButton.disabled) return;
+
           const currentState = loadState();
           const nextResolved = !node.classList.contains("resolved");
 
