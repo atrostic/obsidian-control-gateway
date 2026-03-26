@@ -964,7 +964,7 @@
     }
   </style>
 </head>
-  
+
 <!-- Now with even more AI slop! -->
 
 <body class="scanlines">
@@ -991,7 +991,7 @@
         <span id="modeStatus">MODE: FRAGMENT RECOVERY</span>
       </div>
     </div>
-    
+
     <header class="header">
       <div class="bootline" id="bootlineText">Initializing Easter asset recovery environment...</div>
       <h1 class="title glitch" data-text="System Access Matrix">System Access Matrix</h1>
@@ -1208,7 +1208,7 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "obsidian-node-status-v13";
+    const STORAGE_KEY = "obsidian-node-status-v14";
     const MASTER_NODE_IDS = ["node-g", "node-h"];
     const BASE_NODE_IDS = ["node-a", "node-b", "node-c", "node-d", "node-e", "node-f"];
     const FINAL_REDIRECT_URL = "final_step.html";
@@ -1285,6 +1285,8 @@
       const toggleButton = node.querySelector(".toggle-button");
       const link = node.querySelector(".node-link");
       const stateBadge = node.querySelector(".node-state");
+      const wasLocked = node.classList.contains("locked");
+      const feedback = node.querySelector(".node-feedback");
 
       node.classList.toggle("locked", locked);
 
@@ -1304,8 +1306,10 @@
 
       if (locked && !node.classList.contains("resolved")) {
         setFeedback(node, "Awaiting subordinate node completion");
-      } else if (!locked && !node.classList.contains("resolved")) {
-        setFeedback(node, "Master node unlocked");
+      } else if (!locked && wasLocked && !node.classList.contains("resolved")) {
+        if (!feedback.textContent || feedback.textContent === "Awaiting subordinate node completion") {
+          setFeedback(node, "Master node unlocked");
+        }
       }
     }
 
