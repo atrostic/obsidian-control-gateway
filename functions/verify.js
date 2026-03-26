@@ -15,15 +15,16 @@ export async function onRequestPost(context) {
     return map[v] || v;
   };
 
-  const ANSWERS = {
-    "node-a": "haggis",
-    "node-b": "2",
-    "node-c": "3",
-    "node-d": "4",
-    "node-e": "5",
-    "node-f": "6",
-    "node-g": "7",
-    "node-h": "8"
+  // Room below is 123 - update with real room number
+  const ANSWERS = {  
+    "node-a": "touchy",
+    "node-b": "3",
+    "node-c": "galaxies",
+    "node-d": "1",
+    "node-e": "toolkit",
+    "node-f": "2",
+    "node-g": "function-origin-scale",
+    "node-h": "infrastructure-access-stability"
   };
 
   let input = normalize(answer);
