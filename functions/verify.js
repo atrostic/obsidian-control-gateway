@@ -39,7 +39,7 @@ export async function onRequestPost(context) {
     "node-e": "toolkit",
     "node-f": "2",
     "node-g": "infrastructure-access-stability",
-    "node-h": "function-origin-scale",
+    "node-h": "function-origin-scale"
   };
 
   const safeNodeId = normalize(nodeId);
