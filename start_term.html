@@ -683,6 +683,22 @@
       color: #d7a2a2;
     }
 
+    .master-hint {
+      margin-top: 10px;
+      color: #4f7a4f;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    body.master-active .master-hint {
+      color: #7c9b7c;
+    }
+
+    body.master-unlocked .master-hint {
+      color: #b68989;
+    }
+
     .cursor::after {
       content: "_";
       display: inline-block;
@@ -1047,10 +1063,10 @@
             <div class="node-state">Pending</div>
           </div>
           <h2>Alpha</h2>
-          <p>Recover the hotel room directive and determine the correct numerical sequence required to align the destination pathway.</p>
+          <p>Recover the concealed sequence directive and determine the exact ordered fragment required to align the destination pathway.</p>
           <div class="node-actions">
             <a class="node-link" href="sequence.html">Initialize Master Node</a>
-            <input class="node-input" type="text" placeholder="Enter room sequence" />
+            <input class="node-input" type="text" placeholder="Enter sequence directive" />
             <div class="verify-row">
               <button class="verify-button" type="button">Verify</button>
               <button class="toggle-button" type="button">Mark Completed</button>
@@ -1068,10 +1084,10 @@
             <div class="node-state">Pending</div>
           </div>
           <h2>Omega</h2>
-          <p>Recover the final location directive and identify the three-word destination reference required to authorize interception.</p>
+          <p>Recover the final location directive and identify the exact reference required to authorize interception.</p>
           <div class="node-actions">
             <a class="node-link" href="priority.html">Initialize Master Node</a>
-            <input class="node-input" type="text" placeholder="Enter final location reference" />
+            <input class="node-input" type="text" placeholder="Enter priority directive" />
             <div class="verify-row">
               <button class="verify-button" type="button">Verify</button>
               <button class="toggle-button" type="button">Mark Completed</button>
@@ -1085,11 +1101,12 @@
     <footer class="footer">
       <div id="footerLine1">&gt; advisory: recovered fragments may appear unrelated until properly assembled</div>
       <div id="footerLine2">&gt; directive: resolve all eight nodes before attempting interception</div>
+      <div class="master-hint" id="masterHint">&gt; input note: master directives may require delimiter-preserved entry formats (example: word-word-word)</div>
     </footer>
   </div>
 
   <script>
-    const STORAGE_KEY = "obsidian-node-status-v10";
+    const STORAGE_KEY = "obsidian-node-status-v11";
     const MASTER_NODE_IDS = ["node-g", "node-h"];
     const FINAL_REDIRECT_URL = "final_step.html";
     const FINAL_COUNTDOWN_SECONDS = 10;
