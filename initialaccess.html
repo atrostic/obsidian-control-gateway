@@ -6,35 +6,55 @@
   <title>Access</title>
 
   <style>
+    :root {
+      --bg: #010201;
+      --text: #9cff9c;
+      --text-dim: #5cab5c;
+      --danger: #ff5c5c;
+    }
+
     body {
-      background: black;
-      color: #00ff66;
-      font-family: monospace;
+      background: radial-gradient(circle at center, rgba(0,255,120,0.04), transparent 60%), var(--bg);
+      color: var(--text);
+      font-family: "Courier New", monospace;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
-      font-size: 28px;
-      letter-spacing: 2px;
+      font-size: 30px;
+      letter-spacing: 3px;
       animation: flicker 2.5s infinite;
       position: relative;
       overflow: hidden;
+      text-transform: uppercase;
     }
 
-    /* CRT scanlines */
+    /* CRT scanlines (match other pages) */
     body::before {
       content: "";
       position: absolute;
       inset: 0;
       background: repeating-linear-gradient(
         to bottom,
-        rgba(0,0,0,0) 0px,
-        rgba(0,0,0,0.15) 3px,
-        rgba(0,0,0,0) 4px
+        rgba(255,255,255,0.02) 0px,
+        rgba(255,255,255,0.02) 1px,
+        transparent 2px,
+        transparent 4px
       );
       pointer-events: none;
       z-index: 3;
+      mix-blend-mode: screen;
+    }
+
+    /* subtle vignette */
+    body::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 50%, rgba(0,0,0,0.6) 100%);
+      pointer-events: none;
+      z-index: 1;
     }
 
     .message {
@@ -43,17 +63,21 @@
         reveal 1.2s forwards,
         textGlitch 6s forwards;
       z-index: 2;
+      text-shadow:
+        0 0 8px rgba(156,255,156,0.4),
+        0 0 18px rgba(156,255,156,0.15);
     }
 
-    /* Red glitch overlay – very short */
+    /* Red glitch overlay */
     .red-glitch {
       position: absolute;
       inset: 0;
-      background: #b00000;
+      background: radial-gradient(circle at center, rgba(255,0,0,0.15), transparent 60%), #400000;
       opacity: 0;
       z-index: 4;
       pointer-events: none;
       animation: redFlash 6s forwards;
+      mix-blend-mode: screen;
     }
 
     @keyframes reveal {
@@ -67,7 +91,7 @@
       96% { opacity: 1; }
     }
 
-    /* Text corruption only at the end */
+    /* Text corruption near transition */
     @keyframes textGlitch {
       0%, 90% { opacity: 1; transform: none; }
 
@@ -84,14 +108,16 @@
       100% { opacity: 1; transform: none; }
     }
 
-    /* ~0.45s red flash near the end */
+    /* Red flash tuned to your newer pages */
     @keyframes redFlash {
       0%, 91% { opacity: 0; }
-      92% { opacity: 0.9; }
+
+      92% { opacity: 0.8; }
       93% { opacity: 0.2; }
       94% { opacity: 1; }
-      95% { opacity: 0.4; }
+      95% { opacity: 0.35; }
       96% { opacity: 0; }
+
       100% { opacity: 0; }
     }
   </style>
