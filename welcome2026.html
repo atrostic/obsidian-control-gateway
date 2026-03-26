@@ -141,12 +141,21 @@
     }
 
     .hidden-message {
-      opacity: 0;
-      position: absolute;
-      pointer-events: none;
+      margin-top: 12px;
+      color: #071107; /* matches panel */
       user-select: text;
     }
 
+    .hidden-message::selection {
+      background: #9cff9c;
+      color: #000000;
+    }
+
+    .hidden-message::-moz-selection {
+      background: #9cff9c;
+      color: #000000;
+    }
+    
     .begin {
       margin-top: 30px;
       text-align: center;
