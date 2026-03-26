@@ -18,6 +18,12 @@
       --danger: #ff6b6b;
       --shadow: rgba(80, 255, 80, 0.08);
       --resolved-bg: rgba(120, 255, 120, 0.07);
+
+      --master-border: #5f7f2a;
+      --master-border-active: #c2ff5b;
+      --master-glow: rgba(194, 255, 91, 0.20);
+      --master-bg: rgba(167,255,77,0.06);
+      --master-text: #efffbe;
     }
 
     * {
@@ -38,6 +44,21 @@
     body {
       padding: 24px;
       overflow-x: hidden;
+      transition: background 0.3s ease;
+    }
+
+    body.master-active {
+      background:
+        radial-gradient(circle at top, rgba(167, 255, 77, 0.08), transparent 38%),
+        radial-gradient(circle at center, rgba(140, 255, 140, 0.04), transparent 50%),
+        linear-gradient(180deg, #010201 0%, #030603 100%);
+    }
+
+    body.master-unlocked {
+      background:
+        radial-gradient(circle at top, rgba(194, 255, 91, 0.12), transparent 42%),
+        radial-gradient(circle at center, rgba(120,255,120,0.05), transparent 58%),
+        linear-gradient(180deg, #020502 0%, #050a05 100%);
     }
 
     .scanlines::before {
@@ -66,6 +87,20 @@
         0 0 0 1px rgba(60, 255, 60, 0.05) inset,
         0 0 30px var(--shadow);
       position: relative;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    body.master-active .shell {
+      box-shadow:
+        0 0 0 1px rgba(90, 255, 90, 0.06) inset,
+        0 0 34px rgba(120,255,120,0.10);
+    }
+
+    body.master-unlocked .shell {
+      border-color: #4d7d2e;
+      box-shadow:
+        0 0 0 1px rgba(140, 255, 140, 0.08) inset,
+        0 0 42px rgba(194,255,91,0.14);
     }
 
     .topbar {
@@ -81,6 +116,18 @@
       text-transform: uppercase;
       gap: 12px;
       flex-wrap: wrap;
+      transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease;
+    }
+
+    body.master-active .topbar {
+      border-bottom-color: #365736;
+      color: #7fbd7f;
+    }
+
+    body.master-unlocked .topbar {
+      border-bottom-color: #537c2f;
+      color: #d7ff8a;
+      background: linear-gradient(180deg, #15210d, #0d1409);
     }
 
     .topbar-left,
@@ -101,9 +148,19 @@
       margin-right: 8px;
     }
 
+    .status-dot.alert {
+      background: #d7ff8a;
+      box-shadow: 0 0 12px rgba(215, 255, 138, 0.95);
+    }
+
     .header {
       padding: 28px 22px 20px;
       border-bottom: 1px solid var(--border);
+      transition: border-color 0.3s ease;
+    }
+
+    body.master-unlocked .header {
+      border-bottom-color: #43682a;
     }
 
     .bootline {
@@ -112,6 +169,11 @@
       margin-bottom: 10px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
+      transition: color 0.3s ease;
+    }
+
+    body.master-unlocked .bootline {
+      color: #b9ef77;
     }
 
     .title {
@@ -124,12 +186,38 @@
       text-transform: uppercase;
     }
 
+    body.master-unlocked .title {
+      text-shadow: 0 0 16px rgba(215, 255, 138, 0.28);
+    }
+
     .subtitle {
       margin-top: 12px;
       color: var(--text-dim);
       font-size: 15px;
       line-height: 1.6;
       max-width: 980px;
+      transition: color 0.3s ease;
+    }
+
+    body.master-unlocked .subtitle {
+      color: #89bc65;
+    }
+
+    .master-banner {
+      display: none;
+      margin-top: 18px;
+      padding: 12px 14px;
+      border: 1px solid var(--master-border);
+      background: linear-gradient(180deg, rgba(45,60,18,0.50), rgba(18,28,8,0.55));
+      color: var(--master-text);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      box-shadow: 0 0 18px rgba(194,255,91,0.08);
+    }
+
+    body.master-active .master-banner {
+      display: block;
     }
 
     .status-panel {
@@ -146,6 +234,14 @@
       background: linear-gradient(180deg, rgba(10,23,10,0.9), rgba(5,10,5,0.95));
       padding: 14px;
       min-height: 100%;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    }
+
+    body.master-unlocked .terminal-log,
+    body.master-unlocked .progress-panel {
+      border-color: #466b2d;
+      box-shadow: 0 0 18px rgba(194,255,91,0.06);
+      background: linear-gradient(180deg, rgba(18,28,12,0.94), rgba(7,13,6,0.98));
     }
 
     .terminal-log {
@@ -165,6 +261,10 @@
 
     .terminal-log .attention {
       color: var(--text-bright);
+    }
+
+    .terminal-log .master {
+      color: var(--master-text);
     }
 
     .progress-title {
@@ -198,6 +298,10 @@
       transition: width 0.2s ease;
     }
 
+    body.master-unlocked .progress-fill {
+      background: linear-gradient(90deg, rgba(140,255,140,0.42), rgba(215,255,138,0.92));
+    }
+
     .grid-wrap {
       padding: 22px;
     }
@@ -229,7 +333,7 @@
         0 0 0 1px rgba(100,255,100,0.03) inset,
         0 0 20px rgba(0,255,0,0.03);
       position: relative;
-      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
     }
 
     .node:hover {
@@ -258,6 +362,35 @@
         0 0 28px rgba(80,255,80,0.10);
     }
 
+    .node.master-node {
+      border-color: var(--master-border);
+      background:
+        linear-gradient(180deg, rgba(18, 26, 8, 0.96), rgba(9, 13, 4, 0.98));
+      box-shadow:
+        0 0 0 1px rgba(194,255,91,0.05) inset,
+        0 0 26px rgba(194,255,91,0.08);
+    }
+
+    .node.master-node:hover {
+      border-color: #9dcc44;
+      box-shadow:
+        0 0 0 1px rgba(215,255,138,0.08) inset,
+        0 0 34px rgba(194,255,91,0.14);
+    }
+
+    .node.master-node::after {
+      background: linear-gradient(135deg, rgba(215,255,138,0.05), transparent 48%);
+    }
+
+    .node.master-node.resolved {
+      border-color: var(--master-border-active);
+      background:
+        linear-gradient(180deg, rgba(28, 43, 10, 0.98), rgba(12, 18, 5, 0.99));
+      box-shadow:
+        0 0 0 1px rgba(215,255,138,0.10) inset,
+        0 0 34px var(--master-glow);
+    }
+
     .node-head {
       display: flex;
       justify-content: space-between;
@@ -270,6 +403,10 @@
       font-size: 12px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
+    }
+
+    .node.master-node .node-tag {
+      color: #cfe87d;
     }
 
     .node-state {
@@ -288,6 +425,30 @@
       background: rgba(120,255,120,0.12);
     }
 
+    .node.master-node .node-state {
+      color: #efffbe;
+      border-color: rgba(194,255,91,0.35);
+      background: rgba(194,255,91,0.08);
+    }
+
+    .node.master-node.resolved .node-state {
+      color: #f5ffd2;
+      border-color: rgba(215,255,138,0.55);
+      background: rgba(215,255,138,0.14);
+    }
+
+    .master-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border: 1px solid rgba(194,255,91,0.35);
+      background: rgba(194,255,91,0.08);
+      color: var(--master-text);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      width: fit-content;
+    }
+
     .node h2 {
       margin: 0;
       font-size: 22px;
@@ -296,12 +457,21 @@
       text-transform: uppercase;
     }
 
+    .node.master-node h2 {
+      color: #f1ffd0;
+      text-shadow: 0 0 12px rgba(215,255,138,0.12);
+    }
+
     .node p {
       margin: 0;
       color: var(--text-dim);
       font-size: 14px;
       line-height: 1.6;
       flex-grow: 0;
+    }
+
+    .node.master-node p {
+      color: #a7c66d;
     }
 
     .node-actions {
@@ -327,7 +497,7 @@
       text-transform: uppercase;
       letter-spacing: 0.08em;
       font-size: 13px;
-      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
       font-family: inherit;
       cursor: pointer;
       text-align: center;
@@ -340,6 +510,23 @@
       background: rgba(167,255,77,0.08);
       border-color: #3f7a3f;
       color: #f0fff0;
+    }
+
+    .node.master-node .node-link,
+    .node.master-node .verify-button,
+    .node.master-node .toggle-button {
+      border-color: rgba(194,255,91,0.35);
+      background: linear-gradient(180deg, rgba(20,28,8,0.94), rgba(10,14,4,0.98));
+      color: #f1ffd0;
+    }
+
+    .node.master-node .node-link:hover,
+    .node.master-node .verify-button:hover,
+    .node.master-node .toggle-button:hover {
+      background: rgba(194,255,91,0.10);
+      border-color: #b4eb52;
+      color: #fffedf;
+      box-shadow: 0 0 16px rgba(194,255,91,0.08);
     }
 
     .toggle-button {
@@ -357,14 +544,29 @@
       outline: none;
     }
 
+    .node.master-node .node-input {
+      background: rgba(12, 18, 6, 0.96);
+      border-color: rgba(194,255,91,0.34);
+      color: #f3ffd8;
+    }
+
     .node-input::placeholder {
       color: #4f7a4f;
       text-transform: uppercase;
     }
 
+    .node.master-node .node-input::placeholder {
+      color: #82985c;
+    }
+
     .node-input:focus {
       border-color: #3f7a3f;
       box-shadow: 0 0 0 1px rgba(130,255,130,0.08) inset;
+    }
+
+    .node.master-node .node-input:focus {
+      border-color: #b6ef4f;
+      box-shadow: 0 0 0 1px rgba(194,255,91,0.12) inset;
     }
 
     .verify-row {
@@ -394,12 +596,22 @@
       color: var(--danger);
     }
 
+    .node.master-node .node-feedback.success {
+      color: #e6ff9d;
+    }
+
     .footer {
       padding: 18px 22px 26px;
       border-top: 1px solid var(--border);
       color: var(--text-dim);
       font-size: 13px;
       line-height: 1.7;
+      transition: border-color 0.3s ease, color 0.3s ease;
+    }
+
+    body.master-unlocked .footer {
+      border-top-color: #43682a;
+      color: #a0c96a;
     }
 
     .cursor::after {
@@ -468,39 +680,43 @@
   <div class="shell">
     <div class="topbar">
       <div class="topbar-left">
-        <span><span class="status-dot"></span>SECURE SESSION ACTIVE</span>
+        <span id="sessionStatus"><span class="status-dot" id="statusDot"></span>SECURE SESSION ACTIVE</span>
         <span>OBSIDIAN CONTROL GATEWAY</span>
       </div>
       <div class="topbar-right">
-        <span>ACCESS TIER: INTERNAL</span>
-        <span>MODE: FRAGMENT RECOVERY</span>
+        <span id="accessTier">ACCESS TIER: INTERNAL</span>
+        <span id="modeStatus">MODE: FRAGMENT RECOVERY</span>
       </div>
     </div>
 
     <header class="header">
-      <div class="bootline">Initializing Easter asset recovery environment...</div>
+      <div class="bootline" id="bootlineText">Initializing Easter asset recovery environment...</div>
       <h1 class="title glitch" data-text="System Access Matrix">System Access Matrix</h1>
-      <div class="subtitle">
+      <div class="subtitle" id="subtitleText">
         Distributed recovery fragments have been isolated across multiple system nodes. Resolve each node, preserve all outputs,
         and reconstruct the concealed destination sequence.
+      </div>
+      <div class="master-banner" id="masterBanner">
+        MASTER DIRECTIVE ACTIVITY DETECTED // SEQUENCE AND PRIORITY CHANNELS ARE NOW MODIFYING GLOBAL SYSTEM STATE
       </div>
     </header>
 
     <section class="status-panel">
-      <div class="terminal-log" aria-label="terminal output">
+      <div class="terminal-log" aria-label="terminal output" id="terminalLog">
         <span class="line">&gt; boot sequence .................... <span class="ok">complete</span></span>
         <span class="line">&gt; fragment isolation ............... <span class="ok">complete</span></span>
         <span class="line">&gt; route masking .................... <span class="ok">enabled</span></span>
         <span class="line">&gt; recovery nodes ................... <span class="attention">8 detected</span></span>
         <span class="line">&gt; sequence state ................... <span class="attention">obscured</span></span>
-        <span class="line cursor">&gt; awaiting operator input</span>
+        <span class="line cursor" id="terminalCursor">&gt; awaiting operator input</span>
       </div>
 
       <div class="progress-panel">
-        <h2 class="progress-title">Recovery Status</h2>
+        <h2 class="progress-title" id="progressTitle">Recovery Status</h2>
         <div class="progress-stats">
           <div>Resolved Nodes: <span id="resolvedCount">0</span> / 8</div>
           <div>System Recovery: <span id="progressPercent">0</span>%</div>
+          <div>Master Nodes: <span id="masterStatus">0</span> / 2</div>
           <div class="progress-bar" aria-hidden="true">
             <div class="progress-fill" id="progressFill"></div>
           </div>
@@ -621,16 +837,19 @@
           </div>
         </section>
 
-        <section class="node" data-node-id="node-g">
+        <section class="node master-node" data-node-id="node-g" data-master-node="true">
           <div class="node-head">
-            <div class="node-tag">Node G</div>
+            <div>
+              <div class="node-tag">Master Node G</div>
+              <div class="master-badge">Sequence Directive</div>
+            </div>
             <div class="node-state">Pending</div>
           </div>
           <h2>Sequence</h2>
-          <p>Recover the hidden directive that governs how isolated fragments must be arranged before use.</p>
+          <p>Recover the hotel room directive and determine the correct numerical sequence required to align the destination pathway.</p>
           <div class="node-actions">
-            <a class="node-link" href="sequence.html">Initialize Node</a>
-            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <a class="node-link" href="sequence.html">Initialize Master Node</a>
+            <input class="node-input" type="text" placeholder="Enter room sequence" />
             <div class="verify-row">
               <button class="verify-button" type="button">Verify</button>
               <button class="toggle-button" type="button">Mark Completed</button>
@@ -639,16 +858,19 @@
           </div>
         </section>
 
-        <section class="node" data-node-id="node-h">
+        <section class="node master-node" data-node-id="node-h" data-master-node="true">
           <div class="node-head">
-            <div class="node-tag">Node H</div>
+            <div>
+              <div class="node-tag">Master Node H</div>
+              <div class="master-badge">Priority Directive</div>
+            </div>
             <div class="node-state">Pending</div>
           </div>
           <h2>Priority</h2>
-          <p>Recover the secondary control directive required to finalize the destination reconstruction order.</p>
+          <p>Recover the final location directive and identify the three-word destination reference required to authorize interception.</p>
           <div class="node-actions">
-            <a class="node-link" href="priority.html">Initialize Node</a>
-            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <a class="node-link" href="priority.html">Initialize Master Node</a>
+            <input class="node-input" type="text" placeholder="Enter final location reference" />
             <div class="verify-row">
               <button class="verify-button" type="button">Verify</button>
               <button class="toggle-button" type="button">Mark Completed</button>
@@ -660,19 +882,33 @@
     </main>
 
     <footer class="footer">
-      <div>&gt; advisory: recovered fragments may appear unrelated until properly assembled</div>
-      <div>&gt; directive: resolve all eight nodes before attempting interception</div>
+      <div id="footerLine1">&gt; advisory: recovered fragments may appear unrelated until properly assembled</div>
+      <div id="footerLine2">&gt; directive: resolve all eight nodes before attempting interception</div>
     </footer>
   </div>
 
   <script>
-    const STORAGE_KEY = "obsidian-node-status-v7";
+    const STORAGE_KEY = "obsidian-node-status-v8";
+    const MASTER_NODE_IDS = ["node-g", "node-h"];
 
     const nodes = Array.from(document.querySelectorAll(".node"));
     const resolvedCountEl = document.getElementById("resolvedCount");
     const progressPercentEl = document.getElementById("progressPercent");
     const progressFillEl = document.getElementById("progressFill");
     const resetAllButton = document.getElementById("resetAllButton");
+    const masterStatusEl = document.getElementById("masterStatus");
+
+    const modeStatusEl = document.getElementById("modeStatus");
+    const accessTierEl = document.getElementById("accessTier");
+    const sessionStatusEl = document.getElementById("sessionStatus");
+    const statusDotEl = document.getElementById("statusDot");
+    const terminalLogEl = document.getElementById("terminalLog");
+    const terminalCursorEl = document.getElementById("terminalCursor");
+    const progressTitleEl = document.getElementById("progressTitle");
+    const bootlineTextEl = document.getElementById("bootlineText");
+    const subtitleTextEl = document.getElementById("subtitleText");
+    const footerLine1El = document.getElementById("footerLine1");
+    const footerLine2El = document.getElementById("footerLine2");
 
     function loadState() {
       try {
@@ -702,6 +938,89 @@
       feedback.className = `node-feedback${type ? " " + type : ""}`;
     }
 
+    function getMasterResolvedCount() {
+      return nodes.filter(node =>
+        MASTER_NODE_IDS.includes(node.dataset.nodeId) &&
+        node.classList.contains("resolved")
+      ).length;
+    }
+
+    function renderSystemState() {
+      const masterResolved = getMasterResolvedCount();
+      const bothMastersResolved = masterResolved === 2;
+
+      masterStatusEl.textContent = masterResolved;
+
+      document.body.classList.toggle("master-active", masterResolved >= 1);
+      document.body.classList.toggle("master-unlocked", bothMastersResolved);
+
+      if (bothMastersResolved) {
+        modeStatusEl.textContent = "MODE: INTERCEPT WINDOW OPEN";
+        accessTierEl.textContent = "ACCESS TIER: MASTER OVERRIDE";
+        sessionStatusEl.innerHTML = '<span class="status-dot alert" id="statusDot"></span>MASTER ROUTE AUTHORIZED';
+
+        bootlineTextEl.textContent = "Master directives confirmed. Destination reconstruction authorized.";
+        subtitleTextEl.textContent = "Sequence and Priority directives are now synchronized. Remaining fragments may be used to reconstruct the concealed destination and intercept the transfer pathway.";
+
+        progressTitleEl.textContent = "Master Recovery Status";
+
+        terminalLogEl.innerHTML = `
+          <span class="line">&gt; boot sequence .................... <span class="ok">complete</span></span>
+          <span class="line">&gt; fragment isolation ............... <span class="ok">complete</span></span>
+          <span class="line">&gt; master node sequence ............. <span class="master">confirmed</span></span>
+          <span class="line">&gt; master node priority ............. <span class="master">confirmed</span></span>
+          <span class="line">&gt; route masking .................... <span class="ok">partially bypassed</span></span>
+          <span class="line">&gt; destination model ................ <span class="master">reconstructable</span></span>
+          <span class="line cursor" id="terminalCursor">&gt; interception authority granted</span>
+        `;
+
+        footerLine1El.textContent = "> advisory: final destination indicators are now aligned";
+        footerLine2El.textContent = "> directive: proceed to physical interception using reconstructed sequence and priority";
+      } else if (masterResolved === 1) {
+        modeStatusEl.textContent = "MODE: MASTER DIRECTIVE PARTIAL";
+        accessTierEl.textContent = "ACCESS TIER: INTERNAL+";
+        sessionStatusEl.innerHTML = '<span class="status-dot alert" id="statusDot"></span>MASTER NODE ACTIVITY DETECTED';
+
+        bootlineTextEl.textContent = "Master directive activity detected...";
+        subtitleTextEl.textContent = "At least one master directive has been recovered. Additional system behavior is now influenced by Sequence and Priority channels.";
+
+        progressTitleEl.textContent = "Recovery Status // Master Activity";
+
+        terminalLogEl.innerHTML = `
+          <span class="line">&gt; boot sequence .................... <span class="ok">complete</span></span>
+          <span class="line">&gt; fragment isolation ............... <span class="ok">complete</span></span>
+          <span class="line">&gt; route masking .................... <span class="attention">destabilizing</span></span>
+          <span class="line">&gt; master directive presence ........ <span class="master">detected</span></span>
+          <span class="line">&gt; destination model ................ <span class="attention">partial</span></span>
+          <span class="line cursor" id="terminalCursor">&gt; awaiting remaining master authorization</span>
+        `;
+
+        footerLine1El.textContent = "> advisory: sequence and priority directives are beginning to influence system output";
+        footerLine2El.textContent = "> directive: recover remaining master node before attempting final reconstruction";
+      } else {
+        modeStatusEl.textContent = "MODE: FRAGMENT RECOVERY";
+        accessTierEl.textContent = "ACCESS TIER: INTERNAL";
+        sessionStatusEl.innerHTML = '<span class="status-dot"></span>SECURE SESSION ACTIVE';
+
+        bootlineTextEl.textContent = "Initializing Easter asset recovery environment...";
+        subtitleTextEl.textContent = "Distributed recovery fragments have been isolated across multiple system nodes. Resolve each node, preserve all outputs, and reconstruct the concealed destination sequence.";
+
+        progressTitleEl.textContent = "Recovery Status";
+
+        terminalLogEl.innerHTML = `
+          <span class="line">&gt; boot sequence .................... <span class="ok">complete</span></span>
+          <span class="line">&gt; fragment isolation ............... <span class="ok">complete</span></span>
+          <span class="line">&gt; route masking .................... <span class="ok">enabled</span></span>
+          <span class="line">&gt; recovery nodes ................... <span class="attention">8 detected</span></span>
+          <span class="line">&gt; sequence state ................... <span class="attention">obscured</span></span>
+          <span class="line cursor" id="terminalCursor">&gt; awaiting operator input</span>
+        `;
+
+        footerLine1El.textContent = "> advisory: recovered fragments may appear unrelated until properly assembled";
+        footerLine2El.textContent = "> directive: resolve all eight nodes before attempting interception";
+      }
+    }
+
     function updateProgress() {
       const resolvedNodes = nodes.filter(node => node.classList.contains("resolved"));
       const resolvedCount = resolvedNodes.length;
@@ -710,6 +1029,8 @@
       resolvedCountEl.textContent = resolvedCount;
       progressPercentEl.textContent = percent;
       progressFillEl.style.width = `${percent}%`;
+
+      renderSystemState();
     }
 
     async function verifyNodeAnswer(nodeId, answer) {
