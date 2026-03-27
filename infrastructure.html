@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Infrastructure Node</title>
+
+  <style>
+    :root {
+      --bg: #020402;
+      --panel: #071107;
+      --border: #173417;
+      --text: #9cff9c;
+      --text-dim: #5cab5c;
+      --text-bright: #e5ffe5;
+      --accent: #a7ff4d;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Courier New", monospace;
+    }
+
+    body {
+      padding: 24px;
+      position: relative;
+    }
+
+    /* CRT scanlines */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.02) 0px,
+        rgba(255,255,255,0.02) 1px,
+        transparent 2px,
+        transparent 4px
+      );
+      pointer-events: none;
+    }
+
+    .shell {
+      max-width: 1100px;
+      margin: auto;
+      border: 1px solid var(--border);
+      background: linear-gradient(#071107, #020402);
+    }
+
+    .topbar {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .content {
+      padding: 24px;
+      display: grid;
+      gap: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 36px;
+      color: var(--text-bright);
+      text-transform: uppercase;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      padding: 18px;
+      background: linear-gradient(#0a160a, #040904);
+    }
+
+    .panel-title {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .cipher {
+      white-space: pre-wrap;
+      font-size: 18px;
+      line-height: 1.8;
+      color: var(--text-bright);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+    }
+
+    .image-box {
+      border: 1px solid var(--border);
+      background: black;
+      overflow: hidden;
+    }
+
+    .image-box img {
+      width: 100%;
+      display: block;
+    }
+
+    .clue {
+      text-align: center;
+      font-size: 20px;
+      letter-spacing: 0.08em;
+      color: var(--text-bright);
+    }
+
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 16px;
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 800px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="shell">
+
+  <div class="topbar">
+    <div>Infrastructure Node Online</div>
+    <div>Obsidian Control Gateway // Structural Access</div>
+  </div>
+
+  <div class="content">
+
+    <div class="panel">
+      <div class="panel-title">System Alert</div>
+      <h1>Sealed Container Detected</h1>
+      <div style="margin-top:10px; color:var(--text-dim); line-height:1.7;">
+        Structural scan indicates internal storage within a non-transparent housing.  
+        No visible access point detected. Contents remain secured.
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <div class="panel">
+        <div class="panel-title">Recovered Analysis</div>
+        <div class="cipher">
+EXTERNAL SURFACE IS INTACT  
+NO ENTRY MECHANISM PRESENT  
+
+OBJECT IS NOT SOLID  
+
+INTERIOR SPACE CONFIRMED  
+
+PRIMARY ACCESS METHOD:  
+NON-STANDARD  
+
+WHEN NO PATH EXISTS  
+ONE MUST BE CREATED  
+
+CONTENTS ARE PROTECTED  
+BY FORM — NOT BY LOCK
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Visual Reference</div>
+
+        <div class="image-box">
+          <img src="images/tiki_statue.png" alt="Carved tiki statue">
+        </div>
+
+        <div class="clue">
+          The exterior is not the boundary.
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="footer">
+    &gt; warning: access may require force  
+    &gt; directive: integrity of container is not required  
+    &gt; note: internal payload is the objective  
+    <!-- hollow things rarely advertise their openings -->
+  </div>
+
+</div>
+
+</body>
+</html>
