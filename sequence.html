@@ -283,6 +283,31 @@ THE DIRECTIVE WILL STABILIZE
 
     </section>
 
+/* <div id="overlay"> */
+  <div>
+    <h1>CLICK TO INITIALIZE</h1>
+    <p>Audio channel locked pending user interaction.</p>
+  </div>
+</div>
+
+<audio id="player">
+  <source src="media/whatsnext.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  const overlay = document.getElementById("overlay");
+  const audio = document.getElementById("player");
+
+  overlay.addEventListener("click", async () => {
+    try {
+      await audio.play();
+      overlay.style.display = "none";
+    } catch (err) {
+      console.log("Playback failed:", err);
+    }
+  });
+</script>
+
   </main>
 
   <footer class="footer">
