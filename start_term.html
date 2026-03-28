@@ -683,6 +683,15 @@
 
     .toggle-button {
       background: linear-gradient(180deg, rgba(10,22,10,0.96), rgba(6,12,6,0.98));
+      display: none;
+    }
+
+    body.admin-mode .toggle-button {
+      display: inline-block;
+    }
+
+    body.admin-mode .node.locked .toggle-button {
+      display: none;
     }
 
     .node-input {
@@ -723,13 +732,21 @@
 
     .verify-row {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 1fr;
       gap: 10px;
     }
 
+    body.admin-mode .verify-row {
+      grid-template-columns: 1fr auto;
+    }
+
     .verify-button {
-      width: auto;
+      width: 100%;
       min-width: 100px;
+    }
+
+    body.admin-mode .verify-button {
+      width: auto;
     }
 
     .node-feedback {
@@ -954,7 +971,12 @@
         grid-template-columns: 1fr;
       }
 
-      .verify-button {
+      body.admin-mode .verify-row {
+        grid-template-columns: 1fr;
+      }
+
+      .verify-button,
+      body.admin-mode .verify-button {
         width: 100%;
       }
 
@@ -1209,6 +1231,8 @@
 
   <script>
     const STORAGE_KEY = "obsidian-node-status-v14";
+    const ADMIN_MODE_KEY = "obsidian-admin-mode";
+    const ADMIN_QUERY_PARAM = "admin";
     const MASTER_NODE_IDS = ["node-g", "node-h"];
     const BASE_NODE_IDS = ["node-a", "node-b", "node-c", "node-d", "node-e", "node-f"];
     const FINAL_REDIRECT_URL = "final_step.html";
@@ -1237,6 +1261,28 @@
     let countdownStarted = false;
     let countdownInterval = null;
     let countdownTimeout = null;
+
+    function isAdminModeEnabled() {
+      const params = new URLSearchParams(window.location.search);
+      const adminFromUrl = params.get(ADMIN_QUERY_PARAM);
+
+      if (adminFromUrl === "1") {
+        localStorage.setItem(ADMIN_MODE_KEY, "true");
+        return true;
+      }
+
+      return localStorage.getItem(ADMIN_MODE_KEY) === "true";
+    }
+
+    function applyAdminMode() {
+      document.body.classList.toggle("admin-mode", isAdminModeEnabled());
+    }
+
+    function toggleAdminMode() {
+      const enabled = localStorage.getItem(ADMIN_MODE_KEY) === "true";
+      localStorage.setItem(ADMIN_MODE_KEY, enabled ? "false" : "true");
+      document.body.classList.toggle("admin-mode", !enabled);
+    }
 
     function loadState() {
       try {
@@ -1637,6 +1683,13 @@
       updateProgress();
     });
 
+    document.addEventListener("keydown", (event) => {
+      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "x") {
+        toggleAdminMode();
+      }
+    });
+
+    applyAdminMode();
     initializeNodes();
   </script>
 </body>
