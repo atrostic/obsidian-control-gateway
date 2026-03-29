@@ -17,7 +17,6 @@
       --shadow: rgba(80, 255, 80, 0.08);
       --warn: #d8ff72;
       --stable: #f0ff9e;
-      --danger: #d5ff8b;
     }
 
     * { box-sizing: border-box; }
@@ -237,6 +236,39 @@
       color: var(--text-dim);
       font-size: 12px;
       letter-spacing: 0.04em;
+    }
+
+    .status-message {
+      margin-top: 14px;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      font-size: clamp(28px, 5vw, 42px);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 180ms ease, text-shadow 180ms ease, color 180ms ease;
+    }
+
+    .status-message.visible {
+      opacity: 1;
+    }
+
+    .status-message.error {
+      color: #ff5c5c;
+      text-shadow:
+        0 0 10px rgba(255, 92, 92, 0.45),
+        0 0 24px rgba(255, 92, 92, 0.25),
+        0 0 46px rgba(255, 92, 92, 0.18);
+    }
+
+    .status-message.success {
+      color: var(--stable);
+      text-shadow:
+        0 0 12px rgba(240,255,158,0.45),
+        0 0 26px rgba(240,255,158,0.24);
     }
 
     .cipher-output {
@@ -554,6 +586,8 @@
           <div class="control-note">fill every box, then validate the full sequence</div>
         </div>
 
+        <div class="status-message" id="statusMessage" aria-live="polite"></div>
+
         <div class="cipher-output">
           <div class="cipher-output-label">Recovered Ciphertext</div>
           <div class="cipher-output-value" id="cipherOutput"></div>
@@ -605,11 +639,13 @@
     const output = document.getElementById('cipherOutput');
     const checkButton = document.getElementById('checkButton');
     const resetButton = document.getElementById('resetButton');
+    const statusMessage = document.getElementById('statusMessage');
 
     const correctMonths = [9, 2, 6, 11, 4, 8, 1, 10, 3, 12, 5, 7];
     const finalPhrase = 'ABCDEFGHIJKL';
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let solved = false;
+    let statusTimer = null;
 
     function toggleOverlay() {
       const isActive = artifact.classList.toggle('active');
@@ -625,6 +661,30 @@
       }
     });
 
+    function clearStatus() {
+      statusMessage.textContent = '';
+      statusMessage.className = 'status-message';
+      if (statusTimer) {
+        window.clearTimeout(statusTimer);
+        statusTimer = null;
+      }
+    }
+
+    function showStatus(text, type, duration) {
+      if (statusTimer) {
+        window.clearTimeout(statusTimer);
+      }
+
+      statusMessage.textContent = text;
+      statusMessage.className = 'status-message visible ' + type;
+
+      if (duration) {
+        statusTimer = window.setTimeout(function () {
+          clearStatus();
+        }, duration);
+      }
+    }
+
     function sanitizeMonth(rawValue) {
       const digitsOnly = rawValue.replace(/[^0-9]/g, '').slice(0, 2);
 
@@ -635,14 +695,14 @@
       const parsed = parseInt(digitsOnly, 10);
 
       if (parsed < 1 || parsed > 12) {
-        return { display: digitsOnly, numeric: 0, complete: false };
+        return { display: '', numeric: 0, complete: false };
       }
 
       return { display: String(parsed), numeric: parsed, complete: true };
     }
 
     function getValues() {
-      return inputs.map((input) => {
+      return inputs.map(function (input) {
         const sanitized = sanitizeMonth(input.value);
         input.value = sanitized.display;
         input.classList.toggle('ready', sanitized.complete);
@@ -651,22 +711,28 @@
     }
 
     function allFilled(values) {
-      return values.every((item) => item.complete);
+      return values.every(function (item) {
+        return item.complete;
+      });
     }
 
     function allCorrect(values) {
-      return values.every((item, index) => item.numeric === correctMonths[index]);
+      return values.every(function (item, index) {
+        return item.numeric === correctMonths[index];
+      });
     }
 
     function generateUnstableText(values) {
-      const numericValues = values.map((item) => item.numeric || 0);
+      const numericValues = values.map(function (item) {
+        return item.numeric || 0;
+      });
 
-      const total = numericValues.reduce((sum, value, index) => {
+      const total = numericValues.reduce(function (sum, value, index) {
         return sum + ((value + 1) * (index + 7));
       }, 0);
 
       return Array.from({ length: finalPhrase.length }, function (_, cipherIndex) {
-        const seed = numericValues.reduce((accumulator, enteredValue, inputIndex) => {
+        const seed = numericValues.reduce(function (accumulator, enteredValue, inputIndex) {
           const wave =
             (enteredValue + 3) * (inputIndex + 5) * (cipherIndex + 7) +
             (correctMonths[inputIndex] + 1) * (cipherIndex + 11) +
@@ -703,7 +769,7 @@
       output.classList.remove('unstable-flash');
       void output.offsetWidth;
       output.classList.add('unstable-flash');
-      window.setTimeout(() => {
+      window.setTimeout(function () {
         output.classList.remove('unstable-flash');
       }, 240);
     }
@@ -711,7 +777,7 @@
     function solveSequence() {
       solved = true;
 
-      inputs.forEach((input, index) => {
+      inputs.forEach(function (input, index) {
         input.value = String(correctMonths[index]);
         input.readOnly = true;
         input.classList.add('ready');
@@ -721,16 +787,27 @@
       output.classList.remove('unstable-flash');
       output.classList.add('stable', 'flicker');
 
-      window.setTimeout(() => {
+      showStatus('Aligned', 'success');
+
+      window.setTimeout(function () {
         output.classList.remove('flicker');
       }, 340);
 
       checkButton.disabled = true;
     }
 
-    inputs.forEach((input) => {
+    function resetInputs() {
+      inputs.forEach(function (input) {
+        input.value = '';
+        input.readOnly = false;
+        input.classList.remove('ready');
+      });
+    }
+
+    inputs.forEach(function (input) {
       input.addEventListener('input', function () {
         if (solved) return;
+        clearStatus();
         refreshCipher();
       });
 
@@ -749,21 +826,18 @@
       if (allCorrect(values)) {
         solveSequence();
       } else {
-        output.textContent = generateUnstableText(values);
+        showStatus('Incorrect', 'error', 1400);
+        resetInputs();
         output.classList.remove('stable', 'flicker');
+        refreshCipher();
         flashUnstable();
       }
     });
 
     resetButton.addEventListener('click', function () {
       solved = false;
-
-      inputs.forEach((input) => {
-        input.value = '';
-        input.readOnly = false;
-        input.classList.remove('ready');
-      });
-
+      clearStatus();
+      resetInputs();
       output.classList.remove('stable', 'flicker', 'unstable-flash');
       refreshCipher();
     });
