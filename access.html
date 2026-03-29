@@ -238,39 +238,6 @@
       letter-spacing: 0.04em;
     }
 
-    .status-message {
-      margin-top: 14px;
-      min-height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      font-size: clamp(28px, 5vw, 42px);
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      font-weight: bold;
-      opacity: 0;
-      transition: opacity 180ms ease, text-shadow 180ms ease, color 180ms ease;
-    }
-
-    .status-message.visible {
-      opacity: 1;
-    }
-
-    .status-message.error {
-      color: #ff5c5c;
-      text-shadow:
-        0 0 10px rgba(255, 92, 92, 0.45),
-        0 0 24px rgba(255, 92, 92, 0.25),
-        0 0 46px rgba(255, 92, 92, 0.18);
-    }
-
-    .status-message.success {
-      color: var(--stable);
-      text-shadow:
-        0 0 12px rgba(240,255,158,0.45),
-        0 0 26px rgba(240,255,158,0.24);
-    }
-
     .cipher-output {
       margin-top: 18px;
       padding-top: 14px;
@@ -481,6 +448,90 @@
       line-height: 1.7;
     }
 
+    .overlay-block {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 0, 0, 0.72);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms ease;
+    }
+
+    .overlay-block.active {
+      opacity: 1;
+      pointer-events: auto;
+      animation: screenGlitch 120ms linear;
+    }
+
+    .overlay-panel {
+      border: 1px solid rgba(255, 92, 92, 0.6);
+      background: linear-gradient(180deg, #140303, #080101);
+      padding: 32px 36px;
+      text-align: center;
+      box-shadow:
+        0 0 30px rgba(255, 92, 92, 0.25),
+        inset 0 0 18px rgba(255, 92, 92, 0.08);
+      animation: overlayFlicker 180ms linear;
+      max-width: min(92vw, 560px);
+    }
+
+    .overlay-title {
+      font-size: clamp(28px, 5vw, 48px);
+      letter-spacing: 0.2em;
+      color: #ff5c5c;
+      text-transform: uppercase;
+      text-shadow:
+        0 0 12px rgba(255, 92, 92, 0.6),
+        0 0 30px rgba(255, 92, 92, 0.35);
+      margin-bottom: 10px;
+    }
+
+    .overlay-sub {
+      font-size: 14px;
+      letter-spacing: 0.3em;
+      color: #ff9a9a;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+
+    .overlay-button {
+      padding: 10px 18px;
+      border: 1px solid rgba(255, 92, 92, 0.7);
+      background: rgba(30, 0, 0, 0.8);
+      color: #ffd6d6;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: all 160ms ease;
+    }
+
+    .overlay-button:hover {
+      border-color: rgba(255, 120, 120, 1);
+      box-shadow: 0 0 12px rgba(255, 92, 92, 0.35);
+    }
+
+    @keyframes overlayFlicker {
+      0% { opacity: 0.4; transform: scale(0.98); }
+      50% { opacity: 1; transform: scale(1.01); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes screenGlitch {
+      0% { transform: translateX(0); }
+      20% { transform: translateX(-2px); }
+      40% { transform: translateX(2px); }
+      60% { transform: translateX(-1px); }
+      80% { transform: translateX(1px); }
+      100% { transform: translateX(0); }
+    }
+
     @media (max-width: 860px) {
       .main-grid {
         grid-template-columns: 1fr;
@@ -514,7 +565,6 @@
   </div>
 
   <main class="content">
-
     <section class="header-block">
       <div class="bootline">Reference series recovered...</div>
       <h1>Access Fragment</h1>
@@ -525,7 +575,6 @@
     </section>
 
     <section class="main-grid">
-
       <div class="panel">
         <div class="panel-title">When do they celebrate?</div>
 
@@ -582,11 +631,9 @@
 
         <div class="controls">
           <button type="button" class="action-button" id="checkButton" disabled>Check Alignment</button>
-          <button type="button" class="action-button" id="resetButton">Reset Answers</button>
+          <button type="button" class="action-button" id="resetButton">Reset Sequence</button>
           <div class="control-note">fill every box, then validate the full sequence</div>
         </div>
-
-        <div class="status-message" id="statusMessage" aria-live="polite"></div>
 
         <div class="cipher-output">
           <div class="cipher-output-label">Recovered Ciphertext</div>
@@ -620,9 +667,7 @@
           </div>
         </div>
       </div>
-
     </section>
-
   </main>
 
   <footer class="footer">
@@ -632,6 +677,14 @@
   </footer>
 </div>
 
+<div class="overlay-block" id="failureOverlay" aria-hidden="true">
+  <div class="overlay-panel">
+    <div class="overlay-title">Alignment Rejected</div>
+    <div class="overlay-sub">Sequence Invalid</div>
+    <button class="overlay-button" id="overlayReset">Reinitialize</button>
+  </div>
+</div>
+
 <script>
   (function () {
     const artifact = document.getElementById('artifactImage');
@@ -639,13 +692,14 @@
     const output = document.getElementById('cipherOutput');
     const checkButton = document.getElementById('checkButton');
     const resetButton = document.getElementById('resetButton');
-    const statusMessage = document.getElementById('statusMessage');
+    const failureOverlay = document.getElementById('failureOverlay');
+    const overlayReset = document.getElementById('overlayReset');
 
     const correctMonths = [9, 2, 6, 11, 4, 8, 1, 10, 3, 12, 5, 7];
     const finalPhrase = 'ABCDEFGHIJKL';
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let solved = false;
-    let statusTimer = null;
+    let failed = false;
 
     function toggleOverlay() {
       const isActive = artifact.classList.toggle('active');
@@ -661,28 +715,10 @@
       }
     });
 
-    function clearStatus() {
-      statusMessage.textContent = '';
-      statusMessage.className = 'status-message';
-      if (statusTimer) {
-        window.clearTimeout(statusTimer);
-        statusTimer = null;
-      }
-    }
-
-    function showStatus(text, type, duration) {
-      if (statusTimer) {
-        window.clearTimeout(statusTimer);
-      }
-
-      statusMessage.textContent = text;
-      statusMessage.className = 'status-message visible ' + type;
-
-      if (duration) {
-        statusTimer = window.setTimeout(function () {
-          clearStatus();
-        }, duration);
-      }
+    function setInputsDisabled(isDisabled) {
+      inputs.forEach(function (input) {
+        input.readOnly = isDisabled;
+      });
     }
 
     function sanitizeMonth(rawValue) {
@@ -747,7 +783,7 @@
 
     function refreshCheckButton() {
       const values = getValues();
-      checkButton.disabled = solved || !allFilled(values);
+      checkButton.disabled = solved || failed || !allFilled(values);
       return values;
     }
 
@@ -787,13 +823,24 @@
       output.classList.remove('unstable-flash');
       output.classList.add('stable', 'flicker');
 
-      showStatus('Aligned', 'success');
-
       window.setTimeout(function () {
         output.classList.remove('flicker');
       }, 340);
 
       checkButton.disabled = true;
+    }
+
+    function failSequence(values) {
+      failed = true;
+      setInputsDisabled(true);
+      checkButton.disabled = true;
+
+      output.textContent = generateUnstableText(values);
+      output.classList.remove('stable', 'flicker');
+      flashUnstable();
+
+      failureOverlay.classList.add('active');
+      failureOverlay.setAttribute('aria-hidden', 'false');
     }
 
     function resetInputs() {
@@ -804,21 +851,34 @@
       });
     }
 
+    function fullReset() {
+      solved = false;
+      failed = false;
+
+      resetInputs();
+      setInputsDisabled(false);
+
+      output.classList.remove('stable', 'flicker', 'unstable-flash');
+      refreshCipher();
+
+      failureOverlay.classList.remove('active');
+      failureOverlay.setAttribute('aria-hidden', 'true');
+    }
+
     inputs.forEach(function (input) {
       input.addEventListener('input', function () {
-        if (solved) return;
-        clearStatus();
+        if (solved || failed) return;
         refreshCipher();
       });
 
       input.addEventListener('blur', function () {
-        if (solved) return;
+        if (solved || failed) return;
         refreshCipher();
       });
     });
 
     checkButton.addEventListener('click', function () {
-      if (solved) return;
+      if (solved || failed) return;
 
       const values = refreshCheckButton();
       if (!allFilled(values)) return;
@@ -826,21 +886,12 @@
       if (allCorrect(values)) {
         solveSequence();
       } else {
-        showStatus('Incorrect', 'error', 1400);
-        resetInputs();
-        output.classList.remove('stable', 'flicker');
-        refreshCipher();
-        flashUnstable();
+        failSequence(values);
       }
     });
 
-    resetButton.addEventListener('click', function () {
-      solved = false;
-      clearStatus();
-      resetInputs();
-      output.classList.remove('stable', 'flicker', 'unstable-flash');
-      refreshCipher();
-    });
+    resetButton.addEventListener('click', fullReset);
+    overlayReset.addEventListener('click', fullReset);
 
     refreshCipher();
   })();
