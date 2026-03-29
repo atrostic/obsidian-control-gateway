@@ -56,7 +56,7 @@
     }
 
     .shell {
-      max-width: 1100px;
+      max-width: 1180px;
       margin: 0 auto;
       border: 1px solid var(--border);
       background: linear-gradient(180deg, rgba(5,15,5,0.95), rgba(3,8,3,0.96));
@@ -123,12 +123,12 @@
       color: var(--text-dim);
       font-size: 15px;
       line-height: 1.7;
-      max-width: 900px;
+      max-width: 940px;
     }
 
     .main-grid {
       display: grid;
-      grid-template-columns: 1.15fr 0.95fr;
+      grid-template-columns: 1.08fr 0.92fr;
       gap: 20px;
     }
 
@@ -151,62 +151,108 @@
       white-space: pre-wrap;
       color: var(--text-bright);
       font-size: 18px;
-      line-height: 1.9;
+      line-height: 1.85;
       min-height: 320px;
     }
 
     .clue-box {
       border: 1px solid var(--border);
       padding: 18px;
-      min-height: 240px;
+      min-height: 280px;
       display: grid;
       place-items: center;
       background:
+        radial-gradient(circle at top, rgba(167,255,77,0.05), transparent 30%),
         linear-gradient(180deg, rgba(4,12,4,0.96), rgba(2,6,2,0.98));
       box-shadow: inset 0 0 24px rgba(80,255,80,0.05);
       margin-bottom: 14px;
+      overflow: hidden;
     }
 
-    .placeholder-wheel {
-      width: min(260px, 80%);
+    .cipher-wheel {
+      width: min(310px, 82%);
       aspect-ratio: 1 / 1;
-      border: 1px solid rgba(167,255,77,0.25);
-      border-radius: 50%;
       position: relative;
+      border-radius: 50%;
       box-shadow:
         0 0 0 1px rgba(167,255,77,0.08) inset,
-        0 0 20px rgba(167,255,77,0.08);
+        0 0 30px rgba(167,255,77,0.08);
     }
 
-    .placeholder-wheel::before,
-    .placeholder-wheel::after {
-      content: "";
+    .ring {
       position: absolute;
-      inset: 16%;
-      border: 1px solid rgba(167,255,77,0.22);
       border-radius: 50%;
+      border: 1px solid rgba(167,255,77,0.26);
+      box-shadow: 0 0 14px rgba(167,255,77,0.05);
     }
 
-    .placeholder-wheel::after {
-      inset: 34%;
-    }
+    .ring.outer { inset: 0%; }
+    .ring.outer2 { inset: 8%; }
+    .ring.middle { inset: 18%; }
+    .ring.middle2 { inset: 28%; }
+    .ring.inner { inset: 39%; }
 
-    .wheel-line {
+    .marker {
       position: absolute;
       left: 50%;
       top: 50%;
       width: 1px;
-      height: 46%;
-      background: rgba(167,255,77,0.30);
+      height: 47%;
+      background: rgba(167,255,77,0.28);
       transform-origin: bottom center;
+      transform: translateX(-50%) rotate(var(--r));
     }
 
-    .wheel-line:nth-child(1) { transform: translateX(-50%) rotate(0deg); }
-    .wheel-line:nth-child(2) { transform: translateX(-50%) rotate(30deg); }
-    .wheel-line:nth-child(3) { transform: translateX(-50%) rotate(60deg); }
-    .wheel-line:nth-child(4) { transform: translateX(-50%) rotate(90deg); }
-    .wheel-line:nth-child(5) { transform: translateX(-50%) rotate(120deg); }
-    .wheel-line:nth-child(6) { transform: translateX(-50%) rotate(150deg); }
+    .short-marker {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 1px;
+      height: 35%;
+      background: rgba(167,255,77,0.16);
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotate(var(--r));
+    }
+
+    .hub {
+      position: absolute;
+      inset: 45%;
+      border-radius: 50%;
+      border: 1px solid rgba(167,255,77,0.45);
+      background: radial-gradient(circle, rgba(12,40,12,0.95), rgba(5,18,5,0.9));
+      box-shadow:
+        0 0 10px rgba(167,255,77,0.2),
+        0 0 0 1px rgba(167,255,77,0.06) inset;
+    }
+
+    .pointer {
+      position: absolute;
+      top: 3%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      transform: translateX(-50%);
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 0;
+      border-bottom: 16px solid rgba(167,255,77,0.75);
+      filter: drop-shadow(0 0 8px rgba(167,255,77,0.5));
+    }
+
+    .spark {
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(167,255,77,0.75);
+      opacity: 0.8;
+    }
+
+    .spark.s1 { top: 9%; left: 18%; }
+    .spark.s2 { top: 14%; right: 18%; }
+    .spark.s3 { bottom: 15%; left: 13%; }
+    .spark.s4 { bottom: 10%; right: 15%; }
 
     .clue-text {
       color: var(--text-bright);
@@ -215,6 +261,18 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       line-height: 1.6;
+    }
+
+    .note-strip {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border: 1px solid rgba(167,255,77,0.14);
+      background: rgba(0,0,0,0.18);
+      color: var(--text-dim);
+      font-size: 12px;
+      line-height: 1.7;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
     }
 
     .footer {
@@ -229,69 +287,109 @@
       .main-grid {
         grid-template-columns: 1fr;
       }
+
+      .cipher-block {
+        font-size: 17px;
+      }
     }
   </style>
 </head>
 
 <body class="scanlines">
 
-<!-- Alignment without order is noise. Order without alignment is useless. -->
+<!-- Gifts are useless without the correct date. -->
+<!-- Twelve references. One wheel set. -->
+<!-- Alignment without month is noise. -->
 
 <div class="shell">
   <div class="topbar">
-    <div><span class="status-dot"></span>Recovery Node Active</div>
-    <div>Obsidian Control Gateway // Access Pathway</div>
+    <div><span class="status-dot"></span>Access Node Active</div>
+    <div>Obsidian Control Gateway // Birthday Alignment Channel</div>
   </div>
 
   <main class="content">
 
     <section class="header-block">
-      <div class="bootline">Awaiting alignment protocol...</div>
+      <div class="bootline">Reference series recovered...</div>
       <h1>Access Fragment</h1>
       <div class="subtitle">
-        Entry authorization depends on synchronized rotational state. A multi-ring access mechanism remains
-        offline until the correct arrangement is established. When the wheels are properly aligned, the
-        instruction will no longer appear as noise.
+        The recovered sequence appears to contain twelve celebratory references. Surface interpretation is
+        insufficient. Proper access depends on temporal alignment, rotational consistency, and a single
+        shared frame of reference. When the correct month is established, the wheel state may become readable.
       </div>
     </section>
 
     <section class="main-grid">
 
       <div class="terminal-panel">
-        <div class="panel-title">Recovered Access Notes</div>
-        <div class="cipher-block">
-MULTIPLE RINGS
-SINGLE REFERENCE LINE
-
-ORDER MATTERS
-ORIENTATION MATTERS
-OFFSET MATTERS
-
-DO NOT TRUST THE FIRST READING
-
-MEANING EMERGES ONLY
-WHEN ALL SEGMENTS AGREE
-
-ACCESS WILL BE GRANTED
-WHEN CHAOS RESOLVES
-        </div>
+        <div class="panel-title">Recovered Birthday References</div>
+        <div class="cipher-block">1. Grandma King
+2. George Washington
+3. Grandma Allen
+4. Daxton
+5. Grandpa King
+6. Bella
+7. MLK Jr.
+8. Mom
+9. Albert Einstein
+10. Jesus
+11. Nessie
+12. Desmond</div>
       </div>
 
       <div class="clue-panel">
-        <div class="panel-title">Alignment Placeholder</div>
+        <div class="panel-title">Celebration / Alignment Artifact</div>
 
         <div class="clue-box">
-          <div class="placeholder-wheel" aria-hidden="true">
-            <div class="wheel-line"></div>
-            <div class="wheel-line"></div>
-            <div class="wheel-line"></div>
-            <div class="wheel-line"></div>
-            <div class="wheel-line"></div>
-            <div class="wheel-line"></div>
+          <div class="cipher-wheel" aria-hidden="true">
+            <div class="pointer"></div>
+
+            <div class="ring outer"></div>
+            <div class="ring outer2"></div>
+            <div class="ring middle"></div>
+            <div class="ring middle2"></div>
+            <div class="ring inner"></div>
+
+            <div class="marker" style="--r:0deg;"></div>
+            <div class="marker" style="--r:30deg;"></div>
+            <div class="marker" style="--r:60deg;"></div>
+            <div class="marker" style="--r:90deg;"></div>
+            <div class="marker" style="--r:120deg;"></div>
+            <div class="marker" style="--r:150deg;"></div>
+            <div class="marker" style="--r:180deg;"></div>
+            <div class="marker" style="--r:210deg;"></div>
+            <div class="marker" style="--r:240deg;"></div>
+            <div class="marker" style="--r:270deg;"></div>
+            <div class="marker" style="--r:300deg;"></div>
+            <div class="marker" style="--r:330deg;"></div>
+
+            <div class="short-marker" style="--r:15deg;"></div>
+            <div class="short-marker" style="--r:45deg;"></div>
+            <div class="short-marker" style="--r:75deg;"></div>
+            <div class="short-marker" style="--r:105deg;"></div>
+            <div class="short-marker" style="--r:135deg;"></div>
+            <div class="short-marker" style="--r:165deg;"></div>
+            <div class="short-marker" style="--r:195deg;"></div>
+            <div class="short-marker" style="--r:225deg;"></div>
+            <div class="short-marker" style="--r:255deg;"></div>
+            <div class="short-marker" style="--r:285deg;"></div>
+            <div class="short-marker" style="--r:315deg;"></div>
+            <div class="short-marker" style="--r:345deg;"></div>
+
+            <div class="hub"></div>
+
+            <div class="spark s1"></div>
+            <div class="spark s2"></div>
+            <div class="spark s3"></div>
+            <div class="spark s4"></div>
           </div>
         </div>
 
-        <div class="clue-text">Meaning requires alignment.</div>
+        <div class="clue-text">Twelve references. One alignment.</div>
+
+        <div class="note-strip">
+          celebration markers detected // gift transfer recorded // reference month required before final interpretation
+        </div>
       </div>
 
     </section>
@@ -299,9 +397,9 @@ WHEN CHAOS RESOLVES
   </main>
 
   <footer class="footer">
-    <div>&gt; advisory: apparent gibberish may indicate incorrect wheel state rather than incorrect source text</div>
-    <div>&gt; directive: establish proper order before attempting interpretation</div>
-    <div>&gt; note: access depends on configuration, not discovery</div>
+    <div>&gt; advisory: apparent gibberish may indicate incorrect month selection rather than incorrect source text</div>
+    <div>&gt; directive: identify the relevant celebration date before attempting wheel interpretation</div>
+    <div>&gt; note: the artifact was presented as a gift, not as a key</div>
   </footer>
 </div>
 
