@@ -634,18 +634,18 @@
         <div class="panel-title">When do they celebrate?</div>
 
         <div class="entry-list">
-          <div class="entry-row"><span class="entry-name">1. Grandma King</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="0" aria-label="Month for Grandma King" /></div>
-          <div class="entry-row"><span class="entry-name">2. George Washington</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="1" aria-label="Month for George Washington" /></div>
-          <div class="entry-row"><span class="entry-name">3. Grandma Allen</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="2" aria-label="Month for Grandma Allen" /></div>
-          <div class="entry-row"><span class="entry-name">4. Daxton</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="3" aria-label="Month for Daxton" /></div>
-          <div class="entry-row"><span class="entry-name">5. Grandpa King</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="4" aria-label="Month for Grandpa King" /></div>
-          <div class="entry-row"><span class="entry-name">6. Bella</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="5" aria-label="Month for Bella" /></div>
-          <div class="entry-row"><span class="entry-name">7. MLK Jr.</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="6" aria-label="Month for MLK Jr." /></div>
-          <div class="entry-row"><span class="entry-name">8. Mom</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="7" aria-label="Month for Mom" /></div>
-          <div class="entry-row"><span class="entry-name">9. Albert Einstein</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="8" aria-label="Month for Albert Einstein" /></div>
-          <div class="entry-row"><span class="entry-name">10. Jesus</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="9" aria-label="Month for Jesus" /></div>
-          <div class="entry-row"><span class="entry-name">11. Nessie</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="10" aria-label="Month for Nessie" /></div>
-          <div class="entry-row"><span class="entry-name">12. Desmond</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="11" aria-label="Month for Desmond" /></div>
+          <div class="entry-row"><span class="entry-name">1. Grandma King</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="0" /></div>
+          <div class="entry-row"><span class="entry-name">2. George Washington</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="1" /></div>
+          <div class="entry-row"><span class="entry-name">3. Grandma Allen</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="2" /></div>
+          <div class="entry-row"><span class="entry-name">4. Daxton</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="3" /></div>
+          <div class="entry-row"><span class="entry-name">5. Grandpa King</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="4" /></div>
+          <div class="entry-row"><span class="entry-name">6. Bella</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="5" /></div>
+          <div class="entry-row"><span class="entry-name">7. MLK Jr.</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="6" /></div>
+          <div class="entry-row"><span class="entry-name">8. Mom</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="7" /></div>
+          <div class="entry-row"><span class="entry-name">9. Albert Einstein</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="8" /></div>
+          <div class="entry-row"><span class="entry-name">10. Jesus</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="9" /></div>
+          <div class="entry-row"><span class="entry-name">11. Nessie</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="10" /></div>
+          <div class="entry-row"><span class="entry-name">12. Desmond</span><input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="11" /></div>
         </div>
 
         <div class="controls">
@@ -665,14 +665,7 @@
 
         <div class="artifact-wrap">
           <div class="clue-box">
-            <div
-              class="image-interactive"
-              id="artifactImage"
-              role="button"
-              tabindex="0"
-              aria-pressed="false"
-              aria-label="Toggle artifact analysis overlay"
-            >
+            <div class="image-interactive" id="artifactImage" role="button" tabindex="0" aria-pressed="false">
               <img src="images/albert.png" alt="Recovered artifact image showing Einstein at a birthday party">
               <div class="image-overlay" aria-hidden="true">
                 <div class="highlight-box"></div>
@@ -732,7 +725,7 @@
     let failed = false;
 
     function toggleOverlay() {
-      if (failed || successOverlay.classList.contains('active') || failureOverlay.classList.contains('active')) {
+      if (failed || failureOverlay.classList.contains('active') || successOverlay.classList.contains('active')) {
         return;
       }
       const isActive = artifact.classList.toggle('active');
@@ -740,7 +733,6 @@
     }
 
     artifact.addEventListener('click', toggleOverlay);
-
     artifact.addEventListener('keydown', function (event) {
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
@@ -756,13 +748,9 @@
 
     function sanitizeMonth(rawValue) {
       const digitsOnly = rawValue.replace(/[^0-9]/g, '').slice(0, 2);
-
-      if (!digitsOnly) {
-        return { display: '', numeric: 0, complete: false };
-      }
+      if (!digitsOnly) return { display: '', numeric: 0, complete: false };
 
       const parsed = parseInt(digitsOnly, 10);
-
       if (parsed < 1 || parsed > 12) {
         return { display: '', numeric: 0, complete: false };
       }
@@ -791,27 +779,32 @@
       });
     }
 
-    function generateUnstableText(values) {
-      const numericValues = values.map(function (item) {
-        return item.numeric || 0;
-      });
+    function secureRandomInt(maxExclusive) {
+      if (window.crypto && window.crypto.getRandomValues) {
+        const array = new Uint32Array(1);
+        window.crypto.getRandomValues(array);
+        return array[0] % maxExclusive;
+      }
+      return Math.floor(Math.random() * maxExclusive);
+    }
 
-      const total = numericValues.reduce(function (sum, value, index) {
-        return sum + ((value + 1) * (index + 7));
-      }, 0);
+    function generateUnstableText() {
+      let result = '';
+      let attempts = 0;
 
-      return Array.from({ length: finalPhrase.length }, function (_, cipherIndex) {
-        const seed = numericValues.reduce(function (accumulator, enteredValue, inputIndex) {
-          const wave =
-            (enteredValue + 3) * (inputIndex + 5) * (cipherIndex + 7) +
-            (correctMonths[inputIndex] + 1) * (cipherIndex + 11) +
-            total * (inputIndex + 1);
+      do {
+        let chars = [];
+        for (let i = 0; i < finalPhrase.length; i += 1) {
+          chars.push(alphabet[secureRandomInt(alphabet.length)]);
+        }
+        result = chars.join('');
+        attempts += 1;
+      } while (
+        attempts < 12 &&
+        (result === finalPhrase || /^([A-Z])\1+$/.test(result))
+      );
 
-          return accumulator + wave;
-        }, (cipherIndex + 1) * 31);
-
-        return alphabet[seed % 26];
-      }).join('');
+      return result;
     }
 
     function refreshCheckButton() {
@@ -827,11 +820,12 @@
         output.textContent = finalPhrase;
         output.classList.add('stable');
         output.classList.remove('unstable-flash');
-        return;
+        return values;
       }
 
-      output.textContent = generateUnstableText(values);
+      output.textContent = generateUnstableText();
       output.classList.remove('stable', 'flicker');
+      return values;
     }
 
     function flashUnstable() {
@@ -884,12 +878,12 @@
       openSuccessOverlay();
     }
 
-    function failSequence(values) {
+    function failSequence() {
       failed = true;
       setInputsDisabled(true);
       checkButton.disabled = true;
 
-      output.textContent = generateUnstableText(values);
+      output.textContent = generateUnstableText();
       output.classList.remove('stable', 'flicker');
       flashUnstable();
 
@@ -907,10 +901,8 @@
     function fullReset() {
       solved = false;
       failed = false;
-
       resetInputs();
       setInputsDisabled(false);
-
       output.classList.remove('stable', 'flicker', 'unstable-flash');
       closeFailureOverlay();
       closeSuccessOverlay();
@@ -938,13 +930,15 @@
       if (allCorrect(values)) {
         solveSequence();
       } else {
-        failSequence(values);
+        failSequence();
       }
     });
 
     resetButton.addEventListener('click', fullReset);
     overlayReset.addEventListener('click', fullReset);
-    overlayProceed.addEventListener('click', closeSuccessOverlay);
+    overlayProceed.addEventListener('click', function () {
+      closeSuccessOverlay();
+    });
 
     refreshCipher();
   })();
