@@ -454,6 +454,29 @@
       line-height: 1.7;
     }
 
+    .success-flash {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1990;
+      opacity: 0;
+      background:
+        radial-gradient(circle at center, rgba(167,255,77,0.18), rgba(167,255,77,0.04) 45%, transparent 70%),
+        rgba(167,255,77,0.08);
+    }
+
+    .success-flash.active {
+      animation: successScreenPulse 420ms ease-out;
+    }
+
+    @keyframes successScreenPulse {
+      0% { opacity: 0; }
+      18% { opacity: 0.9; }
+      40% { opacity: 0.35; }
+      62% { opacity: 0.75; }
+      100% { opacity: 0; }
+    }
+
     .overlay-block {
       position: fixed;
       inset: 0;
@@ -689,6 +712,8 @@
   </footer>
 </div>
 
+<div class="success-flash" id="successFlash" aria-hidden="true"></div>
+
 <div class="overlay-block failure" id="failureOverlay" aria-hidden="true">
   <div class="overlay-panel failure">
     <div class="overlay-title failure">Alignment Rejected</div>
@@ -716,6 +741,7 @@
     const overlayReset = document.getElementById('overlayReset');
     const successOverlay = document.getElementById('successOverlay');
     const overlayProceed = document.getElementById('overlayProceed');
+    const successFlash = document.getElementById('successFlash');
 
     const correctMonths = [9, 2, 6, 11, 4, 8, 1, 10, 3, 12, 5, 7];
     const finalPhrase = 'ABCDEFGHIJKL';
@@ -793,7 +819,7 @@
       let attempts = 0;
 
       do {
-        let chars = [];
+        const chars = [];
         for (let i = 0; i < finalPhrase.length; i += 1) {
           chars.push(alphabet[secureRandomInt(alphabet.length)]);
         }
@@ -837,6 +863,16 @@
       }, 240);
     }
 
+    function triggerSuccessFlash() {
+      successFlash.classList.remove('active');
+      void successFlash.offsetWidth;
+      successFlash.classList.add('active');
+
+      window.setTimeout(function () {
+        successFlash.classList.remove('active');
+      }, 430);
+    }
+
     function openFailureOverlay() {
       failureOverlay.classList.add('active');
       failureOverlay.setAttribute('aria-hidden', 'false');
@@ -870,12 +906,14 @@
       output.classList.remove('unstable-flash');
       output.classList.add('stable', 'flicker');
 
+      triggerSuccessFlash();
+      openSuccessOverlay();
+
       window.setTimeout(function () {
         output.classList.remove('flicker');
       }, 340);
 
       checkButton.disabled = true;
-      openSuccessOverlay();
     }
 
     function failSequence() {
