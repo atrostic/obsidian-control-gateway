@@ -16,7 +16,8 @@
       --accent: #a7ff4d;
       --shadow: rgba(80, 255, 80, 0.08);
       --warn: #d8ff72;
-      --stable: #e8ff9a;
+      --stable: #f0ff9e;
+      --danger: #d5ff8b;
     }
 
     * { box-sizing: border-box; }
@@ -153,7 +154,7 @@
 
     .entry-row {
       display: grid;
-      grid-template-columns: 1fr 58px;
+      grid-template-columns: 1fr 64px;
       gap: 12px;
       align-items: center;
     }
@@ -165,7 +166,7 @@
     }
 
     .month-input {
-      width: 58px;
+      width: 64px;
       padding: 7px 8px;
       border: 1px solid rgba(167,255,77,0.2);
       background: rgba(0,0,0,0.28);
@@ -188,6 +189,56 @@
         0 0 10px rgba(167,255,77,0.12);
     }
 
+    .month-input.ready {
+      border-color: rgba(167,255,77,0.34);
+    }
+
+    .controls {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .action-button {
+      padding: 9px 14px;
+      border: 1px solid rgba(167,255,77,0.3);
+      background: linear-gradient(180deg, rgba(10,23,10,0.9), rgba(5,10,5,0.95));
+      color: var(--text-bright);
+      font-family: "Courier New", Courier, monospace;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 120ms ease,
+        opacity 160ms ease;
+    }
+
+    .action-button:hover:not(:disabled) {
+      border-color: rgba(167,255,77,0.55);
+      box-shadow: 0 0 12px rgba(167,255,77,0.12);
+    }
+
+    .action-button:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    .action-button:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .control-note {
+      color: var(--text-dim);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+
     .cipher-output {
       margin-top: 18px;
       padding-top: 14px;
@@ -199,14 +250,16 @@
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.12em;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .cipher-output-value {
-      font-size: 20px;
-      letter-spacing: 0.2em;
+      font-size: clamp(26px, 4vw, 44px);
+      letter-spacing: 0.24em;
       color: var(--accent);
-      text-shadow: 0 0 8px rgba(167,255,77,0.15);
+      text-shadow:
+        0 0 8px rgba(167,255,77,0.15),
+        0 0 18px rgba(167,255,77,0.05);
       transition:
         color 180ms ease,
         text-shadow 180ms ease,
@@ -214,28 +267,60 @@
         opacity 180ms ease,
         transform 180ms ease;
       word-break: break-word;
+      line-height: 1.35;
+      min-height: 1.5em;
+    }
+
+    .cipher-output-value.unstable-flash {
+      animation: unstableFlash 220ms linear;
     }
 
     .cipher-output-value.stable {
       color: var(--stable);
       text-shadow:
-        0 0 10px rgba(232,255,154,0.35),
-        0 0 22px rgba(232,255,154,0.18),
-        0 0 36px rgba(232,255,154,0.12);
-      letter-spacing: 0.24em;
+        0 0 14px rgba(240,255,158,0.72),
+        0 0 28px rgba(240,255,158,0.48),
+        0 0 52px rgba(240,255,158,0.28),
+        0 0 86px rgba(240,255,158,0.16);
+      letter-spacing: 0.32em;
+      transform: scale(1.045);
+      animation: solvedPulse 1.45s ease-in-out infinite;
     }
 
     .cipher-output-value.flicker {
-      animation: stabilizeFlicker 260ms linear;
+      animation: stabilizeFlicker 320ms linear;
+    }
+
+    @keyframes unstableFlash {
+      0% { opacity: 0.55; }
+      50% { opacity: 1; }
+      100% { opacity: 1; }
     }
 
     @keyframes stabilizeFlicker {
-      0%   { opacity: 0.55; }
-      20%  { opacity: 1; }
-      40%  { opacity: 0.72; }
-      60%  { opacity: 1; }
-      80%  { opacity: 0.82; }
+      0%   { opacity: 0.35; }
+      15%  { opacity: 1; }
+      35%  { opacity: 0.62; }
+      55%  { opacity: 1; }
+      75%  { opacity: 0.84; }
       100% { opacity: 1; }
+    }
+
+    @keyframes solvedPulse {
+      0%, 100% {
+        text-shadow:
+          0 0 14px rgba(240,255,158,0.72),
+          0 0 28px rgba(240,255,158,0.48),
+          0 0 52px rgba(240,255,158,0.28),
+          0 0 86px rgba(240,255,158,0.16);
+      }
+      50% {
+        text-shadow:
+          0 0 20px rgba(240,255,158,0.96),
+          0 0 40px rgba(240,255,158,0.64),
+          0 0 72px rgba(240,255,158,0.38),
+          0 0 110px rgba(240,255,158,0.24);
+      }
     }
 
     .artifact-wrap {
@@ -370,7 +455,7 @@
       }
 
       .entry-row {
-        grid-template-columns: 1fr 52px;
+        grid-template-columns: 1fr 58px;
         gap: 10px;
       }
 
@@ -379,7 +464,7 @@
       }
 
       .month-input {
-        width: 52px;
+        width: 58px;
       }
     }
   </style>
@@ -387,8 +472,8 @@
 
 <body class="scanlines">
 
-<!-- Gifts are useless without the correct date. -->
-<!-- Discs are useless without the correct order. -->
+<!-- Gifts are great, but fragments are better! -->
+<!-- Realign the discs to take home the prize! -->
 
 <div class="shell">
   <div class="topbar">
@@ -463,6 +548,12 @@
           </div>
         </div>
 
+        <div class="controls">
+          <button type="button" class="action-button" id="checkButton" disabled>Check Alignment</button>
+          <button type="button" class="action-button" id="resetButton">Reset Answers</button>
+          <div class="control-note">fill every box, then validate the full sequence</div>
+        </div>
+
         <div class="cipher-output">
           <div class="cipher-output-label">Recovered Ciphertext</div>
           <div class="cipher-output-value" id="cipherOutput"></div>
@@ -512,10 +603,13 @@
     const artifact = document.getElementById('artifactImage');
     const inputs = Array.from(document.querySelectorAll('.month-input'));
     const output = document.getElementById('cipherOutput');
+    const checkButton = document.getElementById('checkButton');
+    const resetButton = document.getElementById('resetButton');
 
     const correctMonths = [9, 2, 6, 11, 4, 8, 1, 10, 3, 12, 5, 7];
     const finalPhrase = 'ABCDEFGHIJKL';
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let solved = false;
 
     function toggleOverlay() {
       const isActive = artifact.classList.toggle('active');
@@ -534,64 +628,147 @@
     function sanitizeMonth(rawValue) {
       const digitsOnly = rawValue.replace(/[^0-9]/g, '').slice(0, 2);
 
-      if (!digitsOnly) return { display: '', numeric: 0 };
+      if (!digitsOnly) {
+        return { display: '', numeric: 0, complete: false };
+      }
 
       const parsed = parseInt(digitsOnly, 10);
 
       if (parsed < 1 || parsed > 12) {
-        return { display: digitsOnly, numeric: 0 };
+        return { display: digitsOnly, numeric: 0, complete: false };
       }
 
-      return { display: String(parsed), numeric: parsed };
+      return { display: String(parsed), numeric: parsed, complete: true };
+    }
+
+    function getValues() {
+      return inputs.map((input) => {
+        const sanitized = sanitizeMonth(input.value);
+        input.value = sanitized.display;
+        input.classList.toggle('ready', sanitized.complete);
+        return sanitized;
+      });
+    }
+
+    function allFilled(values) {
+      return values.every((item) => item.complete);
     }
 
     function allCorrect(values) {
-      return values.length === correctMonths.length &&
-        values.every((value, index) => value === correctMonths[index]);
+      return values.every((item, index) => item.numeric === correctMonths[index]);
     }
 
     function generateUnstableText(values) {
-      return values.map((value, index) => {
-        const entered = value || 0;
-        const seed =
-          ((index + 1) * 13) +
-          (entered * 7) +
-          (correctMonths[index] * 11) +
-          ((entered + correctMonths[index]) * (index + 3));
+      const numericValues = values.map((item) => item.numeric || 0);
+
+      const total = numericValues.reduce((sum, value, index) => {
+        return sum + ((value + 1) * (index + 7));
+      }, 0);
+
+      return Array.from({ length: finalPhrase.length }, function (_, cipherIndex) {
+        const seed = numericValues.reduce((accumulator, enteredValue, inputIndex) => {
+          const wave =
+            (enteredValue + 3) * (inputIndex + 5) * (cipherIndex + 7) +
+            (correctMonths[inputIndex] + 1) * (cipherIndex + 11) +
+            total * (inputIndex + 1);
+
+          return accumulator + wave;
+        }, (cipherIndex + 1) * 31);
 
         return alphabet[seed % 26];
       }).join('');
     }
 
-    function updateCipher() {
-      const values = inputs.map((input) => {
-        const sanitized = sanitizeMonth(input.value);
-        input.value = sanitized.display;
-        return sanitized.numeric;
+    function refreshCheckButton() {
+      const values = getValues();
+      checkButton.disabled = solved || !allFilled(values);
+      return values;
+    }
+
+    function refreshCipher() {
+      const values = refreshCheckButton();
+
+      if (solved) {
+        output.textContent = finalPhrase;
+        output.classList.add('stable');
+        output.classList.remove('unstable-flash');
+        return;
+      }
+
+      output.textContent = generateUnstableText(values);
+      output.classList.remove('stable', 'flicker');
+    }
+
+    function flashUnstable() {
+      output.classList.remove('unstable-flash');
+      void output.offsetWidth;
+      output.classList.add('unstable-flash');
+      window.setTimeout(() => {
+        output.classList.remove('unstable-flash');
+      }, 240);
+    }
+
+    function solveSequence() {
+      solved = true;
+
+      inputs.forEach((input, index) => {
+        input.value = String(correctMonths[index]);
+        input.readOnly = true;
+        input.classList.add('ready');
       });
 
-      if (allCorrect(values)) {
-        if (output.textContent !== finalPhrase) {
-          output.textContent = finalPhrase;
-          output.classList.add('stable', 'flicker');
-          window.setTimeout(() => {
-            output.classList.remove('flicker');
-          }, 280);
-        } else {
-          output.classList.add('stable');
-        }
-      } else {
-        output.textContent = generateUnstableText(values);
-        output.classList.remove('stable');
-      }
+      output.textContent = finalPhrase;
+      output.classList.remove('unstable-flash');
+      output.classList.add('stable', 'flicker');
+
+      window.setTimeout(() => {
+        output.classList.remove('flicker');
+      }, 340);
+
+      checkButton.disabled = true;
     }
 
     inputs.forEach((input) => {
-      input.addEventListener('input', updateCipher);
-      input.addEventListener('blur', updateCipher);
+      input.addEventListener('input', function () {
+        if (solved) return;
+        refreshCipher();
+      });
+
+      input.addEventListener('blur', function () {
+        if (solved) return;
+        refreshCipher();
+      });
     });
 
-    updateCipher();
+    checkButton.addEventListener('click', function () {
+      if (solved) return;
+
+      const values = refreshCheckButton();
+      if (!allFilled(values)) return;
+
+      if (allCorrect(values)) {
+        solveSequence();
+      } else {
+        output.textContent = generateUnstableText(values);
+        output.classList.remove('stable', 'flicker');
+        flashUnstable();
+      }
+    });
+
+    resetButton.addEventListener('click', function () {
+      solved = false;
+
+      inputs.forEach((input) => {
+        input.value = '';
+        input.readOnly = false;
+        input.classList.remove('ready');
+      });
+
+      output.classList.remove('stable', 'flicker', 'unstable-flash');
+      refreshCipher();
+    });
+
+    refreshCipher();
   })();
 </script>
 
