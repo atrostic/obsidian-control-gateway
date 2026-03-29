@@ -16,6 +16,7 @@
       --accent: #a7ff4d;
       --shadow: rgba(80, 255, 80, 0.08);
       --warn: #d8ff72;
+      --stable: #e8ff9a;
     }
 
     * { box-sizing: border-box; }
@@ -145,11 +146,46 @@
       letter-spacing: 0.12em;
     }
 
-    .cipher-block {
-      white-space: pre-wrap;
-      font-size: 18px;
-      line-height: 1.8;
+    .entry-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .entry-row {
+      display: grid;
+      grid-template-columns: 1fr 58px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .entry-name {
       color: var(--text-bright);
+      font-size: 17px;
+      line-height: 1.5;
+    }
+
+    .month-input {
+      width: 58px;
+      padding: 7px 8px;
+      border: 1px solid rgba(167,255,77,0.2);
+      background: rgba(0,0,0,0.28);
+      color: var(--text-bright);
+      font-family: "Courier New", Courier, monospace;
+      font-size: 16px;
+      text-align: center;
+      outline: none;
+      box-shadow: inset 0 0 8px rgba(80,255,80,0.04);
+      transition:
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        background 180ms ease;
+    }
+
+    .month-input:focus {
+      border-color: rgba(167,255,77,0.55);
+      box-shadow:
+        0 0 0 1px rgba(167,255,77,0.15),
+        0 0 10px rgba(167,255,77,0.12);
     }
 
     .cipher-output {
@@ -171,6 +207,35 @@
       letter-spacing: 0.2em;
       color: var(--accent);
       text-shadow: 0 0 8px rgba(167,255,77,0.15);
+      transition:
+        color 180ms ease,
+        text-shadow 180ms ease,
+        letter-spacing 180ms ease,
+        opacity 180ms ease,
+        transform 180ms ease;
+      word-break: break-word;
+    }
+
+    .cipher-output-value.stable {
+      color: var(--stable);
+      text-shadow:
+        0 0 10px rgba(232,255,154,0.35),
+        0 0 22px rgba(232,255,154,0.18),
+        0 0 36px rgba(232,255,154,0.12);
+      letter-spacing: 0.24em;
+    }
+
+    .cipher-output-value.flicker {
+      animation: stabilizeFlicker 260ms linear;
+    }
+
+    @keyframes stabilizeFlicker {
+      0%   { opacity: 0.55; }
+      20%  { opacity: 1; }
+      40%  { opacity: 0.72; }
+      60%  { opacity: 1; }
+      80%  { opacity: 0.82; }
+      100% { opacity: 1; }
     }
 
     .artifact-wrap {
@@ -228,24 +293,23 @@
       opacity: 1;
     }
 
-    /* Tuned for current generated image dimensions/composition */
-   .highlight-box {
-  position: absolute;
-  left: 7.5%;
-  top: 16%;
-  width: 34%;
-  height: 25%;
-  border: none;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      rgba(216,255,114,0.10) 0px,
-      rgba(216,255,114,0.10) 1px,
-      rgba(216,255,114,0.02) 2px,
-      rgba(216,255,114,0.02) 4px
-    );
-  box-shadow: inset 0 0 18px rgba(216,255,114,0.10);
-}
+    .highlight-box {
+      position: absolute;
+      left: 7.5%;
+      top: 16%;
+      width: 34%;
+      height: 25%;
+      border: none;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(216,255,114,0.10) 0px,
+          rgba(216,255,114,0.10) 1px,
+          rgba(216,255,114,0.02) 2px,
+          rgba(216,255,114,0.02) 4px
+        );
+      box-shadow: inset 0 0 18px rgba(216,255,114,0.10);
+    }
 
     .highlight-box::before,
     .highlight-box::after {
@@ -292,20 +356,6 @@
       letter-spacing: 0.08em;
     }
 
-    .image-hint strong {
-      color: var(--text-bright);
-      font-weight: normal;
-    }
-
-    .clue-text {
-      text-align: center;
-      font-size: 18px;
-      text-transform: uppercase;
-      color: var(--text-bright);
-      letter-spacing: 0.08em;
-      line-height: 1.5;
-    }
-
     .footer {
       border-top: 1px solid var(--border);
       padding: 16px;
@@ -317,6 +367,19 @@
     @media (max-width: 860px) {
       .main-grid {
         grid-template-columns: 1fr;
+      }
+
+      .entry-row {
+        grid-template-columns: 1fr 52px;
+        gap: 10px;
+      }
+
+      .entry-name {
+        font-size: 16px;
+      }
+
+      .month-input {
+        width: 52px;
       }
     }
   </style>
@@ -349,22 +412,60 @@
       <div class="panel">
         <div class="panel-title">When do they celebrate?</div>
 
-        <div class="cipher-block">1. Grandma King
-2. George Washington
-3. Grandma Allen
-4. Daxton
-5. Grandpa King
-6. Bella
-7. MLK Jr.
-8. Mom
-9. Albert Einstein
-10. Jesus
-11. Nessie
-12. Desmond</div>
+        <div class="entry-list">
+          <div class="entry-row">
+            <span class="entry-name">1. Grandma King</span>
+            <input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="0" aria-label="Month for Grandma King" />
+          </div>
+          <div class="entry-row">
+            <span class="entry-name">2. George Washington</span>
+            <input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="1" aria-label="Month for George Washington" />
+          </div>
+          <div class="entry-row">
+            <span class="entry-name">3. Grandma Allen</span>
+            <input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="2" aria-label="Month for Grandma Allen" />
+          </div>
+          <div class="entry-row">
+            <span class="entry-name">4. Daxton</span>
+            <input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="3" aria-label="Month for Daxton" />
+          </div>
+          <div class="entry-row">
+            <span class="entry-name">5. Grandpa King</span>
+            <input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="4" aria-label="Month for Grandpa King" />
+          </div>
+          <div class="entry-row">
+            <span class="entry-name">6. Bella</span>
+            <input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="5" aria-label="Month for Bella" />
+          </div>
+          <div class="entry-row">
+            <span class="entry-name">7. MLK Jr.</span>
+            <input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="6" aria-label="Month for MLK Jr." />
+          </div>
+          <div class="entry-row">
+            <span class="entry-name">8. Mom</span>
+            <input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="7" aria-label="Month for Mom" />
+          </div>
+          <div class="entry-row">
+            <span class="entry-name">9. Albert Einstein</span>
+            <input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="8" aria-label="Month for Albert Einstein" />
+          </div>
+          <div class="entry-row">
+            <span class="entry-name">10. Jesus</span>
+            <input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="9" aria-label="Month for Jesus" />
+          </div>
+          <div class="entry-row">
+            <span class="entry-name">11. Nessie</span>
+            <input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="10" aria-label="Month for Nessie" />
+          </div>
+          <div class="entry-row">
+            <span class="entry-name">12. Desmond</span>
+            <input class="month-input" type="text" inputmode="numeric" maxlength="2" data-index="11" aria-label="Month for Desmond" />
+          </div>
+        </div>
 
         <div class="cipher-output">
           <div class="cipher-output-label">Recovered Ciphertext</div>
-          <div class="cipher-output-value">ABCDEFGHIJKL</div>
+          <div class="cipher-output-value" id="cipherOutput"></div>
         </div>
       </div>
 
@@ -373,7 +474,14 @@
 
         <div class="artifact-wrap">
           <div class="clue-box">
-            <div class="image-interactive" id="artifactImage" role="button" tabindex="0" aria-pressed="false" aria-label="Toggle artifact analysis overlay">
+            <div
+              class="image-interactive"
+              id="artifactImage"
+              role="button"
+              tabindex="0"
+              aria-pressed="false"
+              aria-label="Toggle artifact analysis overlay"
+            >
               <img src="images/albert.png" alt="Recovered artifact image showing Einstein at a birthday party">
               <div class="image-overlay" aria-hidden="true">
                 <div class="highlight-box"></div>
@@ -402,6 +510,12 @@
 <script>
   (function () {
     const artifact = document.getElementById('artifactImage');
+    const inputs = Array.from(document.querySelectorAll('.month-input'));
+    const output = document.getElementById('cipherOutput');
+
+    const correctMonths = [9, 2, 6, 11, 4, 8, 1, 10, 3, 12, 5, 7];
+    const finalPhrase = 'ABCDEFGHIJKL';
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
     function toggleOverlay() {
       const isActive = artifact.classList.toggle('active');
@@ -416,6 +530,68 @@
         toggleOverlay();
       }
     });
+
+    function sanitizeMonth(rawValue) {
+      const digitsOnly = rawValue.replace(/[^0-9]/g, '').slice(0, 2);
+
+      if (!digitsOnly) return { display: '', numeric: 0 };
+
+      const parsed = parseInt(digitsOnly, 10);
+
+      if (parsed < 1 || parsed > 12) {
+        return { display: digitsOnly, numeric: 0 };
+      }
+
+      return { display: String(parsed), numeric: parsed };
+    }
+
+    function allCorrect(values) {
+      return values.length === correctMonths.length &&
+        values.every((value, index) => value === correctMonths[index]);
+    }
+
+    function generateUnstableText(values) {
+      return values.map((value, index) => {
+        const entered = value || 0;
+        const seed =
+          ((index + 1) * 13) +
+          (entered * 7) +
+          (correctMonths[index] * 11) +
+          ((entered + correctMonths[index]) * (index + 3));
+
+        return alphabet[seed % 26];
+      }).join('');
+    }
+
+    function updateCipher() {
+      const values = inputs.map((input) => {
+        const sanitized = sanitizeMonth(input.value);
+        input.value = sanitized.display;
+        return sanitized.numeric;
+      });
+
+      if (allCorrect(values)) {
+        if (output.textContent !== finalPhrase) {
+          output.textContent = finalPhrase;
+          output.classList.add('stable', 'flicker');
+          window.setTimeout(() => {
+            output.classList.remove('flicker');
+          }, 280);
+        } else {
+          output.classList.add('stable');
+        }
+      } else {
+        output.textContent = generateUnstableText(values);
+        output.classList.remove('stable');
+      }
+    }
+
+    inputs.forEach((input) => {
+      input.addEventListener('input', updateCipher);
+      input.addEventListener('blur', updateCipher);
+    });
+
+    updateCipher();
   })();
 </script>
 
