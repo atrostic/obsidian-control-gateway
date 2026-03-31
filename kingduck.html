@@ -31,7 +31,6 @@
       overflow-x: hidden;
     }
 
-    /* CRT scanlines */
     body::before {
       content: "";
       position: fixed;
@@ -118,7 +117,6 @@
       align-items: start;
     }
 
-    /* ✅ FIXED IMAGE HANDLING */
     .image-box {
       border: 1px solid var(--border);
       background: black;
@@ -198,6 +196,15 @@
       color: var(--warning);
     }
 
+    .subtle-note {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.7;
+      border-top: 1px dashed rgba(156,255,156,0.15);
+      padding-top: 10px;
+    }
+
     .footer {
       border-top: 1px solid var(--border);
       padding: 16px;
@@ -231,10 +238,11 @@
 
     <div class="panel">
       <div class="panel-title">System Update</div>
-      <h1>Secondary Search Directive</h1>
+      <h1>Fragment Recovery Directive</h1>
       <div class="lead" style="margin-top:10px;">
         Combined fragment authentication completed successfully.
-        Supplemental recovery data has been unlocked. Environmental inspection is now required.
+        Primary recovery now depends on an audio payload concealed within this layer.
+        Additional environmental findings may prove useful later, but do not constitute the fragment itself.
       </div>
     </div>
 
@@ -242,21 +250,20 @@
 
       <div class="panel">
         <div class="panel-title">Recovered Guidance</div>
-        <div class="cipher">
-TWO WATCHERS REMAIN IN HIDING
+        <div class="cipher">THE FRAGMENT IS NOT WRITTEN HERE
 
-THEY WERE NOT LEFT IN OPEN VIEW
-NOR PLACED WHERE GUESTS ARE MEANT TO LOOK
+IT WILL NOT BE FOUND IN THE IMAGE
+AND IT IS NOT STORED IN DECORATION
 
-THEIR RESTING PLACE SITS QUIETLY ABOVE THE WATER
-YET BELOW WHAT IS SEEN
+THE REQUIRED SIGNAL MUST BE HEARD
 
-LIFT NOTHING WITHOUT PURPOSE
-BUT IGNORE NO COVER THAT HOLDS STILL
+RECOVER THE AUDIO
+PLAY IT
+AND LISTEN CAREFULLY
 
-WHEN THE FALSE SENTRIES ARE FOUND
-THE NEXT INSTRUCTION MAY BE HEARD
-        </div>
+AUXILIARY INTELLIGENCE ALSO REMAINS IN THE ROOM
+ITS VALUE IS REAL
+BUT ITS PURPOSE IS DEFERRED</div>
       </div>
 
       <div class="panel">
@@ -267,50 +274,98 @@ THE NEXT INSTRUCTION MAY BE HEARD
         </div>
 
         <div class="clue">
-          Authority is often displayed…  
-          but not always where it rests.
+          Some signals advance the mission.<br>
+          Others only prepare the next one.
         </div>
       </div>
 
     </div>
 
     <div class="panel">
-      <div class="panel-title">Audio Retrieval Interface</div>
+      <div class="panel-title">Audio Recovery Interface</div>
 
       <div class="audio-wrap">
         <div class="lead">
-          Once the concealed items are recovered, launch the attached audio sequence for the next clue.
+          The fragment for this node is contained in the audio sequence. Recover access to the file, then play it to obtain the required directive.
         </div>
 
         <div class="audio-box">
           <audio id="clueAudio" controls preload="none">
             <source src="audio/kingduck.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
           </audio>
         </div>
 
         <div class="button-row">
-          <button onclick="audio.play()">Play Audio Clue</button>
-          <button onclick="audio.pause()">Pause Audio</button>
-          <button onclick="audio.currentTime = 0">Restart Audio</button>
+          <button id="playBtn" type="button">Play Audio Clue</button>
+          <button id="pauseBtn" type="button">Pause Audio</button>
+          <button id="restartBtn" type="button">Restart Audio</button>
         </div>
 
         <div id="audioStatus" class="status">Audio standing by.</div>
       </div>
     </div>
 
+    <div class="panel">
+      <div class="panel-title">Supplemental Field Note</div>
+      <div class="lead">
+        Two concealed observers remain in the environment. They are not the fragment. Their recovery may reveal a combination required by a later node.
+      </div>
+      <div class="subtle-note">
+        Environmental clue path: not in open view, not where guests are meant to look, above the water yet below what is seen.
+      </div>
+    </div>
+
   </div>
 
   <div class="footer">
-    &gt; directive: concealed observers must be located before progression<br>
-    &gt; note: audio payload contains supplemental guidance<br>
-    &gt; warning: stillness does not imply emptiness
-    <!-- not in the bowl / not in plain sight / think upper chamber -->
+    &gt; primary objective: recover and interpret the audio payload<br>
+    &gt; secondary objective: locate auxiliary observers for future combination data<br>
+    &gt; note: not every recovered asset is for immediate use
+    <!-- ducks are deferred / audio is the fragment / upper chamber still matters -->
   </div>
 
 </div>
 
 <script>
   const audio = document.getElementById("clueAudio");
+  const playBtn = document.getElementById("playBtn");
+  const pauseBtn = document.getElementById("pauseBtn");
+  const restartBtn = document.getElementById("restartBtn");
+  const audioStatus = document.getElementById("audioStatus");
+
+  function setStatus(message, isWarning = false) {
+    audioStatus.textContent = message;
+    audioStatus.className = "status" + (isWarning ? " warning" : "");
+  }
+
+  playBtn.addEventListener("click", async () => {
+    try {
+      await audio.play();
+      setStatus("Audio clue playing.");
+    } catch (err) {
+      setStatus("Playback could not begin. Verify the MP3 file path.", true);
+    }
+  });
+
+  pauseBtn.addEventListener("click", () => {
+    audio.pause();
+    setStatus("Audio clue paused.");
+  });
+
+  restartBtn.addEventListener("click", () => {
+    audio.pause();
+    audio.currentTime = 0;
+    setStatus("Audio clue reset.");
+  });
+
+  audio.addEventListener("ended", () => {
+    setStatus("Audio clue complete.");
+  });
+
+  audio.addEventListener("error", () => {
+    setStatus("Audio file unavailable. Check audio/kingduck.mp3.", true);
+  });
 </script>
 
 </body>
