@@ -118,49 +118,32 @@
       align-items: start;
     }
 
-    .clue-box {
+    /* ✅ FIXED IMAGE HANDLING */
+    .image-box {
       border: 1px solid var(--border);
-      background:
-        linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)),
-        linear-gradient(#091309, #030603);
-      padding: 18px;
-      min-height: 220px;
+      background: black;
+      overflow: hidden;
+      height: 360px;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .image-box img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 0 12px rgba(167,255,77,0.15));
+    }
+
+    .clue {
       text-align: center;
-    }
-
-    .clue-text {
-      font-size: 21px;
-      line-height: 1.8;
+      font-size: 19px;
+      letter-spacing: 0.06em;
       color: var(--text-bright);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-.image-box {
-  border: 1px solid var(--border);
-  background: black;
-  overflow: hidden;
-  max-height: 420px; /* controls vertical size */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.image-box img {
-  max-width: 100%;
-  max-height: 420px;
-  object-fit: contain;
-  display: block;
-}
-    
-    .subtle {
-      color: var(--text-dim);
-      font-size: 14px;
-      line-height: 1.7;
-      margin-top: 12px;
+      margin-top: 14px;
+      line-height: 1.5;
     }
 
     .audio-wrap {
@@ -231,10 +214,6 @@
       h1 {
         font-size: 28px;
       }
-
-      .clue-text {
-        font-size: 18px;
-      }
     }
   </style>
 </head>
@@ -263,7 +242,8 @@
 
       <div class="panel">
         <div class="panel-title">Recovered Guidance</div>
-        <div class="cipher">TWO WATCHERS REMAIN IN HIDING
+        <div class="cipher">
+TWO WATCHERS REMAIN IN HIDING
 
 THEY WERE NOT LEFT IN OPEN VIEW
 NOR PLACED WHERE GUESTS ARE MEANT TO LOOK
@@ -275,21 +255,22 @@ LIFT NOTHING WITHOUT PURPOSE
 BUT IGNORE NO COVER THAT HOLDS STILL
 
 WHEN THE FALSE SENTRIES ARE FOUND
-THE NEXT INSTRUCTION MAY BE HEARD</div>
+THE NEXT INSTRUCTION MAY BE HEARD
+        </div>
       </div>
 
       <div class="panel">
-  <div class="panel-title">Visual Reference</div>
+        <div class="panel-title">Visual Reference</div>
 
-  <div class="image-box">
-    <img src="images/kingduck.png?v=2" alt="Duck king seated on throne">
-  </div>
+        <div class="image-box">
+          <img src="images/kingduck.png?v=2" alt="Duck king seated on throne">
+        </div>
 
-  <div class="clue">
-    Authority is often displayed…  
-    but not always where it rests.
-  </div>
-</div>
+        <div class="clue">
+          Authority is often displayed…  
+          but not always where it rests.
+        </div>
+      </div>
 
     </div>
 
@@ -304,14 +285,13 @@ THE NEXT INSTRUCTION MAY BE HEARD</div>
         <div class="audio-box">
           <audio id="clueAudio" controls preload="none">
             <source src="audio/kingduck.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
           </audio>
         </div>
 
         <div class="button-row">
-          <button id="playBtn" type="button">Play Audio Clue</button>
-          <button id="pauseBtn" type="button">Pause Audio</button>
-          <button id="restartBtn" type="button">Restart Audio</button>
+          <button onclick="audio.play()">Play Audio Clue</button>
+          <button onclick="audio.pause()">Pause Audio</button>
+          <button onclick="audio.currentTime = 0">Restart Audio</button>
         </div>
 
         <div id="audioStatus" class="status">Audio standing by.</div>
@@ -331,43 +311,6 @@ THE NEXT INSTRUCTION MAY BE HEARD</div>
 
 <script>
   const audio = document.getElementById("clueAudio");
-  const playBtn = document.getElementById("playBtn");
-  const pauseBtn = document.getElementById("pauseBtn");
-  const restartBtn = document.getElementById("restartBtn");
-  const audioStatus = document.getElementById("audioStatus");
-
-  function setStatus(message, isWarning = false) {
-    audioStatus.textContent = message;
-    audioStatus.className = "status" + (isWarning ? " warning" : "");
-  }
-
-  playBtn.addEventListener("click", async () => {
-    try {
-      await audio.play();
-      setStatus("Audio clue playing.");
-    } catch (err) {
-      setStatus("Playback could not begin. Verify the MP3 file path.", true);
-    }
-  });
-
-  pauseBtn.addEventListener("click", () => {
-    audio.pause();
-    setStatus("Audio clue paused.");
-  });
-
-  restartBtn.addEventListener("click", () => {
-    audio.pause();
-    audio.currentTime = 0;
-    setStatus("Audio clue reset.");
-  });
-
-  audio.addEventListener("ended", () => {
-    setStatus("Audio clue complete.");
-  });
-
-  audio.addEventListener("error", () => {
-    setStatus("Audio file unavailable. Check audio/kingduck.mp3.", true);
-  });
 </script>
 
 </body>
