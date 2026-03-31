@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kingduck Composite Node</title>
+
+  <style>
+    :root {
+      --bg: #020402;
+      --panel: #071107;
+      --border: #173417;
+      --text: #9cff9c;
+      --text-dim: #5cab5c;
+      --text-bright: #e5ffe5;
+      --accent: #a7ff4d;
+      --warning: #ffd36a;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Courier New", monospace;
+    }
+
+    body {
+      padding: 24px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* CRT scanlines */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.02) 0px,
+        rgba(255,255,255,0.02) 1px,
+        transparent 2px,
+        transparent 4px
+      );
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .shell {
+      max-width: 1100px;
+      margin: auto;
+      border: 1px solid var(--border);
+      background: linear-gradient(#071107, #020402);
+      box-shadow: 0 0 24px rgba(0, 255, 120, 0.05);
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .content {
+      padding: 24px;
+      display: grid;
+      gap: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 36px;
+      color: var(--text-bright);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      padding: 18px;
+      background: linear-gradient(#0a160a, #040904);
+      box-shadow: inset 0 0 10px rgba(0,255,100,0.03);
+    }
+
+    .panel-title {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .lead {
+      color: var(--text-dim);
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    .cipher {
+      white-space: pre-wrap;
+      font-size: 18px;
+      line-height: 1.9;
+      color: var(--text-bright);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .clue-box {
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)),
+        linear-gradient(#091309, #030603);
+      padding: 18px;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .clue-text {
+      font-size: 21px;
+      line-height: 1.8;
+      color: var(--text-bright);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .subtle {
+      color: var(--text-dim);
+      font-size: 14px;
+      line-height: 1.7;
+      margin-top: 12px;
+    }
+
+    .audio-wrap {
+      display: grid;
+      gap: 14px;
+    }
+
+    .audio-box {
+      border: 1px solid var(--border);
+      background: #030603;
+      padding: 16px;
+    }
+
+    audio {
+      width: 100%;
+      filter: hue-rotate(35deg) saturate(0.75) brightness(0.9);
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: #081208;
+      color: var(--text-bright);
+      border: 1px solid var(--border);
+      padding: 12px 18px;
+      font-family: "Courier New", monospace;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 12px rgba(167,255,77,0.12);
+    }
+
+    .status {
+      min-height: 22px;
+      font-size: 14px;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+    }
+
+    .warning {
+      color: var(--warning);
+    }
+
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 16px;
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 860px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .clue-text {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="shell">
+
+  <div class="topbar">
+    <div>Composite Phrase Accepted</div>
+    <div>Obsidian Control Gateway // Kingduck Layer</div>
+  </div>
+
+  <div class="content">
+
+    <div class="panel">
+      <div class="panel-title">System Update</div>
+      <h1>Secondary Search Directive</h1>
+      <div class="lead" style="margin-top:10px;">
+        Combined fragment authentication completed successfully.
+        Supplemental recovery data has been unlocked. Environmental inspection is now required.
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <div class="panel">
+        <div class="panel-title">Recovered Guidance</div>
+        <div class="cipher">TWO WATCHERS REMAIN IN HIDING
+
+THEY WERE NOT LEFT IN OPEN VIEW
+NOR PLACED WHERE GUESTS ARE MEANT TO LOOK
+
+THEIR RESTING PLACE SITS QUIETLY ABOVE THE WATER
+YET BELOW WHAT IS SEEN
+
+LIFT NOTHING WITHOUT PURPOSE
+BUT IGNORE NO COVER THAT HOLDS STILL
+
+WHEN THE FALSE SENTRIES ARE FOUND
+THE NEXT INSTRUCTION MAY BE HEARD</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Environmental Hint</div>
+        <div class="clue-box">
+          <div>
+            <div class="clue-text">
+              Some things float.<br>
+              Some things hide above where water waits.
+            </div>
+            <div class="subtle">
+              Placeholder clue text — tighten once final duck mechanic is locked.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Audio Retrieval Interface</div>
+
+      <div class="audio-wrap">
+        <div class="lead">
+          Once the concealed items are recovered, launch the attached audio sequence for the next clue.
+        </div>
+
+        <div class="audio-box">
+          <audio id="clueAudio" controls preload="none">
+            <source src="audio/kingduck.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+
+        <div class="button-row">
+          <button id="playBtn" type="button">Play Audio Clue</button>
+          <button id="pauseBtn" type="button">Pause Audio</button>
+          <button id="restartBtn" type="button">Restart Audio</button>
+        </div>
+
+        <div id="audioStatus" class="status">Audio standing by.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    &gt; directive: concealed observers must be located before progression<br>
+    &gt; note: audio payload contains supplemental guidance<br>
+    &gt; warning: stillness does not imply emptiness
+    <!-- not in the bowl / not in plain sight / think upper chamber -->
+  </div>
+
+</div>
+
+<script>
+  const audio = document.getElementById("clueAudio");
+  const playBtn = document.getElementById("playBtn");
+  const pauseBtn = document.getElementById("pauseBtn");
+  const restartBtn = document.getElementById("restartBtn");
+  const audioStatus = document.getElementById("audioStatus");
+
+  function setStatus(message, isWarning = false) {
+    audioStatus.textContent = message;
+    audioStatus.className = "status" + (isWarning ? " warning" : "");
+  }
+
+  playBtn.addEventListener("click", async () => {
+    try {
+      await audio.play();
+      setStatus("Audio clue playing.");
+    } catch (err) {
+      setStatus("Playback could not begin. Verify the MP3 file path.", true);
+    }
+  });
+
+  pauseBtn.addEventListener("click", () => {
+    audio.pause();
+    setStatus("Audio clue paused.");
+  });
+
+  restartBtn.addEventListener("click", () => {
+    audio.pause();
+    audio.currentTime = 0;
+    setStatus("Audio clue reset.");
+  });
+
+  audio.addEventListener("ended", () => {
+    setStatus("Audio clue complete.");
+  });
+
+  audio.addEventListener("error", () => {
+    setStatus("Audio file unavailable. Check audio/kingduck.mp3.", true);
+  });
+</script>
+
+</body>
+</html>
