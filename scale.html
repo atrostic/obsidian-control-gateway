@@ -225,7 +225,9 @@
       box-shadow: 0 0 12px rgba(167,255,77,0.08);
     }
 
-    .gate-button {
+    .gate-button,
+    .audio-button,
+    .close-button {
       padding: 10px 14px;
       border: 1px solid var(--border);
       background: linear-gradient(180deg, #0c180c, #071007);
@@ -237,7 +239,9 @@
       cursor: pointer;
     }
 
-    .gate-button:hover {
+    .gate-button:hover,
+    .audio-button:hover,
+    .close-button:hover {
       border-color: rgba(167,255,77,0.45);
       box-shadow: 0 0 12px rgba(167,255,77,0.08);
     }
@@ -362,6 +366,51 @@
       margin-right: 8px;
     }
 
+    .audio-popup {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+    }
+
+    .audio-popup.visible {
+      display: flex;
+    }
+
+    .audio-panel {
+      width: min(520px, 100%);
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(10,23,10,0.98), rgba(5,10,5,0.98));
+      box-shadow:
+        0 0 0 1px rgba(60,255,60,0.05) inset,
+        0 0 30px var(--shadow);
+      padding: 20px;
+    }
+
+    .audio-title {
+      margin: 0 0 10px;
+      color: var(--text-bright);
+      font-size: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .audio-copy {
+      color: var(--text-dim);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .audio-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .footer {
       border-top: 1px solid var(--border);
       padding: 16px 22px 20px;
@@ -398,7 +447,8 @@
         font-size: 16px;
       }
 
-      .gate-controls {
+      .gate-controls,
+      .audio-controls {
         flex-direction: column;
         align-items: stretch;
       }
@@ -483,14 +533,12 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
             Visual feed restricted until all spikes are accounted for.
           </div>
 
-          <!-- engine / math joke hotspot -->
           <div
             class="hotspot"
             data-id="1"
             aria-label="Engine hotspot"
             style="left:8%; top:18%; width:42%; height:42%;"></div>
 
-          <!-- track / inversion hotspot -->
           <div
             class="hotspot"
             data-id="2"
@@ -523,9 +571,26 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
   </footer>
 </div>
 
+<div class="audio-popup" id="audioPopup" aria-hidden="true">
+  <div class="audio-panel">
+    <h2 class="audio-title">Archived Signal Recovered</h2>
+    <div class="audio-copy">
+      Anomalous count accepted. Auxiliary audio trace located in suppressed memory.
+    </div>
+    <div class="audio-controls">
+      <button class="audio-button" id="playAudioButton" type="button">Play Audio Trace</button>
+      <button class="close-button" id="closeAudioButton" type="button">Close</button>
+    </div>
+    <audio id="rabbitAudio" preload="auto">
+      <source src="media/wherearethey.mp3" type="audio/mpeg" />
+    </audio>
+  </div>
+</div>
+
 <script>
   const HOLD_MS = 1400;
   const REQUIRED_SPIKES = "11";
+  const SECRET_SPIKES = "9";
 
   const clues = {
     1: {
@@ -571,6 +636,11 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
   const unlockButton = document.getElementById("unlockButton");
   const gateMessage = document.getElementById("gateMessage");
 
+  const audioPopup = document.getElementById("audioPopup");
+  const playAudioButton = document.getElementById("playAudioButton");
+  const closeAudioButton = document.getElementById("closeAudioButton");
+  const rabbitAudio = document.getElementById("rabbitAudio");
+
   let gateUnlocked = false;
   let holdTimer = null;
   let progressTimer = null;
@@ -599,11 +669,32 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
     spikeInput.blur();
   }
 
+  function showAudioPopup() {
+    audioPopup.classList.add("visible");
+    audioPopup.setAttribute("aria-hidden", "false");
+    gateMessage.textContent = "Unexpected archival branch detected.";
+    gateMessage.classList.remove("error", "success");
+    hintNote.textContent = "Auxiliary signal available.";
+    statusLine.textContent = "> suppressed audio trace recovered";
+  }
+
+  function hideAudioPopup() {
+    audioPopup.classList.remove("visible");
+    audioPopup.setAttribute("aria-hidden", "true");
+    rabbitAudio.pause();
+    rabbitAudio.currentTime = 0;
+  }
+
   function checkGate() {
     const value = normalizeSpikeValue(spikeInput.value);
 
     if (value === REQUIRED_SPIKES) {
       unlockGate();
+      return;
+    }
+
+    if (value === SECRET_SPIKES) {
+      showAudioPopup();
       return;
     }
 
@@ -749,6 +840,29 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
   spikeInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       checkGate();
+    }
+  });
+
+  playAudioButton.addEventListener("click", () => {
+    rabbitAudio.currentTime = 0;
+    rabbitAudio.play().catch(() => {
+      gateMessage.textContent = "Audio playback blocked. Press play again if needed.";
+      gateMessage.classList.remove("success");
+      gateMessage.classList.add("error");
+    });
+  });
+
+  closeAudioButton.addEventListener("click", hideAudioPopup);
+
+  audioPopup.addEventListener("click", (e) => {
+    if (e.target === audioPopup) {
+      hideAudioPopup();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && audioPopup.classList.contains("visible")) {
+      hideAudioPopup();
     }
   });
 
