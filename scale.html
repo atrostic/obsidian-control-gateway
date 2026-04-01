@@ -15,6 +15,7 @@
       --text-bright: #e5ffe5;
       --accent: #a7ff4d;
       --shadow: rgba(80, 255, 80, 0.08);
+      --danger: #ff6b6b;
     }
 
     * {
@@ -185,6 +186,77 @@
       transition: width 0.08s linear;
     }
 
+    .gate-panel {
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.22);
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .gate-label {
+      color: var(--text-bright);
+      font-size: 14px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .gate-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .gate-input {
+      width: 120px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      background: #030703;
+      color: var(--text-bright);
+      font-family: inherit;
+      font-size: 18px;
+      outline: none;
+      box-shadow: inset 0 0 8px rgba(80,255,80,0.04);
+    }
+
+    .gate-input:focus {
+      border-color: rgba(167,255,77,0.55);
+      box-shadow: 0 0 12px rgba(167,255,77,0.08);
+    }
+
+    .gate-button {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, #0c180c, #071007);
+      color: var(--text-bright);
+      font-family: inherit;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .gate-button:hover {
+      border-color: rgba(167,255,77,0.45);
+      box-shadow: 0 0 12px rgba(167,255,77,0.08);
+    }
+
+    .gate-message {
+      margin-top: 10px;
+      min-height: 18px;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    .gate-message.error {
+      color: #ff9f9f;
+    }
+
+    .gate-message.success {
+      color: var(--accent);
+    }
+
     .clue-image {
       border: 1px solid var(--border);
       overflow: hidden;
@@ -200,6 +272,33 @@
       user-select: none;
       -webkit-user-drag: none;
       pointer-events: none;
+      transition: filter 0.35s ease, opacity 0.35s ease;
+    }
+
+    .clue-image.locked img {
+      filter: brightness(0.42) contrast(0.95);
+      opacity: 0.88;
+    }
+
+    .image-lock-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+      color: var(--text-bright);
+      background: rgba(0, 0, 0, 0.34);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 14px;
+      line-height: 1.8;
+      z-index: 3;
+    }
+
+    .clue-image.unlocked .image-lock-overlay {
+      display: none;
     }
 
     .hotspot {
@@ -207,8 +306,14 @@
       border: 1px solid rgba(156,255,156,0);
       background: rgba(156,255,156,0);
       cursor: pointer;
-      transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+      transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
       touch-action: manipulation;
+      z-index: 2;
+    }
+
+    .clue-image.locked .hotspot {
+      pointer-events: none;
+      opacity: 0;
     }
 
     .hotspot:hover {
@@ -292,6 +397,15 @@
       .cipher-block {
         font-size: 16px;
       }
+
+      .gate-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .gate-input {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -335,7 +449,7 @@ SUPPRESSED ADVISORIES PRESENT
 VISUAL CONTACT MAY RESTORE OUTPUT</div>
 
         <div class="status-box">
-          <div class="status-line" id="statusLine">&gt; after all spikes are located, hold contact on the visual feed to obtain clue</div>
+          <div class="status-line" id="statusLine">&gt; account for all recovered spikes to unlock the visual feed</div>
           <div class="progress-wrap">
             <div class="progress-bar" id="progressBar"></div>
           </div>
@@ -345,8 +459,29 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
       <div class="clue-panel">
         <div class="panel-title">Visual Feed</div>
 
-        <div class="clue-image" id="imageBox">
+        <div class="gate-panel">
+          <div class="gate-label">How many spikes have you recovered?</div>
+          <div class="gate-controls">
+            <input
+              id="spikeInput"
+              class="gate-input"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              spellcheck="false"
+              maxlength="2"
+              aria-label="How many spikes have you recovered?"
+            />
+            <button id="unlockButton" class="gate-button" type="button">Confirm Count</button>
+          </div>
+          <div class="gate-message" id="gateMessage">Enter the recovered spike count to restore the hover clues.</div>
+        </div>
+
+        <div class="clue-image locked" id="imageBox">
           <img src="images/choochoo.png" alt="Steam locomotive approaching on tracks with spikes visible">
+          <div class="image-lock-overlay" id="imageLockOverlay">
+            Visual feed restricted until all spikes are accounted for.
+          </div>
 
           <!-- engine / math joke hotspot -->
           <div
@@ -364,7 +499,7 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
         </div>
 
         <div class="clue-text" id="hintNote">
-          Hold contact on the visual feed to obtain clue data.
+          Visual feed locked. Enter the correct spike count to proceed.
         </div>
 
         <div class="obtained-clues">
@@ -390,6 +525,7 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
 
 <script>
   const HOLD_MS = 1400;
+  const REQUIRED_SPIKES = "11";
 
   const clues = {
     1: {
@@ -430,7 +566,12 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
   const progressBar = document.getElementById("progressBar");
   const hintNote = document.getElementById("hintNote");
   const hotspots = document.querySelectorAll(".hotspot");
+  const imageBox = document.getElementById("imageBox");
+  const spikeInput = document.getElementById("spikeInput");
+  const unlockButton = document.getElementById("unlockButton");
+  const gateMessage = document.getElementById("gateMessage");
 
+  let gateUnlocked = false;
   let holdTimer = null;
   let progressTimer = null;
   let activeSpot = null;
@@ -438,6 +579,40 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
 
   function setProgress(percent) {
     progressBar.style.width = percent + "%";
+  }
+
+  function normalizeSpikeValue(value) {
+    return value.trim().toLowerCase();
+  }
+
+  function unlockGate() {
+    gateUnlocked = true;
+    imageBox.classList.remove("locked");
+    imageBox.classList.add("unlocked");
+    gateMessage.textContent = "Spike count confirmed. Visual feed restored.";
+    gateMessage.classList.remove("error");
+    gateMessage.classList.add("success");
+    hintNote.textContent = "Hold contact on the visual feed to obtain clue data.";
+    statusLine.textContent = "> all spikes accounted for. hold contact on the visual feed to obtain clue";
+    spikeInput.disabled = true;
+    unlockButton.disabled = true;
+    spikeInput.blur();
+  }
+
+  function checkGate() {
+    const value = normalizeSpikeValue(spikeInput.value);
+
+    if (value === REQUIRED_SPIKES) {
+      unlockGate();
+      return;
+    }
+
+    gateMessage.textContent = "Count mismatch. The line does not move until every spike is accounted for.";
+    gateMessage.classList.remove("success");
+    gateMessage.classList.add("error");
+    hintNote.textContent = "Visual feed locked. Enter the correct spike count to proceed.";
+    statusLine.textContent = "> spike recovery incomplete. visual feed remains restricted";
+    setProgress(0);
   }
 
   function scrambleReveal(element, finalText) {
@@ -467,6 +642,15 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
   }
 
   function beginHold(spot) {
+    if (!gateUnlocked) {
+      gateMessage.textContent = "Visual feed still locked. Confirm all 11 spikes first.";
+      gateMessage.classList.remove("success");
+      gateMessage.classList.add("error");
+      statusLine.textContent = "> access denied. spike recovery incomplete";
+      hintNote.textContent = "Visual feed locked. Enter the correct spike count to proceed.";
+      return;
+    }
+
     const id = spot.dataset.id;
     const clueData = clues[id];
 
@@ -540,7 +724,7 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
       activeSpot.classList.remove("scanning");
     }
 
-    if (progressBar.style.width !== "100%") {
+    if (progressBar.style.width !== "100%" && gateUnlocked) {
       setProgress(0);
       statusLine.textContent = "> hold contact on the visual feed to obtain clue";
       hintNote.textContent = "Contact interrupted.";
@@ -559,6 +743,14 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
       progressTimer = null;
     }
   }
+
+  unlockButton.addEventListener("click", checkGate);
+
+  spikeInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      checkGate();
+    }
+  });
 
   hotspots.forEach((spot) => {
     spot.addEventListener("mousedown", () => beginHold(spot));
