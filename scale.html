@@ -397,10 +397,12 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
       stage: 0,
       stages: [
         {
+          display: "[partial clue obtained]",
           text: "C---S-I-- K---P",
           note: "partial advisory restored."
         },
         {
+          display: null,
           text: "How does Christian Kramp like to solve his equations?",
           note: "suppressed advisory restored."
         }
@@ -411,7 +413,13 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
       stage: 0,
       stages: [
         {
-          text: "The answer lies inverted.",
+          display: "[partial clue obtained]",
+          text: "T---- I- I--------",
+          note: "partial orientation directive restored."
+        },
+        {
+          display: null,
+          text: "Truth is inverted.",
           note: "orientation directive restored."
         }
       ]
@@ -466,7 +474,12 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
     startTime = Date.now();
     spot.classList.add("scanning");
 
-    statusLine.textContent = "> obtaining clue...";
+    if (clueData.stage > 0) {
+      statusLine.textContent = "> stabilizing clue...";
+    } else {
+      statusLine.textContent = "> obtaining clue...";
+    }
+
     hintNote.textContent = "Maintain contact...";
     setProgress(0);
 
@@ -495,9 +508,22 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
     const currentStage = clueData.stages[clueData.stage];
 
     clueItem.classList.add("revealed");
-    scrambleReveal(textSpan, currentStage.text);
 
-    statusLine.textContent = "> obtaining clue... complete.";
+    if (currentStage.display) {
+      textSpan.textContent = currentStage.display;
+      setTimeout(() => {
+        scrambleReveal(textSpan, currentStage.text);
+      }, 500);
+    } else {
+      scrambleReveal(textSpan, currentStage.text);
+    }
+
+    if (clueData.stage > 0) {
+      statusLine.textContent = "> stabilizing clue... complete.";
+    } else {
+      statusLine.textContent = "> obtaining clue... complete.";
+    }
+
     hintNote.textContent = currentStage.note;
 
     if (clueData.stage < clueData.stages.length - 1) {
@@ -551,6 +577,5 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
   document.addEventListener("touchend", cancelHold);
   document.addEventListener("touchcancel", cancelHold);
 </script>
-
 </body>
 </html>
