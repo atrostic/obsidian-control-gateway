@@ -394,13 +394,27 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
   const clues = {
     1: {
       target: "clue1",
-      text: "How does Christian Kramp like to solve his equations?",
-      note: "suppressed advisory restored."
+      stage: 0,
+      stages: [
+        {
+          text: "C---S-I-- K---P",
+          note: "partial advisory restored."
+        },
+        {
+          text: "How does Christian Kramp like to solve his equations?",
+          note: "suppressed advisory restored."
+        }
+      ]
     },
     2: {
       target: "clue2",
-      text: "Truth is inverted.",
-      note: "orientation directive restored."
+      stage: 0,
+      stages: [
+        {
+          text: "The answer lies inverted.",
+          note: "orientation directive restored."
+        }
+      ]
     }
   };
 
@@ -428,6 +442,7 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
         .split("")
         .map((ch, idx) => {
           if (ch === " ") return " ";
+          if (ch === "-") return "-";
           if (idx < Math.floor((frame / totalFrames) * finalText.length)) return finalText[idx];
           return chars[Math.floor(Math.random() * chars.length)];
         })
@@ -477,11 +492,17 @@ VISUAL CONTACT MAY RESTORE OUTPUT</div>
 
     const clueItem = document.getElementById(clueData.target);
     const textSpan = clueItem.querySelector(".clue-text-inner");
+    const currentStage = clueData.stages[clueData.stage];
+
     clueItem.classList.add("revealed");
-    scrambleReveal(textSpan, clueData.text);
+    scrambleReveal(textSpan, currentStage.text);
 
     statusLine.textContent = "> obtaining clue... complete.";
-    hintNote.textContent = clueData.note;
+    hintNote.textContent = currentStage.note;
+
+    if (clueData.stage < clueData.stages.length - 1) {
+      clueData.stage += 1;
+    }
 
     activeSpot = null;
   }
