@@ -1,326 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>King Duck</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Court of King Duck</title>
 
-  <!-- Royal font -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
 
-  <style>
-    :root {
-      --bg: #0b0f0b;
-      --panel: #101810;
-      --border: #3a5a3a;
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: "Quicksand", sans-serif;
+    background:
+      radial-gradient(circle at 20% 30%, #fff6d6, transparent 40%),
+      radial-gradient(circle at 80% 70%, #e6fff5, transparent 40%),
+      #fffaf0;
+    color: #3a3a3a;
+  }
 
-      --text: #e8ffe8;
-      --text-dim: #a6cfa6;
-      --text-bright: #ffffff;
+  .container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 40px 20px;
+    text-align: center;
+  }
 
-      --accent: #ffd36a;
-      --accent-soft: #ffe8a3;
+  h1 {
+    font-family: "Playfair Display", serif;
+    font-size: 42px;
+    margin-bottom: 10px;
+    color: #c79a00;
+  }
 
-      --fun: #7affc1;
-    }
+  .subtitle {
+    font-size: 18px;
+    margin-bottom: 40px;
+    color: #6b6b6b;
+  }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      font-family: "Courier New", monospace;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 20% 20%, rgba(255,211,106,0.08), transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(122,255,193,0.08), transparent 40%),
-        var(--bg);
-    }
+  .card {
+    background: white;
+    border-radius: 18px;
+    padding: 24px;
+    margin: 20px 0;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  }
 
-    body {
-      padding: 24px;
-    }
+  .kingduck-img {
+    max-width: 320px;
+    margin: 20px auto;
+    display: block;
+    transform: rotate(-1deg);
+  }
 
-    .shell {
-      max-width: 1100px;
-      margin: auto;
-      border: 1px solid var(--border);
-      background: linear-gradient(#121a12, #070b07);
-      box-shadow:
-        0 0 18px rgba(255,211,106,0.08),
-        inset 0 0 10px rgba(122,255,193,0.05);
-      position: relative;
-    }
+  .speech {
+    font-size: 18px;
+    line-height: 1.7;
+    margin: 20px auto;
+    max-width: 700px;
+  }
 
-    .shell::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 30% 10%, rgba(255,211,106,0.12), transparent 30%),
-        radial-gradient(circle at 70% 90%, rgba(122,255,193,0.08), transparent 30%);
-      opacity: 0.4;
-    }
+  .whisper {
+    font-style: italic;
+    color: #888;
+    margin-top: 10px;
+  }
 
-    .topbar {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      font-size: 13px;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      display: flex;
-      justify-content: space-between;
-    }
+  /* AUDIO */
 
-    .content {
-      padding: 24px;
-      display: grid;
-      gap: 22px;
-    }
+  .audio-section {
+    margin-top: 30px;
+  }
 
-    h1 {
-      font-family: "Cinzel", serif;
-      font-size: 36px;
-      color: var(--accent);
-      letter-spacing: 0.06em;
-      margin: 0;
-    }
+  .audio-section audio {
+    width: 100%;
+    margin-top: 10px;
+  }
 
-    .panel {
-      border: 1px solid var(--border);
-      padding: 18px;
-      background: linear-gradient(#121a12, #070b07);
-    }
+  .audio-buttons button {
+    margin: 8px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: none;
+    background: #ffe8a3;
+    cursor: pointer;
+    font-weight: 600;
+  }
 
-    .panel-title {
-      font-size: 13px;
-      color: var(--text-dim);
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
+  .audio-buttons button:hover {
+    background: #ffd36a;
+  }
 
-    .lead {
-      line-height: 1.8;
-      font-size: 16px;
-      color: var(--text-dim);
-    }
+  /* DUCK HINT */
 
-    .cipher {
-      white-space: pre-wrap;
-      font-size: 18px;
-      line-height: 1.8;
-      color: var(--text-bright);
-    }
+  .duck-note {
+    font-size: 17px;
+    margin-top: 20px;
+  }
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
+  .duck-note span {
+    display: block;
+    margin-top: 6px;
+    font-style: italic;
+    color: #777;
+  }
 
-    .image-box {
-      border: 1px solid var(--border);
-      background: black;
-      height: 360px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .image-box img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      filter:
-        drop-shadow(0 0 14px rgba(255,211,106,0.25))
-        contrast(1.05)
-        saturate(1.05);
-    }
-
-    .clue {
-      text-align: center;
-      font-size: 18px;
-      margin-top: 14px;
-      color: var(--text-bright);
-    }
-
-    .audio-box {
-      border: 1px solid rgba(255,211,106,0.4);
-      background: linear-gradient(#0c140c, #060906);
-      padding: 16px;
-      box-shadow: 0 0 12px rgba(255,211,106,0.15);
-    }
-
-    audio {
-      width: 100%;
-    }
-
-    .button-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    button {
-      background: #0c140c;
-      border: 1px solid var(--border);
-      color: var(--text-bright);
-      padding: 10px 16px;
-      cursor: pointer;
-      text-transform: uppercase;
-    }
-
-    button:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      box-shadow: 0 0 12px rgba(255,211,106,0.25);
-    }
-
-    .status {
-      margin-top: 10px;
-      font-size: 14px;
-      color: var(--text-dim);
-    }
-
-    .subtle-note {
-      margin-top: 10px;
-      font-size: 13px;
-      color: var(--text-dim);
-      border-top: 1px dashed rgba(255,255,255,0.1);
-      padding-top: 10px;
-    }
-
-    @media (max-width: 860px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-  </style>
+</style>
 </head>
 
 <body>
 
-<div class="shell">
+<div class="container">
 
-  <div class="topbar">
-    <div>Audience Granted</div>
-    <div>King Duck's Court</div>
+  <h1>The Court of King Duck</h1>
+  <div class="subtitle">…you were expected.</div>
+
+  <img src="images/kingduck.png?v=2" class="kingduck-img">
+
+  <div class="card">
+
+    <div class="speech">
+      “Ah. Seekers.
+
+      You’ve made it farther than most—though that’s not saying much.
+
+      Now then… I will help you.
+      But only properly.”
+    </div>
+
   </div>
 
-  <div class="content">
+  <div class="card">
 
-    <div class="panel">
-      <div class="panel-title">The King Receives You</div>
-      <h1>Ah. There You Are.</h1>
-      <div class="lead">
-        You’ve done well to get this far.
+    <div class="speech">
+      “First—listen.
 
-        I suppose I can help… just a little.
-
-        But understand—answers rarely travel alone.
-      </div>
+      The song carries something important.
+      You’ll know it when you hear it.”
     </div>
 
-    <div class="grid">
+    <div class="audio-section">
+      <audio id="audio" controls>
+        <source src="audio/kingduck.mp3" type="audio/mpeg">
+      </audio>
 
-      <div class="panel">
-        <div class="panel-title">A Word from the King</div>
-        <div class="cipher">FIRST — LISTEN
-
-THE SOUND HOLDS WHAT YOU NEED NOW
-
-SECOND — SEEK MY SUBJECTS
-
-THREE OF THEM
-WAYWARD AS EVER
-
-THEY FAVOR PORCELAIN THRONES
-
-FIND THEM
-
-REMEMBER WHAT THEY SHOW YOU
-
-YOU WILL NEED IT LATER</div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-title">His Majesty</div>
-
-        <div class="image-box">
-          <img src="images/kingduck.png?v=2" alt="King Duck">
-        </div>
-
-        <div class="clue">
-          Even a king needs his subjects.
-        </div>
-      </div>
-
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">The Song</div>
-
-      <div class="lead">
-        Start here.
-
-        The song knows something you don’t.
-      </div>
-
-      <div class="audio-box">
-        <audio id="clueAudio" controls preload="none">
-          <source src="audio/kingduck.mp3" type="audio/mpeg">
-        </audio>
-      </div>
-
-      <div class="button-row">
-        <button onclick="playAudio()">Play</button>
-        <button onclick="pauseAudio()">Pause</button>
-        <button onclick="restartAudio()">Restart</button>
-      </div>
-
-      <div id="audioStatus" class="status">Awaiting input.</div>
-
-      <div class="subtle-note">
-        When you hear it, you’ll know what to take.<br>
-        Bring it back with you.
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">A Small Problem</div>
-      <div class="lead">
-        My ducks have wandered.
-
-        I would very much like them returned.
-      </div>
-      <div class="subtle-note">
-        Not where you’d expect…<br>
-        but exactly where water waits.
+      <div class="audio-buttons">
+        <button onclick="play()">Play</button>
+        <button onclick="pause()">Pause</button>
+        <button onclick="restart()">Restart</button>
       </div>
     </div>
 
   </div>
+
+  <div class="card">
+
+    <div class="speech">
+      “Second…
+
+      My ducks have wandered.
+
+      Three of them.
+
+      They’ve taken to hiding in places most creatures avoid—
+      but ducks… are not most creatures.”
+    </div>
+
+    <div class="duck-note">
+      <strong>Find them.</strong>
+      <span>They wait where water rests… but is rarely seen.</span>
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="speech">
+      “Bring back what you learn.
+
+      Some things matter now.
+      Some things… matter later.”
+    </div>
+
+    <div class="whisper">
+      (You’ll know which is which.)
+    </div>
+
+  </div>
+
 </div>
 
 <script>
-  const audio = document.getElementById("clueAudio");
-  const status = document.getElementById("audioStatus");
+  const audio = document.getElementById("audio");
 
-  function playAudio() {
-    audio.play();
-    status.textContent = "Playing...";
-  }
-
-  function pauseAudio() {
-    audio.pause();
-    status.textContent = "Paused.";
-  }
-
-  function restartAudio() {
+  function play() { audio.play(); }
+  function pause() { audio.pause(); }
+  function restart() {
     audio.currentTime = 0;
     audio.play();
-    status.textContent = "Restarted.";
   }
 </script>
 
