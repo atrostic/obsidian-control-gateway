@@ -35,7 +35,7 @@
 
   .subtitle {
     font-size: 18px;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     color: #6b6b6b;
   }
 
@@ -47,32 +47,36 @@
     box-shadow: 0 10px 25px rgba(0,0,0,0.08);
   }
 
+  /* 🦆 KING DUCK */
   .kingduck-img {
     max-width: 320px;
     margin: 20px auto;
     display: block;
-    transform: rotate(-1deg);
+    transform-origin: center;
+    transition: transform 0.15s ease-out;
+    animation: floatDuck 5s ease-in-out infinite;
+  }
+
+  @keyframes floatDuck {
+    0%,100% { transform: translateY(0px) rotate(-1deg); }
+    50% { transform: translateY(-10px) rotate(1deg); }
   }
 
   .speech {
     font-size: 18px;
     line-height: 1.7;
-    margin: 20px auto;
     max-width: 700px;
+    margin: auto;
   }
 
   .whisper {
+    margin-top: 12px;
     font-style: italic;
     color: #888;
-    margin-top: 10px;
+    min-height: 20px;
   }
 
   /* AUDIO */
-
-  .audio-section {
-    margin-top: 30px;
-  }
-
   .audio-section audio {
     width: 100%;
     margin-top: 10px;
@@ -92,11 +96,9 @@
     background: #ffd36a;
   }
 
-  /* DUCK HINT */
-
   .duck-note {
     font-size: 17px;
-    margin-top: 20px;
+    margin-top: 10px;
   }
 
   .duck-note span {
@@ -104,6 +106,10 @@
     margin-top: 6px;
     font-style: italic;
     color: #777;
+  }
+
+  @media (max-width: 860px) {
+    h1 { font-size: 32px; }
   }
 
 </style>
@@ -116,23 +122,27 @@
   <h1>The Court of King Duck</h1>
   <div class="subtitle">…you were expected.</div>
 
-  <img src="images/kingduck.png?v=2" class="kingduck-img">
+  <!-- 🦆 KING DUCK -->
+  <img src="images/kingduck.png?v=3" class="kingduck-img" id="kingDuck">
 
+  <div id="duckResponse" class="whisper"></div>
+  <div id="idleWhisper" class="whisper"></div>
+
+  <!-- INTRO -->
   <div class="card">
-
     <div class="speech">
       “Ah. Seekers.
 
-      You’ve made it farther than most—though that’s not saying much.
+      You’ve done well to get this far.
 
-      Now then… I will help you.
-      But only properly.”
+      I suppose I can help… just a little.
+
+      But understand—answers rarely travel alone.”
     </div>
-
   </div>
 
+  <!-- AUDIO -->
   <div class="card">
-
     <div class="speech">
       “First—listen.
 
@@ -141,7 +151,7 @@
     </div>
 
     <div class="audio-section">
-      <audio id="audio" controls>
+      <audio id="audio" controls preload="none">
         <source src="audio/kingduck.mp3" type="audio/mpeg">
       </audio>
 
@@ -151,11 +161,10 @@
         <button onclick="restart()">Restart</button>
       </div>
     </div>
-
   </div>
 
+  <!-- DUCK QUEST -->
   <div class="card">
-
     <div class="speech">
       “Second…
 
@@ -171,11 +180,10 @@
       <strong>Find them.</strong>
       <span>They wait where water rests… but is rarely seen.</span>
     </div>
-
   </div>
 
+  <!-- FINAL -->
   <div class="card">
-
     <div class="speech">
       “Bring back what you learn.
 
@@ -186,19 +194,68 @@
     <div class="whisper">
       (You’ll know which is which.)
     </div>
-
   </div>
 
 </div>
 
 <script>
+  const duck = document.getElementById("kingDuck");
+  const response = document.getElementById("duckResponse");
+  const idle = document.getElementById("idleWhisper");
   const audio = document.getElementById("audio");
 
-  function play() { audio.play(); }
-  function pause() { audio.pause(); }
+  /* 🦆 CLICK RESPONSES */
+  const lines = [
+    "Yes, yes… I see you.",
+    "The song is more helpful than I am.",
+    "Three ducks. Try to keep up.",
+    "Water above, not below… curious, isn’t it?",
+    "You’re doing very well… for someone who clearly has no idea what they’re doing."
+  ];
+
+  let clickCount = 0;
+
+  duck.addEventListener("click", () => {
+    response.textContent = lines[clickCount % lines.length];
+    clickCount++;
+  });
+
+  /* 🖱️ CURSOR TRACKING */
+  document.addEventListener("mousemove", (e) => {
+    const rect = duck.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const dx = e.clientX - centerX;
+    const dy = e.clientY - centerY;
+
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+    duck.style.transform = `
+      translateY(${Math.sin(Date.now()/800)*5}px)
+      rotate(${angle * 0.03}deg)
+    `;
+  });
+
+  /* ⏳ IDLE WHISPER */
+  setTimeout(() => {
+    idle.textContent = "...you’re overthinking this.";
+  }, 8000);
+
+  /* 🎵 AUDIO */
+  function play() {
+    audio.play();
+    response.textContent = "Ah. A wise choice.";
+  }
+
+  function pause() {
+    audio.pause();
+  }
+
   function restart() {
     audio.currentTime = 0;
     audio.play();
+    response.textContent = "Listen carefully this time.";
   }
 </script>
 
