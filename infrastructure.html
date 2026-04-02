@@ -14,7 +14,7 @@
       --text-dim: #5cab5c;
       --text-bright: #e5ffe5;
       --accent: #a7ff4d;
-      --danger: #ff5f5f;
+      --danger: #ff4d4d;
     }
 
     html, body {
@@ -65,22 +65,19 @@
       color: var(--text-dim);
       display: flex;
       justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
     }
 
     .content {
       padding: 24px;
       display: grid;
-      gap: 20px;
+      gap: 24px;
     }
 
     h1 {
       margin: 0;
-      font-size: 36px;
+      font-size: 34px;
       color: var(--text-bright);
       text-transform: uppercase;
-      letter-spacing: 0.04em;
     }
 
     .panel {
@@ -98,40 +95,74 @@
       letter-spacing: 0.1em;
     }
 
-    .cipher {
-      white-space: pre-wrap;
-      font-size: 18px;
-      line-height: 1.8;
-      color: var(--text-bright);
-    }
-
     .grid {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
+      grid-template-columns: 1.2fr 0.8fr;
       gap: 20px;
       align-items: start;
     }
+
+    /* IMAGE + EFFECTS */
 
     .image-box {
       border: 1px solid var(--border);
       background: black;
       overflow: hidden;
+      position: relative;
     }
 
     .image-box img {
       width: 100%;
       display: block;
-      filter: contrast(1.05) saturate(0.9);
+      animation: subtleGlitch 6s infinite;
+    }
+
+    .glow-eyes {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 42% 32%, rgba(0,255,120,0.6) 0px, transparent 18px),
+        radial-gradient(circle at 58% 32%, rgba(0,255,120,0.6) 0px, transparent 18px);
+      mix-blend-mode: screen;
+      animation: flickerEyes 2.5s infinite;
+      transition: all 0.2s ease;
+    }
+
+    /* 🔴 RED HOVER EFFECT */
+    .image-box:hover .glow-eyes {
+      background:
+        radial-gradient(circle at 42% 32%, rgba(255,60,60,0.9) 0px, transparent 20px),
+        radial-gradient(circle at 58% 32%, rgba(255,60,60,0.9) 0px, transparent 20px);
+      filter: drop-shadow(0 0 8px rgba(255,0,0,0.6));
+      animation: flickerRed 0.6s infinite;
+    }
+
+    @keyframes flickerEyes {
+      0%,100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes flickerRed {
+      0%,100% { opacity: 0.8; }
+      50% { opacity: 1; transform: translate(1px,-1px); }
+    }
+
+    @keyframes subtleGlitch {
+      0%,97%,100% { transform: translate(0,0); }
+      98% { transform: translate(2px,-1px); }
+      99% { transform: translate(-2px,1px); }
     }
 
     .clue {
       text-align: center;
-      font-size: 19px;
+      font-size: 20px;
       letter-spacing: 0.06em;
       color: var(--text-bright);
       margin-top: 14px;
-      line-height: 1.5;
     }
+
+    /* INPUTS */
 
     .entry-panel {
       display: grid;
@@ -154,14 +185,12 @@
 
     .entry-input {
       width: 100%;
-      box-sizing: border-box;
       background: #020402;
       border: 1px solid var(--border);
       color: var(--text-bright);
       padding: 12px 14px;
       font-family: "Courier New", monospace;
       font-size: 18px;
-      outline: none;
       text-transform: uppercase;
     }
 
@@ -170,125 +199,29 @@
       box-shadow: 0 0 10px rgba(167,255,77,0.15);
     }
 
-    .button-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 6px;
-    }
-
     button {
       background: #081208;
       color: var(--text-bright);
       border: 1px solid var(--border);
       padding: 12px 18px;
       font-family: "Courier New", monospace;
-      font-size: 14px;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
       cursor: pointer;
-      transition: 0.2s ease;
     }
 
     button:hover {
       border-color: var(--accent);
       color: var(--accent);
-      box-shadow: 0 0 12px rgba(167,255,77,0.12);
     }
 
     .status {
-      min-height: 24px;
-      margin-top: 6px;
       font-size: 14px;
-      letter-spacing: 0.04em;
       color: var(--text-dim);
     }
 
-    .status.error {
-      color: #ff8c8c;
-    }
+    .status.error { color: #ff8c8c; }
+    .status.success { color: var(--accent); }
 
-    .status.success {
-      color: var(--accent);
-    }
-
-    .footer {
-      border-top: 1px solid var(--border);
-      padding: 16px;
-      font-size: 12px;
-      color: var(--text-dim);
-      line-height: 1.7;
-    }
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 10, 0, 0.84);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 20;
-      padding: 20px;
-    }
-
-    .overlay.active {
-      display: flex;
-    }
-
-    .overlay-box {
-      width: min(680px, 100%);
-      border: 1px solid var(--accent);
-      background: linear-gradient(#081208, #030603);
-      padding: 28px;
-      box-shadow:
-        0 0 30px rgba(167,255,77,0.12),
-        inset 0 0 18px rgba(167,255,77,0.05);
-      text-align: center;
-      animation: pulseBox 1.8s ease-in-out infinite;
-    }
-
-    .overlay-title {
-      color: var(--accent);
-      font-size: 28px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-bottom: 14px;
-    }
-
-    .overlay-text {
-      color: var(--text-bright);
-      font-size: 18px;
-      line-height: 1.8;
-      white-space: pre-line;
-    }
-
-    .countdown {
-      margin-top: 18px;
-      color: var(--text-dim);
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    @keyframes pulseBox {
-      0%, 100% { box-shadow: 0 0 30px rgba(167,255,77,0.12), inset 0 0 18px rgba(167,255,77,0.05); }
-      50% { box-shadow: 0 0 44px rgba(167,255,77,0.2), inset 0 0 22px rgba(167,255,77,0.08); }
-    }
-
-    @media (max-width: 800px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .entry-row {
-        grid-template-columns: 1fr;
-        gap: 8px;
-      }
-
-      h1 {
-        font-size: 28px;
-      }
-    }
   </style>
 </head>
 
@@ -297,179 +230,81 @@
 <div class="shell">
 
   <div class="topbar">
-    <div>Infrastructure Node Online</div>
-    <div>Obsidian Control Gateway // Structural Access</div>
+    <div>Infrastructure Node</div>
+    <div>Obsidian Control Gateway</div>
   </div>
 
   <div class="content">
 
     <div class="panel">
-      <div class="panel-title">System Alert</div>
-      <h1>Obstruction Layer Detected</h1>
-      <div style="margin-top:10px; color:var(--text-dim); line-height:1.7;">
-        Structural review indicates that critical information is not contained within the visible objects themselves.
-        Surface placement appears intentional. Relevant intelligence may be concealed beneath static exterior elements.
-      </div>
-    </div>
+      <h1>Visual Reference</h1>
 
-    <div class="grid">
-
-      <div class="panel">
-        <div class="panel-title">Recovered Analysis</div>
-        <div class="cipher">VISIBLE FORMS MAY SERVE ONLY AS WEIGHT
-
-PRIMARY MATERIAL IS A DISTRACTION
-POSITION IS THE TRUE FUNCTION
-
-WHEN CONTENT CANNOT BE SEEN
-CHECK WHAT IT COVERS
-
-THE OBJECT ABOVE IS NOT THE CLUE
-THE CLUE IS BENEATH IT
-
-TWO FRAGMENTS WERE STORED
-BOTH ARE REQUIRED FOR ADVANCEMENT</div>
+      <div class="image-box">
+        <img src="images/tiki.png" alt="Tiki statues">
+        <div class="glow-eyes"></div>
       </div>
 
-      <div class="panel">
-        <div class="panel-title">Visual Reference</div>
-
-        <div class="image-box">
-          <img src="images/tiki.png" alt="Carved tiki statue">
-        </div>
-
-        <div class="clue">
-          What is placed in view may only exist to conceal what matters.
-        </div>
+      <div class="clue">
+        Seek and you shall find.
       </div>
-
     </div>
 
     <div class="panel">
-      <div class="panel-title">Fragment Recovery Interface</div>
+      <div class="panel-title">Verification</div>
 
       <div class="entry-panel">
+
         <div class="entry-row">
-          <label class="entry-label" for="clue1">Fragment One</label>
-          <input class="entry-input" id="clue1" type="text" autocomplete="off" spellcheck="false" />
+          <label class="entry-label">Image One</label>
+          <input class="entry-input" id="clue1" placeholder="Enter first image">
         </div>
 
         <div class="entry-row">
-          <label class="entry-label" for="clue2">Fragment Two</label>
-          <input class="entry-input" id="clue2" type="text" autocomplete="off" spellcheck="false" />
+          <label class="entry-label">Image Two</label>
+          <input class="entry-input" id="clue2" placeholder="Enter second image">
         </div>
 
-        <div class="button-row">
-          <button id="verifyBtn">Verify Fragments</button>
-          <button id="clearBtn" type="button">Clear</button>
-        </div>
+        <button id="verifyBtn">Verify</button>
 
         <div id="status" class="status"></div>
+
       </div>
     </div>
 
-  </div>
-
-  <div class="footer">
-    &gt; directive: hidden layers must be evaluated before visible structures<br>
-    &gt; note: multiple recoveries required for node completion<br>
-    &gt; warning: partial submission will not satisfy validation
-    <!-- the object is above the answer, not around it -->
-  </div>
-
-</div>
-
-<div id="successOverlay" class="overlay" aria-hidden="true">
-  <div class="overlay-box">
-    <div class="overlay-title">Infrastructure Node Solved</div>
-    <div class="overlay-text">Recovered fragments accepted.
-
-Composite access phrase confirmed.
-
-Routing to next layer...</div>
-    <div id="countdown" class="countdown">Redirect in 4</div>
   </div>
 </div>
 
 <script>
   const ANSWER_ONE = "king";
   const ANSWER_TWO = "duck";
-  const REDIRECT_URL = "kingduck.html";
-  const REDIRECT_DELAY = 4000;
 
-  const clue1Input = document.getElementById("clue1");
-  const clue2Input = document.getElementById("clue2");
-  const verifyBtn = document.getElementById("verifyBtn");
-  const clearBtn = document.getElementById("clearBtn");
+  const clue1 = document.getElementById("clue1");
+  const clue2 = document.getElementById("clue2");
   const statusEl = document.getElementById("status");
-  const successOverlay = document.getElementById("successOverlay");
-  const countdownEl = document.getElementById("countdown");
 
-  function normalize(value) {
-    return value.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+  function normalize(v) {
+    return v.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
   }
 
-  function setStatus(message, type = "") {
-    statusEl.textContent = message;
-    statusEl.className = "status";
-    if (type) statusEl.classList.add(type);
-  }
+  document.getElementById("verifyBtn").onclick = () => {
+    const a = normalize(clue1.value);
+    const b = normalize(clue2.value);
 
-  function verifyAnswers() {
-    const a1 = normalize(clue1Input.value);
-    const a2 = normalize(clue2Input.value);
-
-    if (!a1 || !a2) {
-      setStatus("Both recovered fragments are required.", "error");
+    if (!a || !b) {
+      statusEl.textContent = "Both entries required.";
+      statusEl.className = "status error";
       return;
     }
 
-    if (a1 === ANSWER_ONE && a2 === ANSWER_TWO) {
-      setStatus("Fragments accepted. Establishing route...", "success");
-      launchSuccess();
-      return;
+    if (a === ANSWER_ONE && b === ANSWER_TWO) {
+      statusEl.textContent = "Accepted.";
+      statusEl.className = "status success";
+      setTimeout(() => window.location.href = "kingduck.html", 1500);
+    } else {
+      statusEl.textContent = "Incorrect.";
+      statusEl.className = "status error";
     }
-
-    setStatus("Fragment mismatch detected. Reassess recovered material.", "error");
-  }
-
-  function launchSuccess() {
-    successOverlay.classList.add("active");
-    successOverlay.setAttribute("aria-hidden", "false");
-
-    let remaining = Math.ceil(REDIRECT_DELAY / 1000);
-    countdownEl.textContent = `Redirect in ${remaining}`;
-
-    const timer = setInterval(() => {
-      remaining -= 1;
-      if (remaining > 0) {
-        countdownEl.textContent = `Redirect in ${remaining}`;
-      } else {
-        clearInterval(timer);
-      }
-    }, 1000);
-
-    setTimeout(() => {
-      window.location.href = REDIRECT_URL;
-    }, REDIRECT_DELAY);
-  }
-
-  verifyBtn.addEventListener("click", verifyAnswers);
-
-  clearBtn.addEventListener("click", () => {
-    clue1Input.value = "";
-    clue2Input.value = "";
-    setStatus("");
-    clue1Input.focus();
-  });
-
-  [clue1Input, clue2Input].forEach(input => {
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        verifyAnswers();
-      }
-    });
-  });
+  };
 </script>
 
 </body>
