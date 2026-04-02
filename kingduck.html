@@ -8,100 +8,142 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
-body {
-  margin: 0;
-  font-family: "Quicksand", sans-serif;
-  background:
-    radial-gradient(circle at 20% 30%, #fff6d6, transparent 40%),
-    radial-gradient(circle at 80% 70%, #e6fff5, transparent 40%),
-    #fffaf0;
-  color: #3a3a3a;
-}
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: "Quicksand", sans-serif;
+    background:
+      radial-gradient(circle at 20% 30%, #fff6d6, transparent 40%),
+      radial-gradient(circle at 80% 70%, #e6fff5, transparent 40%),
+      #fffaf0;
+    color: #3a3a3a;
+  }
 
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 40px 20px;
-  text-align: center;
-}
+  .container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 40px 20px;
+    text-align: center;
+  }
 
-h1 {
-  font-family: "Playfair Display", serif;
-  font-size: 42px;
-  color: #c79a00;
-}
+  h1 {
+    font-family: "Playfair Display", serif;
+    font-size: 42px;
+    margin-bottom: 10px;
+    color: #c79a00;
+  }
 
-.card {
-  background: white;
-  border-radius: 18px;
-  padding: 24px;
-  margin: 20px 0;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-}
+  .subtitle {
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: #6b6b6b;
+  }
 
-.kingduck-img {
-  max-width: 320px;
-  margin: 20px auto;
-  display: block;
-  animation: floatDuck 5s ease-in-out infinite;
-  transform-origin: center;
-}
+  .card {
+    background: white;
+    border-radius: 18px;
+    padding: 24px;
+    margin: 20px 0;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  }
 
-@keyframes floatDuck {
-  0%,100% { transform: translateY(0px) rotate(-1deg); }
-  50% { transform: translateY(-10px) rotate(1deg); }
-}
+  .kingduck-img {
+    max-width: 320px;
+    margin: 20px auto;
+    display: block;
+    transform-origin: center;
+    transition: transform 0.15s ease-out;
+    animation: floatDuck 5s ease-in-out infinite;
+    cursor: pointer;
+  }
 
-.whisper {
-  margin-top: 10px;
-  font-style: italic;
-  color: #888;
-  min-height: 20px;
-}
+  @keyframes floatDuck {
+    0%,100% { transform: translateY(0px) rotate(-1deg); }
+    50% { transform: translateY(-10px) rotate(1deg); }
+  }
 
-input {
-  padding: 10px;
-  margin: 8px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  text-align: center;
-  font-size: 16px;
-}
+  .speech {
+    font-size: 18px;
+    line-height: 1.7;
+    max-width: 700px;
+    margin: auto;
+    white-space: pre-line;
+  }
 
-button {
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: none;
-  background: #ffe8a3;
-  cursor: pointer;
-  font-weight: 600;
-}
+  .whisper {
+    margin-top: 12px;
+    font-style: italic;
+    color: #888;
+    min-height: 20px;
+  }
 
-button:hover {
-  background: #ffd36a;
-}
+  .audio-section audio {
+    width: 100%;
+    margin-top: 10px;
+  }
 
-.hidden {
-  display: none;
-}
+  .audio-buttons button,
+  .gate-button {
+    margin: 8px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: none;
+    background: #ffe8a3;
+    cursor: pointer;
+    font-weight: 600;
+    color: #4b3b00;
+  }
 
-/* 🎉 SUCCESS POPUP */
-#successPopup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255,255,255,0.95);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  font-family: "Playfair Display", serif;
-  z-index: 999;
-  display: none;
-}
+  .audio-buttons button:hover,
+  .gate-button:hover {
+    background: #ffd36a;
+  }
 
+  .duck-note {
+    font-size: 17px;
+    margin-top: 10px;
+  }
+
+  .duck-note span {
+    display: block;
+    margin-top: 6px;
+    font-style: italic;
+    color: #777;
+  }
+
+  .locked-audio {
+    background: linear-gradient(180deg, #fff9ec, #fff4d8);
+    border: 2px dashed #e4c469;
+  }
+
+  .gate-title {
+    font-family: "Playfair Display", serif;
+    font-size: 28px;
+    color: #b48900;
+    margin: 0 0 10px;
+  }
+
+  .gate-copy {
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.7;
+    white-space: pre-line;
+  }
+
+  .status-line {
+    margin-top: 12px;
+    font-style: italic;
+    color: #7a7a7a;
+    min-height: 22px;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  @media (max-width: 860px) {
+    h1 { font-size: 32px; }
+  }
 </style>
 </head>
 
@@ -109,118 +151,243 @@ button:hover {
 
 <div class="container">
 
-<h1>The Court of King Duck</h1>
+  <h1>The Court of King Duck</h1>
+  <div class="subtitle">He's been expecting you...</div>
 
-<img src="images/kingduck.png" class="kingduck-img" id="kingDuck">
+  <img src="images/kingduck.png?v=5" class="kingduck-img" id="kingDuck" alt="King Duck seated on his throne">
 
-<div id="duckResponse" class="whisper"></div>
+  <div id="duckResponse" class="whisper"></div>
+  <div id="idleWhisper" class="whisper"></div>
 
-<!-- INTRO -->
-<div class="card">
-  <p>
-    “Ah… you’ve returned.<br><br>
+  <div class="card">
+    <div class="speech" id="introSpeech">
+“Ah… there you are.
 
-    I was wondering when someone would come back for that unfinished piece.<br><br>
+You seem to have left something unfinished.
 
-    Lucky for you… I take an interest in lost things.”
-  </p>
+No matter. I am here now, and I am feeling unusually generous.”
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="speech">
+“First — my subjects.
+
+They have wandered off again, as subjects do.
+
+Find them, and the fragment that escaped you earlier will make itself known.”
+    </div>
+
+    <div class="duck-note">
+      <strong>Seek the subjects first.</strong>
+      <span>They wait where water rests… but is rarely seen.</span>
+    </div>
+
+    <div id="subjectsStatus" class="status-line"></div>
+  </div>
+
+  <div id="audioLockedCard" class="card locked-audio">
+    <h2 class="gate-title">The Royal Gate</h2>
+    <div class="gate-copy">
+King Duck folds one wing across his chest.
+
+“Not yet.
+
+Find my subjects, recover the Stability fragment, and return to my court.
+
+Then I shall help you even more.”
+    </div>
+
+    <button class="gate-button" id="checkGateBtn" type="button">Ask the King Again</button>
+    <div id="gateStatus" class="status-line"></div>
+  </div>
+
+  <div id="audioCard" class="card hidden">
+    <div class="speech">
+“Ahh. Much better.
+
+You have found my subjects and recovered what was missing.
+
+Now — listen carefully.
+
+The song carries the next fragment.”
+    </div>
+
+    <div class="audio-section">
+      <audio id="audio" controls preload="none">
+        <source src="audio/kingduck.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
+
+      <div class="audio-buttons">
+        <button type="button" onclick="playAudio()">Play</button>
+        <button type="button" onclick="pauseAudio()">Pause</button>
+        <button type="button" onclick="restartAudio()">Restart</button>
+      </div>
+    </div>
+
+    <div id="audioStatus" class="status-line">The court is quiet.</div>
+
+    <div class="duck-note">
+      <strong>Listen well.</strong>
+      <span>When you hear it, bring the answer back with you.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="speech">
+“Some things matter now.
+
+Some things matter later.
+
+A wise seeker learns the difference.”
+    </div>
+  </div>
+
 </div>
-
-<!-- PATH 1: SUBJECTS -->
-<div class="card">
-  <p>
-    “My subjects have wandered.<br><br>
-
-    They are not far… but they are not obvious.<br><br>
-
-    Find them, and you will recover what was missed.”
-  </p>
-
-  <input id="stabilityInput" placeholder="Enter what you find">
-  <br>
-  <button onclick="checkStability()">Submit</button>
-
-  <div id="stabilityResult" class="whisper"></div>
-</div>
-
-<!-- PATH 2: AUDIO (LOCKED) -->
-<div id="audioSection" class="card hidden">
-  <p>
-    “Ahh… you’ve found them.<br><br>
-
-    Come back to my court, and I will help you further.<br><br>
-
-    Listen carefully now.”
-  </p>
-
-  <audio id="audio" controls>
-    <source src="audio/kingduck.mp3" type="audio/mpeg">
-  </audio>
-
-  <br><br>
-
-  <input id="audioInput" placeholder="Enter what you hear">
-  <br>
-  <button onclick="checkAudio()">Submit</button>
-
-  <div id="audioResult" class="whisper"></div>
-</div>
-
-</div>
-
-<div id="successPopup">Alignment Confirmed</div>
 
 <script>
-const duck = document.getElementById("kingDuck");
-const response = document.getElementById("duckResponse");
+  const SHARED_PROGRESS_KEY = "obsidianNodeProgress";
+  const STABILITY_KEY = "b";
 
-/* 🦆 CLICK RESPONSES */
-const lines = [
-  "Yes, yes… I see you.",
-  "Try the subjects first.",
-  "Water above, not below… curious.",
-  "You missed something earlier.",
-  "Come back when you've finished what you started."
-];
+  const duck = document.getElementById("kingDuck");
+  const response = document.getElementById("duckResponse");
+  const idle = document.getElementById("idleWhisper");
+  const subjectsStatus = document.getElementById("subjectsStatus");
+  const gateStatus = document.getElementById("gateStatus");
+  const audioCard = document.getElementById("audioCard");
+  const audioLockedCard = document.getElementById("audioLockedCard");
+  const audio = document.getElementById("audio");
+  const audioStatus = document.getElementById("audioStatus");
+  const checkGateBtn = document.getElementById("checkGateBtn");
+  const introSpeech = document.getElementById("introSpeech");
 
-let clickCount = 0;
-
-duck.addEventListener("click", () => {
-  response.textContent = lines[clickCount % lines.length];
-  clickCount++;
-});
-
-/* 🧠 STABILITY CHECK */
-function checkStability() {
-  const val = document.getElementById("stabilityInput").value.trim().toLowerCase();
-
-  // 🔥 CHANGE THIS VALUE
-  if (val === "3") {
-    document.getElementById("stabilityResult").textContent = "Yes… that’s correct.";
-    document.getElementById("audioSection").classList.remove("hidden");
-  } else {
-    document.getElementById("stabilityResult").textContent = "No… try again.";
+  function getProgress() {
+    try {
+      const raw = localStorage.getItem(SHARED_PROGRESS_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (error) {
+      return {};
+    }
   }
-}
 
-/* 🎵 AUDIO CHECK */
-function checkAudio() {
-  const val = document.getElementById("audioInput").value.trim().toLowerCase();
-
-  // 🔥 CHANGE THIS VALUE
-  if (val === "king") {
-    document.getElementById("audioResult").textContent = "Correct.";
-
-    document.getElementById("successPopup").style.display = "flex";
-
-    setTimeout(() => {
-      window.location.href = "kingduck.html";
-    }, 3000);
-
-  } else {
-    document.getElementById("audioResult").textContent = "Listen more carefully.";
+  function isStabilitySolved() {
+    const progress = getProgress();
+    return progress[STABILITY_KEY] === true;
   }
-}
+
+  function updateGateState(showReturnMessage = false) {
+    const solved = isStabilitySolved();
+
+    if (solved) {
+      audioLockedCard.classList.add("hidden");
+      audioCard.classList.remove("hidden");
+      subjectsStatus.textContent = "The King nods. “Yes… my subjects have been found.”";
+      if (showReturnMessage) {
+        gateStatus.textContent = "The gate yields.";
+      } else {
+        gateStatus.textContent = "";
+      }
+      introSpeech.textContent =
+`“Ah… there you are.
+
+I see you finished what was left unfinished.
+
+Excellent.
+
+I knew you would be back.”`;
+    } else {
+      audioLockedCard.classList.remove("hidden");
+      audioCard.classList.add("hidden");
+      subjectsStatus.textContent = "The King waits, amused, but says nothing more.";
+      if (showReturnMessage) {
+        gateStatus.textContent = "“No, no. Subjects first.”";
+      } else {
+        gateStatus.textContent = "";
+      }
+    }
+  }
+
+  const linesLocked = [
+    "Yes, yes… I see you.",
+    "My subjects first.",
+    "Water above, not below… curious, isn’t it?",
+    "You missed something earlier.",
+    "Come back when you have finished what you started."
+  ];
+
+  const linesUnlocked = [
+    "Ah. There you are again.",
+    "The song is ready for you now.",
+    "My subjects have done their part.",
+    "Listen carefully this time.",
+    "You are improving."
+  ];
+
+  let clickCount = 0;
+
+  duck.addEventListener("click", () => {
+    const lines = isStabilitySolved() ? linesUnlocked : linesLocked;
+    response.textContent = lines[clickCount % lines.length];
+    clickCount++;
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    const rect = duck.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const dx = e.clientX - centerX;
+    const dy = e.clientY - centerY;
+
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+    duck.style.transform = `
+      translateY(${Math.sin(Date.now() / 800) * 5}px)
+      rotate(${angle * 0.03}deg)
+    `;
+  });
+
+  setTimeout(() => {
+    idle.textContent = "...you’re overthinking this.";
+  }, 8000);
+
+  checkGateBtn.addEventListener("click", () => {
+    updateGateState(true);
+    if (isStabilitySolved()) {
+      response.textContent = "Ah. There it is. Now we may proceed.";
+    } else {
+      response.textContent = "Not yet. My court remains patient.";
+    }
+  });
+
+  function playAudio() {
+    audio.play();
+    response.textContent = "Ah. A wise choice.";
+    audioStatus.textContent = "The song begins.";
+  }
+
+  function pauseAudio() {
+    audio.pause();
+    audioStatus.textContent = "The court falls quiet again.";
+  }
+
+  function restartAudio() {
+    audio.currentTime = 0;
+    audio.play();
+    response.textContent = "Listen carefully this time.";
+    audioStatus.textContent = "The song starts anew.";
+  }
+
+  audio.addEventListener("ended", () => {
+    audioStatus.textContent = "The song is complete.";
+  });
+
+  audio.addEventListener("error", () => {
+    audioStatus.textContent = "The musicians appear to be missing.";
+  });
+
+  updateGateState(false);
 </script>
 
 </body>
