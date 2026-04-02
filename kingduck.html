@@ -160,16 +160,10 @@
   <div id="idleWhisper" class="whisper"></div>
 
   <div class="card">
-    <div class="speech" id="introSpeech">
-“Ah… there you are.
-
-You seem to have left something unfinished.
-
-No matter. I am here now, and I am feeling unusually generous.”
-    </div>
+    <div class="speech" id="introSpeech"></div>
   </div>
 
-  <div class="card">
+  <div id="subjectsCard" class="card">
     <div class="speech">
 “First — my subjects.
 
@@ -253,6 +247,8 @@ A wise seeker learns the difference.”
   const duck = document.getElementById("kingDuck");
   const response = document.getElementById("duckResponse");
   const idle = document.getElementById("idleWhisper");
+  const introSpeech = document.getElementById("introSpeech");
+  const subjectsCard = document.getElementById("subjectsCard");
   const subjectsStatus = document.getElementById("subjectsStatus");
   const gateStatus = document.getElementById("gateStatus");
   const audioCard = document.getElementById("audioCard");
@@ -260,7 +256,6 @@ A wise seeker learns the difference.”
   const audio = document.getElementById("audio");
   const audioStatus = document.getElementById("audioStatus");
   const checkGateBtn = document.getElementById("checkGateBtn");
-  const introSpeech = document.getElementById("introSpeech");
 
   function getProgress() {
     try {
@@ -287,32 +282,31 @@ A wise seeker learns the difference.”
 
     if (progress.b) {
       if (solved === 8) {
-        return "“All eight fragments… and my subjects have already done their part. Splendid.”";
+        return `I see you have found all eight fragments so far… and my subjects have already helped you. Splendid.`;
       }
-      return `“I see you have found ${solved} fragment${solved === 1 ? "" : "s"} so far… and my subjects have already helped you. Good.”`;
+      return `I see you have found ${solved} fragment${solved === 1 ? "" : "s"} so far… and my subjects have already helped you. Good.`;
     }
 
     if (solved === 0) {
-      return "“You have yet to recover any fragments. A bold starting point.”";
+      return "You have yet to recover any fragments. A bold starting point.";
     }
 
     if (solved === 8) {
-      return "“All eight fragments… impressive. Everything is now within reach.”";
+      return "All eight fragments… impressive. Everything is now within reach.";
     }
 
-    return `“I see you have found ${solved} fragment${solved === 1 ? "" : "s"} so far. You are well on your way to the prize.”`;
+    return `I see you have found ${solved} fragment${solved === 1 ? "" : "s"} so far. You are well on your way to the prize.`;
   }
 
-  function updateGateState(showReturnMessage = false) {
-    const solved = isStabilitySolved();
+  function updateIntroSpeech() {
+    const stabilitySolved = isStabilitySolved();
+    const progressLine = getProgressSummaryLine();
 
-    if (solved) {
-      audioLockedCard.classList.add("hidden");
-      audioCard.classList.remove("hidden");
-      subjectsStatus.textContent = "The King nods. “Yes… my subjects have been found.”";
-      gateStatus.textContent = showReturnMessage ? "The gate yields." : "";
+    if (stabilitySolved) {
       introSpeech.textContent =
 `“Ah… there you are.
+
+${progressLine}
 
 I see you finished what was left unfinished.
 
@@ -320,13 +314,35 @@ Excellent.
 
 I knew you would be back.”`;
     } else {
+      introSpeech.textContent =
+`“Ah… there you are.
+
+${progressLine}
+
+You seem to have left something unfinished.
+
+No matter. I am here now, and I am feeling unusually generous.”`;
+    }
+  }
+
+  function updateGateState(showReturnMessage = false) {
+    const solved = isStabilitySolved();
+
+    updateIntroSpeech();
+
+    if (solved) {
+      subjectsCard.classList.add("hidden");
+      audioLockedCard.classList.add("hidden");
+      audioCard.classList.remove("hidden");
+      subjectsStatus.textContent = "";
+      gateStatus.textContent = showReturnMessage ? "The gate yields." : "";
+    } else {
+      subjectsCard.classList.remove("hidden");
       audioLockedCard.classList.remove("hidden");
       audioCard.classList.add("hidden");
       subjectsStatus.textContent = "The King waits, amused, but says nothing more.";
       gateStatus.textContent = showReturnMessage ? "“No, no. Subjects first.”" : "";
     }
-
-    response.textContent = getProgressSummaryLine();
   }
 
   function buildDuckLines() {
@@ -335,7 +351,6 @@ I knew you would be back.”`;
 
     const lines = [
       getProgressSummaryLine(),
-      `You have ${solved} fragment${solved === 1 ? "" : "s"} so far.`,
       "Yes, yes… I see you."
     ];
 
@@ -360,7 +375,7 @@ I knew you would be back.”`;
 
   duck.addEventListener("click", () => {
     const lines = buildDuckLines();
-    response.textContent = `“${lines[clickCount % lines.length]}”`.replace(/““|””/g, '"');
+    response.textContent = lines[clickCount % lines.length];
     clickCount++;
   });
 
@@ -387,15 +402,15 @@ I knew you would be back.”`;
   checkGateBtn.addEventListener("click", () => {
     updateGateState(true);
     if (isStabilitySolved()) {
-      response.textContent = "“Ah. There it is. Now we may proceed.”";
+      response.textContent = "Ah. There it is. Now we may proceed.";
     } else {
-      response.textContent = "“Not yet. My court remains patient.”";
+      response.textContent = "Not yet. My court remains patient.";
     }
   });
 
   function playAudio() {
     audio.play();
-    response.textContent = "“Ah. A wise choice.”";
+    response.textContent = "Ah. A wise choice.";
     audioStatus.textContent = "The song begins.";
   }
 
@@ -407,7 +422,7 @@ I knew you would be back.”`;
   function restartAudio() {
     audio.currentTime = 0;
     audio.play();
-    response.textContent = "“Listen carefully this time.”";
+    response.textContent = "Listen carefully this time.";
     audioStatus.textContent = "The song starts anew.";
   }
 
