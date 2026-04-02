@@ -117,26 +117,41 @@
       animation: subtleGlitch 6s infinite;
     }
 
-    .glow-eyes {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 42% 32%, rgba(0,255,120,0.6) 0px, transparent 18px),
-        radial-gradient(circle at 58% 32%, rgba(0,255,120,0.6) 0px, transparent 18px);
-      mix-blend-mode: screen;
-      animation: flickerEyes 2.5s infinite;
-      transition: all 0.2s ease;
-    }
+  .eye {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0,255,120,0.7);
+  filter: blur(4px);
+  pointer-events: none;
+  opacity: 0.7;
+  animation: greenPulse 2.5s infinite;
+}
 
-    /* 🔴 RED HOVER EFFECT */
-    .image-box:hover .glow-eyes {
-      background:
-        radial-gradient(circle at 42% 32%, rgba(255,60,60,0.9) 0px, transparent 20px),
-        radial-gradient(circle at 58% 32%, rgba(255,60,60,0.9) 0px, transparent 20px);
-      filter: drop-shadow(0 0 8px rgba(255,0,0,0.6));
-      animation: flickerRed 0.6s infinite;
-    }
+/* 🔧 TUNE THESE POSITIONS ONCE */
+.eye-left  { top: 31%; left: 34%; }
+.eye-left-2 { top: 31%; left: 40%; }
+
+.eye-right { top: 31%; left: 58%; }
+.eye-right-2 { top: 31%; left: 64%; }
+
+@keyframes greenPulse {
+  0%,100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* 🔴 HOVER RED MODE */
+.image-box:hover .eye {
+  background: rgba(255, 40, 40, 0.95);
+  filter: blur(6px) drop-shadow(0 0 8px rgba(255,0,0,0.7));
+  animation: redFlicker 0.4s infinite;
+}
+
+@keyframes redFlicker {
+  0%,100% { opacity: 0.7; transform: translate(0,0); }
+  50% { opacity: 1; transform: translate(1px,-1px); }
+}
 
     @keyframes flickerEyes {
       0%,100% { opacity: 0.6; }
@@ -239,10 +254,17 @@
     <div class="panel">
       <h1>Visual Reference</h1>
 
-      <div class="image-box">
-        <img src="images/tiki.png" alt="Tiki statues">
-        <div class="glow-eyes"></div>
-      </div>
+  <div class="image-box">
+  <img src="images/tiki.png" alt="Tiki statues">
+
+  <!-- LEFT TIKI -->
+  <div class="eye eye-left"></div>
+  <div class="eye eye-left-2"></div>
+
+  <!-- RIGHT TIKI -->
+  <div class="eye eye-right"></div>
+  <div class="eye eye-right-2"></div>
+</div>
 
       <div class="clue">
         Seek and you shall find.
