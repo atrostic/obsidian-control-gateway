@@ -3,57 +3,62 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Kingduck Composite Node</title>
+  <title>King Duck</title>
+
+  <!-- Royal font -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #020402;
-      --panel: #071107;
-      --border: #173417;
-      --text: #9cff9c;
-      --text-dim: #5cab5c;
-      --text-bright: #e5ffe5;
-      --accent: #a7ff4d;
-      --warning: #ffd36a;
+      --bg: #0b0f0b;
+      --panel: #101810;
+      --border: #3a5a3a;
+
+      --text: #e8ffe8;
+      --text-dim: #a6cfa6;
+      --text-bright: #ffffff;
+
+      --accent: #ffd36a;
+      --accent-soft: #ffe8a3;
+
+      --fun: #7affc1;
     }
 
     html, body {
       margin: 0;
       padding: 0;
-      background: var(--bg);
-      color: var(--text);
       font-family: "Courier New", monospace;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,211,106,0.08), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(122,255,193,0.08), transparent 40%),
+        var(--bg);
     }
 
     body {
       padding: 24px;
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.02) 0px,
-        rgba(255,255,255,0.02) 1px,
-        transparent 2px,
-        transparent 4px
-      );
-      pointer-events: none;
-      z-index: 2;
     }
 
     .shell {
       max-width: 1100px;
       margin: auto;
       border: 1px solid var(--border);
-      background: linear-gradient(#071107, #020402);
-      box-shadow: 0 0 24px rgba(0, 255, 120, 0.05);
+      background: linear-gradient(#121a12, #070b07);
+      box-shadow:
+        0 0 18px rgba(255,211,106,0.08),
+        inset 0 0 10px rgba(122,255,193,0.05);
       position: relative;
-      z-index: 1;
+    }
+
+    .shell::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 30% 10%, rgba(255,211,106,0.12), transparent 30%),
+        radial-gradient(circle at 70% 90%, rgba(122,255,193,0.08), transparent 30%);
+      opacity: 0.4;
     }
 
     .topbar {
@@ -64,49 +69,46 @@
       color: var(--text-dim);
       display: flex;
       justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
     }
 
     .content {
       padding: 24px;
       display: grid;
-      gap: 20px;
+      gap: 22px;
     }
 
     h1 {
-      margin: 0;
+      font-family: "Cinzel", serif;
       font-size: 36px;
-      color: var(--text-bright);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+      color: var(--accent);
+      letter-spacing: 0.06em;
+      margin: 0;
     }
 
     .panel {
       border: 1px solid var(--border);
       padding: 18px;
-      background: linear-gradient(#0a160a, #040904);
-      box-shadow: inset 0 0 10px rgba(0,255,100,0.03);
+      background: linear-gradient(#121a12, #070b07);
     }
 
     .panel-title {
       font-size: 13px;
       color: var(--text-dim);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       text-transform: uppercase;
       letter-spacing: 0.1em;
     }
 
     .lead {
-      color: var(--text-dim);
       line-height: 1.8;
       font-size: 16px;
+      color: var(--text-dim);
     }
 
     .cipher {
       white-space: pre-wrap;
       font-size: 18px;
-      line-height: 1.9;
+      line-height: 1.8;
       color: var(--text-bright);
     }
 
@@ -114,13 +116,11 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
-      align-items: start;
     }
 
     .image-box {
       border: 1px solid var(--border);
       background: black;
-      overflow: hidden;
       height: 360px;
       display: flex;
       align-items: center;
@@ -131,97 +131,71 @@
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
-      display: block;
-      filter: drop-shadow(0 0 12px rgba(167,255,77,0.15));
+      filter:
+        drop-shadow(0 0 14px rgba(255,211,106,0.25))
+        contrast(1.05)
+        saturate(1.05);
     }
 
     .clue {
       text-align: center;
-      font-size: 19px;
-      letter-spacing: 0.06em;
-      color: var(--text-bright);
+      font-size: 18px;
       margin-top: 14px;
-      line-height: 1.5;
-    }
-
-    .audio-wrap {
-      display: grid;
-      gap: 14px;
+      color: var(--text-bright);
     }
 
     .audio-box {
-      border: 1px solid var(--border);
-      background: #030603;
+      border: 1px solid rgba(255,211,106,0.4);
+      background: linear-gradient(#0c140c, #060906);
       padding: 16px;
+      box-shadow: 0 0 12px rgba(255,211,106,0.15);
     }
 
     audio {
       width: 100%;
-      filter: hue-rotate(35deg) saturate(0.75) brightness(0.9);
     }
 
     .button-row {
       display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
     }
 
     button {
-      background: #081208;
-      color: var(--text-bright);
+      background: #0c140c;
       border: 1px solid var(--border);
-      padding: 12px 18px;
-      font-family: "Courier New", monospace;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      color: var(--text-bright);
+      padding: 10px 16px;
       cursor: pointer;
-      transition: 0.2s ease;
+      text-transform: uppercase;
     }
 
     button:hover {
       border-color: var(--accent);
       color: var(--accent);
-      box-shadow: 0 0 12px rgba(167,255,77,0.12);
+      box-shadow: 0 0 12px rgba(255,211,106,0.25);
     }
 
     .status {
-      min-height: 22px;
+      margin-top: 10px;
       font-size: 14px;
       color: var(--text-dim);
-      letter-spacing: 0.04em;
-    }
-
-    .warning {
-      color: var(--warning);
     }
 
     .subtle-note {
       margin-top: 10px;
       font-size: 13px;
       color: var(--text-dim);
-      line-height: 1.7;
-      border-top: 1px dashed rgba(156,255,156,0.15);
+      border-top: 1px dashed rgba(255,255,255,0.1);
       padding-top: 10px;
-    }
-
-    .footer {
-      border-top: 1px solid var(--border);
-      padding: 16px;
-      font-size: 12px;
-      color: var(--text-dim);
-      line-height: 1.7;
     }
 
     @media (max-width: 860px) {
       .grid {
         grid-template-columns: 1fr;
       }
-
-      h1 {
-        font-size: 28px;
-      }
     }
+
   </style>
 </head>
 
@@ -230,147 +204,124 @@
 <div class="shell">
 
   <div class="topbar">
-    <div>Composite Phrase Accepted</div>
-    <div>Obsidian Control Gateway // Kingduck Layer</div>
+    <div>Audience Granted</div>
+    <div>King Duck's Court</div>
   </div>
 
   <div class="content">
 
     <div class="panel">
-      <div class="panel-title">System Update</div>
-      <h1>Fragment Recovery Directive</h1>
-      <div class="lead" style="margin-top:10px;">
-        Combined fragment authentication completed successfully.
-        Primary recovery now depends on an audio payload concealed within this layer.
-        Additional environmental findings may prove useful later, but do not constitute the fragment itself.
+      <div class="panel-title">The King Receives You</div>
+      <h1>Ah. There You Are.</h1>
+      <div class="lead">
+        You’ve done well to get this far.
+
+        I suppose I can help… just a little.
+
+        But understand—answers rarely travel alone.
       </div>
     </div>
 
     <div class="grid">
 
       <div class="panel">
-        <div class="panel-title">Recovered Guidance</div>
-        <div class="cipher">THE FRAGMENT IS NOT WRITTEN HERE
+        <div class="panel-title">A Word from the King</div>
+        <div class="cipher">FIRST — LISTEN
 
-IT WILL NOT BE FOUND IN THE IMAGE
-AND IT IS NOT STORED IN DECORATION
+THE SOUND HOLDS WHAT YOU NEED NOW
 
-THE REQUIRED SIGNAL MUST BE HEARD
+SECOND — SEEK MY SUBJECTS
 
-RECOVER THE AUDIO
-PLAY IT
-AND LISTEN CAREFULLY
+THREE OF THEM
+WAYWARD AS EVER
 
-AUXILIARY INTELLIGENCE ALSO REMAINS IN THE ROOM
-ITS VALUE IS REAL
-BUT ITS PURPOSE IS DEFERRED</div>
+THEY FAVOR PORCELAIN THRONES
+
+FIND THEM
+
+REMEMBER WHAT THEY SHOW YOU
+
+YOU WILL NEED IT LATER</div>
       </div>
 
       <div class="panel">
-        <div class="panel-title">Visual Reference</div>
+        <div class="panel-title">His Majesty</div>
 
         <div class="image-box">
-          <img src="images/kingduck.png?v=2" alt="Duck king seated on throne">
+          <img src="images/kingduck.png?v=2" alt="King Duck">
         </div>
 
         <div class="clue">
-          Some signals advance the mission.<br>
-          Others only prepare the next one.
+          Even a king needs his subjects.
         </div>
       </div>
 
     </div>
 
     <div class="panel">
-      <div class="panel-title">Audio Recovery Interface</div>
+      <div class="panel-title">The Song</div>
 
-      <div class="audio-wrap">
-        <div class="lead">
-          The fragment for this node is contained in the audio sequence. Recover access to the file, then play it to obtain the required directive.
-        </div>
+      <div class="lead">
+        Start here.
 
-       <div class="audio-box">
-      <audio id="clueAudio" controls preload="none">
-        <source src="audio/kingduck.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-      </audio>
+        The song knows something you don’t.
+      </div>
+
+      <div class="audio-box">
+        <audio id="clueAudio" controls preload="none">
+          <source src="audio/kingduck.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <div class="button-row">
+        <button onclick="playAudio()">Play</button>
+        <button onclick="pauseAudio()">Pause</button>
+        <button onclick="restartAudio()">Restart</button>
+      </div>
+
+      <div id="audioStatus" class="status">Awaiting input.</div>
+
+      <div class="subtle-note">
+        When you hear it, you’ll know what to take.<br>
+        Bring it back with you.
+      </div>
     </div>
-
-    <div class="button-row">
-      <button id="playBtn" type="button">Play Audio Clue</button>
-      <button id="pauseBtn" type="button">Pause Audio</button>
-      <button id="restartBtn" type="button">Restart Audio</button>
-    </div>
-
-    <div id="audioStatus" class="status">Audio standing by.</div>
-
-    <div class="subtle-note">
-      Extract the fragment from the signal.<br>
-      Return to the system interface and submit it for validation.
-    </div>
-  </div>
-</div>
 
     <div class="panel">
-      <div class="panel-title">Supplemental Field Note</div>
+      <div class="panel-title">A Small Problem</div>
       <div class="lead">
-        Three little duckies remain at large.  Their recovery may help you later.
+        My ducks have wandered.
+
+        I would very much like them returned.
       </div>
       <div class="subtle-note">
-        Like a duck to water, but out of sight.
+        Not where you’d expect…<br>
+        but exactly where water waits.
       </div>
     </div>
 
   </div>
-
-  <div class="footer">
-    &gt; primary objective: recover and interpret the audio payload<br>
-    &gt; secondary objective: locate auxiliary observers for future combination data<br>
-    &gt; note: not every recovered asset is for immediate use
-    <!-- ducks are deferred / audio is the fragment / upper chamber still matters -->
-  </div>
-
 </div>
 
 <script>
   const audio = document.getElementById("clueAudio");
-  const playBtn = document.getElementById("playBtn");
-  const pauseBtn = document.getElementById("pauseBtn");
-  const restartBtn = document.getElementById("restartBtn");
-  const audioStatus = document.getElementById("audioStatus");
+  const status = document.getElementById("audioStatus");
 
-  function setStatus(message, isWarning = false) {
-    audioStatus.textContent = message;
-    audioStatus.className = "status" + (isWarning ? " warning" : "");
+  function playAudio() {
+    audio.play();
+    status.textContent = "Playing...";
   }
 
-  playBtn.addEventListener("click", async () => {
-    try {
-      await audio.play();
-      setStatus("Audio clue playing.");
-    } catch (err) {
-      setStatus("Playback could not begin. Verify the MP3 file path.", true);
-    }
-  });
-
-  pauseBtn.addEventListener("click", () => {
+  function pauseAudio() {
     audio.pause();
-    setStatus("Audio clue paused.");
-  });
+    status.textContent = "Paused.";
+  }
 
-  restartBtn.addEventListener("click", () => {
-    audio.pause();
+  function restartAudio() {
     audio.currentTime = 0;
-    setStatus("Audio clue reset.");
-  });
-
-  audio.addEventListener("ended", () => {
-    setStatus("Audio clue complete.");
-  });
-
-  audio.addEventListener("error", () => {
-    setStatus("Audio file unavailable. Check audio/kingduck.mp3.", true);
-  });
+    audio.play();
+    status.textContent = "Restarted.";
+  }
 </script>
 
 </body>
