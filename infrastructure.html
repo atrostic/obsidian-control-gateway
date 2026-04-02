@@ -29,7 +29,7 @@
       overflow-x: hidden;
     }
 
-    /* CRT scanlines across whole page */
+    /* CRT scanlines */
     body::before {
       content: "";
       position: fixed;
@@ -109,23 +109,13 @@
       animation: imageGlitch 7s infinite;
     }
 
-    /* subtle movement glitch */
     @keyframes imageGlitch {
-      0%, 96%, 100% {
-        transform: translate(0,0);
-      }
-      97% {
-        transform: translate(2px, -1px);
-      }
-      98% {
-        transform: translate(-2px, 1px);
-      }
-      99% {
-        transform: translate(1px, 0);
-      }
+      0%, 96%, 100% { transform: translate(0,0); }
+      97% { transform: translate(2px,-1px); }
+      98% { transform: translate(-2px,1px); }
+      99% { transform: translate(1px,0); }
     }
 
-    /* scanline overlay */
     .glitch-overlay {
       position: absolute;
       inset: 0;
@@ -146,7 +136,6 @@
       50% { opacity: 0.55; }
     }
 
-    /* occasional signal break */
     .image-box::after {
       content: "";
       position: absolute;
@@ -161,7 +150,7 @@
       0%, 98%, 100% { opacity: 0; }
       99% {
         opacity: 1;
-        transform: translate(3px, -2px) skewX(3deg);
+        transform: translate(3px,-2px) skewX(3deg);
       }
     }
 
@@ -233,9 +222,62 @@
     .status.error { color: #ff8c8c; }
     .status.success { color: var(--accent); }
 
-    @media (max-width: 800px) {
-      .entry-row {
-        grid-template-columns: 1fr;
+    /* SUCCESS OVERLAY */
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 10, 0, 0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .overlay.active {
+      display: flex;
+    }
+
+    .overlay-box {
+      width: min(600px, 100%);
+      border: 1px solid var(--accent);
+      background: linear-gradient(#081208, #030603);
+      padding: 28px;
+      text-align: center;
+      box-shadow:
+        0 0 30px rgba(167,255,77,0.15),
+        inset 0 0 20px rgba(167,255,77,0.05);
+      animation: pulseBox 1.8s infinite;
+    }
+
+    .overlay-title {
+      color: var(--accent);
+      font-size: 26px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .overlay-text {
+      color: var(--text-bright);
+      font-size: 18px;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    .countdown {
+      margin-top: 16px;
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+
+    @keyframes pulseBox {
+      0%,100% {
+        box-shadow: 0 0 30px rgba(167,255,77,0.15),
+                    inset 0 0 20px rgba(167,255,77,0.05);
+      }
+      50% {
+        box-shadow: 0 0 45px rgba(167,255,77,0.25),
+                    inset 0 0 24px rgba(167,255,77,0.08);
       }
     }
 
@@ -262,7 +304,7 @@
       </div>
 
       <div class="clue">
-        Seek and ye shall find.
+        Seek and you shall find.
       </div>
     </div>
 
@@ -291,16 +333,53 @@
   </div>
 </div>
 
+<!-- SUCCESS OVERLAY -->
+<div id="successOverlay" class="overlay">
+  <div class="overlay-box">
+    <div class="overlay-title">Access Confirmed</div>
+    <div class="overlay-text">
+Visual inputs verified.
+
+Routing to next node...
+    </div>
+    <div id="countdown" class="countdown">Redirect in 4</div>
+  </div>
+</div>
+
 <script>
   const ANSWER_ONE = "king";
   const ANSWER_TWO = "duck";
+  const REDIRECT_URL = "kingduck.html";
+  const REDIRECT_DELAY = 4000;
 
   const clue1 = document.getElementById("clue1");
   const clue2 = document.getElementById("clue2");
   const statusEl = document.getElementById("status");
+  const overlay = document.getElementById("successOverlay");
+  const countdownEl = document.getElementById("countdown");
 
   function normalize(v) {
     return v.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+  }
+
+  function launchSuccess() {
+    overlay.classList.add("active");
+
+    let remaining = 4;
+    countdownEl.textContent = `Redirect in ${remaining}`;
+
+    const timer = setInterval(() => {
+      remaining--;
+      if (remaining > 0) {
+        countdownEl.textContent = `Redirect in ${remaining}`;
+      } else {
+        clearInterval(timer);
+      }
+    }, 1000);
+
+    setTimeout(() => {
+      window.location.href = REDIRECT_URL;
+    }, REDIRECT_DELAY);
   }
 
   document.getElementById("verifyBtn").onclick = () => {
@@ -316,7 +395,7 @@
     if (a === ANSWER_ONE && b === ANSWER_TWO) {
       statusEl.textContent = "Accepted.";
       statusEl.className = "status success";
-      setTimeout(() => window.location.href = "kingduck.html", 1500);
+      launchSuccess();
     } else {
       statusEl.textContent = "Incorrect.";
       statusEl.className = "status error";
