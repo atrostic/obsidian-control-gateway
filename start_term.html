@@ -1039,7 +1039,7 @@
       <div class="progress-panel">
         <h2 class="progress-title" id="progressTitle">Recovery Status</h2>
         <div class="progress-stats">
-          <div>Resolved Nodes: <span id="resolvedCount">0</span> / 6</div>
+          <div>Resolved Nodes: <span id="resolvedCount">0</span> / <span id="resolvedTotal">8</span></div>
           <div>System Recovery: <span id="progressPercent">0</span>%</div>
           <div>Master Nodes: <span id="masterStatus">0</span> / 2</div>
           <div class="progress-bar" aria-hidden="true">
@@ -1231,6 +1231,7 @@
 
   <script>
     const STORAGE_KEY = "obsidian-node-status-v14";
+    const SHARED_PROGRESS_KEY = "obsidianNodeProgress";
     const ADMIN_MODE_KEY = "obsidian-admin-mode";
     const ADMIN_QUERY_PARAM = "admin";
     const MASTER_NODE_IDS = ["node-g", "node-h"];
@@ -1238,8 +1239,33 @@
     const FINAL_REDIRECT_URL = "final_step.html";
     const FINAL_COUNTDOWN_SECONDS = 10;
 
+    const NODE_PROGRESS_MAP = {
+      "node-a": "a",
+      "node-b": "b",
+      "node-c": "c",
+      "node-d": "d",
+      "node-e": "e",
+      "node-f": "f",
+      "node-g": "alpha",
+      "node-h": "omega"
+    };
+
+    const DEFAULT_PROGRESS = {
+      a: false,
+      b: false,
+      c: false,
+      d: false,
+      e: false,
+      f: false,
+      alpha: false,
+      omega: false
+    };
+
     const nodes = Array.from(document.querySelectorAll(".node"));
+    const TOTAL_NODE_COUNT = nodes.length;
+
     const resolvedCountEl = document.getElementById("resolvedCount");
+    const resolvedTotalEl = document.getElementById("resolvedTotal");
     const progressPercentEl = document.getElementById("progressPercent");
     const progressFillEl = document.getElementById("progressFill");
     const resetAllButton = document.getElementById("resetAllButton");
@@ -1294,6 +1320,46 @@
 
     function saveState(state) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function getSharedProgress() {
+      try {
+        const raw = localStorage.getItem(SHARED_PROGRESS_KEY);
+        if (!raw) {
+          localStorage.setItem(SHARED_PROGRESS_KEY, JSON.stringify(DEFAULT_PROGRESS));
+          return { ...DEFAULT_PROGRESS };
+        }
+
+        const parsed = JSON.parse(raw);
+        return { ...DEFAULT_PROGRESS, ...parsed };
+      } catch (error) {
+        localStorage.setItem(SHARED_PROGRESS_KEY, JSON.stringify(DEFAULT_PROGRESS));
+        return { ...DEFAULT_PROGRESS };
+      }
+    }
+
+    function saveSharedProgress(progress) {
+      localStorage.setItem(SHARED_PROGRESS_KEY, JSON.stringify(progress));
+    }
+
+    function setSharedNodeProgress(nodeId, resolved) {
+      const progress = getSharedProgress();
+      const mappedKey = NODE_PROGRESS_MAP[nodeId];
+      if (!mappedKey) return;
+
+      progress[mappedKey] = Boolean(resolved);
+      saveSharedProgress(progress);
+    }
+
+    function syncSharedProgressFromState() {
+      const state = loadState();
+      const progress = { ...DEFAULT_PROGRESS };
+
+      Object.entries(NODE_PROGRESS_MAP).forEach(([nodeId, progressKey]) => {
+        progress[progressKey] = Boolean(state[nodeId]?.resolved);
+      });
+
+      saveSharedProgress(progress);
     }
 
     function setNodeResolved(node, isResolved) {
@@ -1524,9 +1590,10 @@
     function updateProgress() {
       const resolvedNodes = nodes.filter(node => node.classList.contains("resolved"));
       const resolvedCount = resolvedNodes.length;
-      const percent = Math.round((resolvedCount / nodes.length) * 100);
+      const percent = Math.round((resolvedCount / TOTAL_NODE_COUNT) * 100);
 
       resolvedCountEl.textContent = resolvedCount;
+      resolvedTotalEl.textContent = TOTAL_NODE_COUNT;
       progressPercentEl.textContent = percent;
       progressFillEl.style.width = `${percent}%`;
 
@@ -1566,6 +1633,7 @@
 
         input.value = savedValue;
         setNodeResolved(node, isResolved);
+        setSharedNodeProgress(nodeId, isResolved);
 
         if (isResolved) {
           setFeedback(node, "Accepted", "success");
@@ -1601,6 +1669,7 @@
             currentState[nodeId].resolved = false;
             saveState(currentState);
             setNodeResolved(node, false);
+            setSharedNodeProgress(nodeId, false);
             setFeedback(node, "No entry detected", "error");
             updateProgress();
             return;
@@ -1616,6 +1685,7 @@
               currentState[nodeId].resolved = true;
               saveState(currentState);
               setNodeResolved(node, true);
+              setSharedNodeProgress(nodeId, true);
               setFeedback(node, "Accepted", "success");
 
               if (MASTER_NODE_IDS.includes(nodeId)) {
@@ -1625,6 +1695,7 @@
               currentState[nodeId].resolved = false;
               saveState(currentState);
               setNodeResolved(node, false);
+              setSharedNodeProgress(nodeId, false);
               setFeedback(node, "Invalid entry", "error");
             }
 
@@ -1633,6 +1704,7 @@
             currentState[nodeId].resolved = false;
             saveState(currentState);
             setNodeResolved(node, false);
+            setSharedNodeProgress(nodeId, false);
             setFeedback(node, "Verification error", "error");
             updateProgress();
           } finally {
@@ -1656,6 +1728,7 @@
           saveState(currentState);
 
           setNodeResolved(node, nextResolved);
+          setSharedNodeProgress(nodeId, nextResolved);
           setFeedback(node, nextResolved ? "Marked manually" : "");
 
           if (nextResolved && MASTER_NODE_IDS.includes(nodeId)) {
@@ -1671,6 +1744,7 @@
 
     resetAllButton.addEventListener("click", () => {
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.setItem(SHARED_PROGRESS_KEY, JSON.stringify(DEFAULT_PROGRESS));
       stopCountdown();
 
       nodes.forEach(node => {
@@ -1691,6 +1765,7 @@
 
     applyAdminMode();
     initializeNodes();
+    syncSharedProgressFromState();
   </script>
 </body>
 </html>
