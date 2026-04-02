@@ -271,9 +271,36 @@ A wise seeker learns the difference.”
     }
   }
 
+  function getSolvedCount() {
+    const progress = getProgress();
+    return Object.values(progress).filter(Boolean).length;
+  }
+
   function isStabilitySolved() {
     const progress = getProgress();
     return progress[STABILITY_KEY] === true;
+  }
+
+  function getProgressSummaryLine() {
+    const progress = getProgress();
+    const solved = Object.values(progress).filter(Boolean).length;
+
+    if (progress.b) {
+      if (solved === 8) {
+        return "“All eight fragments… and my subjects have already done their part. Splendid.”";
+      }
+      return `“I see you have found ${solved} fragment${solved === 1 ? "" : "s"} so far… and my subjects have already helped you. Good.”`;
+    }
+
+    if (solved === 0) {
+      return "“You have yet to recover any fragments. A bold starting point.”";
+    }
+
+    if (solved === 8) {
+      return "“All eight fragments… impressive. Everything is now within reach.”";
+    }
+
+    return `“I see you have found ${solved} fragment${solved === 1 ? "" : "s"} so far. You are well on your way to the prize.”`;
   }
 
   function updateGateState(showReturnMessage = false) {
@@ -283,11 +310,7 @@ A wise seeker learns the difference.”
       audioLockedCard.classList.add("hidden");
       audioCard.classList.remove("hidden");
       subjectsStatus.textContent = "The King nods. “Yes… my subjects have been found.”";
-      if (showReturnMessage) {
-        gateStatus.textContent = "The gate yields.";
-      } else {
-        gateStatus.textContent = "";
-      }
+      gateStatus.textContent = showReturnMessage ? "The gate yields." : "";
       introSpeech.textContent =
 `“Ah… there you are.
 
@@ -300,35 +323,44 @@ I knew you would be back.”`;
       audioLockedCard.classList.remove("hidden");
       audioCard.classList.add("hidden");
       subjectsStatus.textContent = "The King waits, amused, but says nothing more.";
-      if (showReturnMessage) {
-        gateStatus.textContent = "“No, no. Subjects first.”";
-      } else {
-        gateStatus.textContent = "";
-      }
+      gateStatus.textContent = showReturnMessage ? "“No, no. Subjects first.”" : "";
     }
+
+    response.textContent = getProgressSummaryLine();
   }
 
-  const linesLocked = [
-    "Yes, yes… I see you.",
-    "My subjects first.",
-    "Water above, not below… curious, isn’t it?",
-    "You missed something earlier.",
-    "Come back when you have finished what you started."
-  ];
+  function buildDuckLines() {
+    const solved = getSolvedCount();
+    const stabilitySolved = isStabilitySolved();
 
-  const linesUnlocked = [
-    "Ah. There you are again.",
-    "The song is ready for you now.",
-    "My subjects have done their part.",
-    "Listen carefully this time.",
-    "You are improving."
-  ];
+    const lines = [
+      getProgressSummaryLine(),
+      `You have ${solved} fragment${solved === 1 ? "" : "s"} so far.`,
+      "Yes, yes… I see you."
+    ];
+
+    if (stabilitySolved) {
+      lines.push("My subjects have served you well.");
+      lines.push("The song is ready for you now.");
+      lines.push("You are doing rather well for yourself.");
+    } else {
+      lines.push("My subjects first.");
+      lines.push("You missed something earlier.");
+      lines.push("Water above, not below… curious, isn’t it?");
+      lines.push("Come back when you have finished what you started.");
+    }
+
+    lines.push("Some things matter now. Some things matter later.");
+    lines.push("Try not to confuse the two.");
+
+    return lines;
+  }
 
   let clickCount = 0;
 
   duck.addEventListener("click", () => {
-    const lines = isStabilitySolved() ? linesUnlocked : linesLocked;
-    response.textContent = lines[clickCount % lines.length];
+    const lines = buildDuckLines();
+    response.textContent = `“${lines[clickCount % lines.length]}”`.replace(/““|””/g, '"');
     clickCount++;
   });
 
@@ -355,15 +387,15 @@ I knew you would be back.”`;
   checkGateBtn.addEventListener("click", () => {
     updateGateState(true);
     if (isStabilitySolved()) {
-      response.textContent = "Ah. There it is. Now we may proceed.";
+      response.textContent = "“Ah. There it is. Now we may proceed.”";
     } else {
-      response.textContent = "Not yet. My court remains patient.";
+      response.textContent = "“Not yet. My court remains patient.”";
     }
   });
 
   function playAudio() {
     audio.play();
-    response.textContent = "Ah. A wise choice.";
+    response.textContent = "“Ah. A wise choice.”";
     audioStatus.textContent = "The song begins.";
   }
 
@@ -375,7 +407,7 @@ I knew you would be back.”`;
   function restartAudio() {
     audio.currentTime = 0;
     audio.play();
-    response.textContent = "Listen carefully this time.";
+    response.textContent = "“Listen carefully this time.”";
     audioStatus.textContent = "The song starts anew.";
   }
 
