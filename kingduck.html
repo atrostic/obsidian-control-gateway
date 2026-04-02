@@ -347,7 +347,6 @@ No matter. I am here now, and I am feeling unusually generous.”`;
   }
 
   function buildDuckLines() {
-    const solved = getSolvedCount();
     const stabilitySolved = isStabilitySolved();
 
     const lines = [
@@ -362,7 +361,7 @@ No matter. I am here now, and I am feeling unusually generous.”`;
     } else {
       lines.push("My subjects first.");
       lines.push("You missed something earlier.");
-      lines.push("Do you like my throne?  It's quite comfortable.  Not like those porcelain ones my subjects prefer.");
+      lines.push("Do you like my throne? It's quite comfortable. Not like those porcelain ones my subjects prefer.");
       lines.push("Come back when you have finished what you started.");
     }
     return lines;
