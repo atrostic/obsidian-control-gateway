@@ -214,13 +214,9 @@ Find them, and the fragment that escaped you earlier will make itself known.”
   <div id="audioLockedCard" class="card locked-audio">
     <h2 class="gate-title">The Royal Gate</h2>
     <div class="gate-copy">
-King Duck folds one wing across his chest.
+By order of the court, the gate remains closed.
 
-“Not yet.
-
-Find my subjects, recover the Stability fragment, and return to my court.
-
-Then I shall help you even more.”
+Recover the Stability fragment and present yourself again.
     </div>
 
     <button class="gate-button" id="checkGateBtn" type="button">Ask the King Again</button>
@@ -375,11 +371,13 @@ No matter. I am here now, and I am feeling unusually generous.”`;
       lines.push("My subjects have served you well.");
       lines.push("The song is ready for you now.");
       lines.push("You are doing rather well for yourself.");
+      lines.push("Proceed through the Royal Gate.:);
     } else {
       lines.push("My subjects first.");
       lines.push("You missed something earlier.");
       lines.push("Do you like my throne? It's quite comfortable. Not like those porcelain ones my subjects prefer.");
       lines.push("Come back when you have finished what you started.");
+      lines.push("Find my subjects, recover the Stability fragment, and return to my court.");
     }
     return lines;
   }
