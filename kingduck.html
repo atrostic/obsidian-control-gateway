@@ -56,7 +56,10 @@
     animation: floatDuck 5s ease-in-out infinite;
     cursor: pointer;
   }
-
+.kingduck-img:hover {
+  transform: scale(1.02);
+  filter: drop-shadow(0 0 12px rgba(199, 154, 0, 0.25));
+}
   @keyframes floatDuck {
     0%,100% { transform: translateY(0px) rotate(-1deg); }
     50% { transform: translateY(-10px) rotate(1deg); }
@@ -355,7 +358,7 @@ No matter. I am here now, and I am feeling unusually generous.”`;
       subjectsCard.classList.remove("hidden");
       audioLockedCard.classList.remove("hidden");
       audioCard.classList.add("hidden");
-      subjectsStatus.textContent = "The King waits, amused, but says nothing more.";
+      subjectsStatus.textContent = "The King waits, amused, but seems willing to share more.";
       gateStatus.textContent = showReturnMessage ? "“No, no. Subjects first.”" : "";
     }
   }
@@ -406,7 +409,7 @@ No matter. I am here now, and I am feeling unusually generous.”`;
   });
 
   setTimeout(() => {
-    idle.textContent = "Don't overthink it...";
+    idle.textContent = "The King appears to be listening.";
   }, 8000);
 
   checkGateBtn.addEventListener("click", () => {
