@@ -185,65 +185,6 @@
       line-height: 1.7;
     }
 
-    /* NEW AUDIO CLUE STYLES */
-    .later-audio-clue {
-      margin-top: 16px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(80, 255, 80, 0.12);
-    }
-
-.audio-clue-btn {
-  background: transparent;
-  color: var(--text-dim);
-  border: 1px solid rgba(167,255,77,0.45);
-  padding: 10px 14px;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-
-  /* Combined animations */
-  animation:
-    audioPulse 2.8s infinite ease-in-out,
-    audioFlicker 6s infinite;
-}
-
-.audio-clue-btn:hover {
-  color: var(--text-bright);
-  border-color: var(--accent);
-  box-shadow: 0 0 14px rgba(167,255,77,0.25);
-}
-
-.audio-clue-btn:active {
-  transform: translateY(1px);
-}
-
-/* Glow pulse */
-@keyframes audioPulse {
-  0% {
-    box-shadow: 0 0 0 rgba(167,255,77,0);
-    border-color: rgba(167,255,77,0.35);
-  }
-  50% {
-    box-shadow: 0 0 10px rgba(167,255,77,0.18);
-    border-color: rgba(167,255,77,0.75);
-  }
-  100% {
-    box-shadow: 0 0 0 rgba(167,255,77,0);
-    border-color: rgba(167,255,77,0.35);
-  }
-}
-
-/* Subtle instability flicker */
-@keyframes audioFlicker {
-  0%, 97%, 100% { opacity: 1; }
-  98% { opacity: 0.6; }
-  99% { opacity: 0.85; }
-}
-
     @media (max-width: 860px) {
       .main-grid {
         grid-template-columns: 1fr;
@@ -309,28 +250,8 @@ BOTH STILL HOLD WHAT MATTERS
     <div>&gt; advisory: theatrical promotion and athletic exhibition were archived under the same classification</div>
     <div>&gt; directive: inspect posted material, not private storage</div>
     <div>&gt; note: balance may refer to movement, not ideology</div>
-
-    <!-- AUDIO CLUE -->
-    <div class="later-audio-clue">
-      <button id="feedYourHeadBtn" class="audio-clue-btn" type="button">
-        This might help you later...
-      </button>
-      <audio id="feedYourHeadAudio" preload="none">
-        <source src="media/feedyourhead.mp3" type="audio/mpeg">
-      </audio>
-    </div>
   </footer>
 </div>
-
-<script>
-  const feedYourHeadBtn = document.getElementById("feedYourHeadBtn");
-  const feedYourHeadAudio = document.getElementById("feedYourHeadAudio");
-
-  feedYourHeadBtn?.addEventListener("click", () => {
-    feedYourHeadAudio.currentTime = 0;
-    feedYourHeadAudio.play().catch(() => {});
-  });
-</script>
 
 </body>
 </html>
