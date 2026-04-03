@@ -130,33 +130,35 @@
     line-height: 1.55;
     white-space: pre-line;
   }
-
 .duck-note {
-  margin-top: 16px;
-  padding-left: 12px;
+  margin-top: 18px;
+  padding-left: 14px;
   border-left: 3px solid #e4c469;
   text-align: left;
+  max-width: 560px;
 }
 
 .duck-note strong {
   display: block;
-  font-size: 15px;
+  font-size: 16px;
   color: #4b3b00;
+  line-height: 1.4;
 }
 
 .duck-note span {
   display: block;
   margin-top: 6px;
-  font-size: 14px;
+  font-size: 15px;
   font-style: italic;
   color: #777;
+  line-height: 1.45;
 }
 
-.status-line {
-  margin-top: 10px;
+.duck-status {
+  margin-top: 8px;
+  font-size: 14px;
   font-style: italic;
-  color: #7a7a7a;
-  min-height: 20px;
+  color: #8a8a8a;
   line-height: 1.4;
 }
 
@@ -195,12 +197,11 @@ They have wandered off again, as subjects do.
 Find them, and the fragment that escaped you earlier will make itself known.”
     </div>
 
-    <div class="duck-note">
+  <div class="duck-note">
       <strong>Seek the subjects first.</strong>
       <span>They wait where water rests… but is rarely seen.</span>
+      <div id="subjectsStatus" class="duck-status"></div>
     </div>
-
-    <div id="subjectsStatus" class="status-line"></div>
   </div>
 
   <div id="audioLockedCard" class="card locked-audio">
