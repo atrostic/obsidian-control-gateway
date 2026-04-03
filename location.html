@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Priority Node</title>
+  <title>Location Node</title>
 
   <style>
     :root {
@@ -155,61 +155,17 @@
       min-height: 320px;
     }
 
-    .target-box {
+    .clue-image {
       border: 1px solid var(--border);
-      padding: 18px;
-      min-height: 240px;
-      background:
-        linear-gradient(180deg, rgba(4,12,4,0.96), rgba(2,6,2,0.98));
-      box-shadow: inset 0 0 24px rgba(80,255,80,0.05);
-      margin-bottom: 14px;
-      display: grid;
-      place-items: center;
-      position: relative;
       overflow: hidden;
+      margin-bottom: 14px;
+      background: #000;
+      box-shadow: 0 0 18px rgba(80,255,80,0.06);
     }
 
-    .target-box::before,
-    .target-box::after {
-      content: "";
-      position: absolute;
-      border: 1px solid rgba(167,255,77,0.20);
-      border-radius: 50%;
-    }
-
-    .target-box::before {
-      width: 210px;
-      height: 210px;
-    }
-
-    .target-box::after {
-      width: 110px;
-      height: 110px;
-    }
-
-    .crosshair-h,
-    .crosshair-v {
-      position: absolute;
-      background: rgba(167,255,77,0.18);
-    }
-
-    .crosshair-h {
-      width: 70%;
-      height: 1px;
-    }
-
-    .crosshair-v {
-      width: 1px;
-      height: 70%;
-    }
-
-    .target-core {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: rgba(167,255,77,0.75);
-      box-shadow: 0 0 16px rgba(167,255,77,0.35);
-      z-index: 2;
+    .clue-image img {
+      width: 100%;
+      display: block;
     }
 
     .clue-text {
@@ -239,58 +195,57 @@
 
 <body class="scanlines">
 
-<!-- Not every destination matters. Only one authorizes interception. -->
+<!-- The answer is hanging in plain sight. -->
 
 <div class="shell">
   <div class="topbar">
     <div><span class="status-dot"></span>Recovery Node Active</div>
-    <div>Obsidian Control Gateway // Priority Pathway</div>
+    <div>Obsidian Control Gateway // Location Pathway</div>
   </div>
 
   <main class="content">
 
     <section class="header-block">
-      <div class="bootline">Evaluating final destination priority...</div>
-      <h1>Priority Fragment</h1>
+      <div class="bootline">Evaluating final location...</div>
+      <h1>Location Fragment</h1>
       <div class="subtitle">
-        Multiple outcomes may appear plausible, but plausibility is not authorization. This node exists to
-        isolate the single valid endpoint and reject all competing interpretations. Selection must be exact.
+        You’re not searching anymore — you’re choosing. One place fits everything you’ve found.
+        Trust it and go there.
       </div>
     </section>
 
     <section class="main-grid">
 
       <div class="terminal-panel">
-        <div class="panel-title">Recovered Priority Notes</div>
+        <div class="panel-title">Recovered Location Notes</div>
         <div class="cipher-block">
-MULTIPLE PATHS MAY CONVERGE
-ONLY ONE PATH MATTERS
+YOU’VE DONE THE HARD PART
 
-SECONDARY SIGNALS
-MUST BE IGNORED
+THE RIGHT PLACE SHOULD FEEL OBVIOUS NOW
 
-DO NOT CHASE
-THE LOUDEST RESULT
+DON’T OVERTHINK IT
 
-THE TRUE DESTINATION
-WILL MATCH
-ALL PREVIOUS RECOVERIES
+YOU’RE NOT LOOKING FOR SOMETHING NEW
+YOU’RE LOOKING AT SOMETHING YOU’VE ALREADY SEEN
 
-WHEN ONLY ONE POSSIBILITY REMAINS
-INTERCEPTION IS AUTHORIZED
+TAKE A STEP BACK
+
+WHAT STILL STANDS OUT?
+
+WHERE DOES EVERYTHING POINT?
         </div>
       </div>
 
       <div class="clue-panel">
-        <div class="panel-title">Priority Placeholder</div>
+        <div class="panel-title">Visual Reference</div>
 
-        <div class="target-box" aria-hidden="true">
-          <div class="crosshair-h"></div>
-          <div class="crosshair-v"></div>
-          <div class="target-core"></div>
+        <div class="clue-image">
+          <img src="images/location-painting.png" alt="Filtered painting clue for final location">
         </div>
 
-        <div class="clue-text">Only one target is valid.</div>
+        <div class="clue-text">
+          The answer is hanging in plain sight.
+        </div>
       </div>
 
     </section>
@@ -298,9 +253,9 @@ INTERCEPTION IS AUTHORIZED
   </main>
 
   <footer class="footer">
-    <div>&gt; advisory: false positives increase near final resolution</div>
-    <div>&gt; directive: confirm against every prior recovery before acting</div>
-    <div>&gt; note: the last answer is not necessarily the correct one</div>
+    <div>&gt; advisory: the right place should already feel familiar</div>
+    <div>&gt; directive: trust the answer that fits everything</div>
+    <div>&gt; note: you have already seen what matters</div>
   </footer>
 </div>
 
