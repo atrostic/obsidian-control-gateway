@@ -34,31 +34,33 @@ export async function onRequest(context) {
   // -----------------------------
   // ROUTE PROTECTION MAP
   // -----------------------------
-  // Map protected pages to required unlock cookies
+  // Each page can require one or more signed unlock cookies
   const protectedRoutes = {
-    "/location.html": "unlock_location",
-    "/sequence.html": "unlock_sequence",
-    "/alpha.html": "unlock_alpha",
-    "/omega.html": "unlock_omega",
-    "/final_step.html": "unlock_final"
+    "/location.html": ["unlock_location"],
+    "/sequence.html": ["unlock_sequence"],
+    "/alpha.html": ["unlock_alpha"],
+    "/omega.html": ["unlock_omega"],
+    "/final_step.html": ["unlock_alpha", "unlock_omega"]
   };
 
-  const requiredCookie = protectedRoutes[path];
-  if (!requiredCookie) {
+  const requiredCookies = protectedRoutes[path];
+  if (!requiredCookies) {
     return next();
   }
 
   const cookies = parseCookies(request.headers.get("Cookie") || "");
-  const value = cookies[requiredCookie];
 
-  if (!value) {
-    return Response.redirect(`${url.origin}/locked.html`, 302);
-  }
+  for (const requiredCookie of requiredCookies) {
+    const value = cookies[requiredCookie];
 
-  // Verify the signed cookie
-  const valid = await verifySignedValue(value, env.HUNT_SIGNING_SECRET, requiredCookie);
-  if (!valid) {
-    return Response.redirect(`${url.origin}/locked.html`, 302);
+    if (!value) {
+      return Response.redirect(`${url.origin}/locked.html`, 302);
+    }
+
+    const valid = await verifySignedValue(value, env.HUNT_SIGNING_SECRET, requiredCookie);
+    if (!valid) {
+      return Response.redirect(`${url.origin}/locked.html`, 302);
+    }
   }
 
   return next();
@@ -92,8 +94,7 @@ async function verifySignedValue(signedValue, secret, expectedName) {
 
   if (!payload || payload.name !== expectedName || !payload.ts) return false;
 
-  const data = `${payloadB64}`;
-  const expectedSig = await hmacSign(data, secret);
+  const expectedSig = await hmacSign(payloadB64, secret);
   return timingSafeEqual(sigB64, expectedSig);
 }
 
