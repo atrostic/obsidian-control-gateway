@@ -694,6 +694,11 @@
       display: none;
     }
 
+    body.admin-disabled .toggle-button,
+    body.admin-disabled #resetAllButton {
+      display: none !important;
+    }
+
     .node-input {
       width: 100%;
       background: rgba(4, 16, 4, 0.95);
@@ -987,8 +992,6 @@
   </style>
 </head>
 
-<!-- Now with even more AI slop! -->
-
 <body class="scanlines">
   <div class="countdown-overlay" id="countdownOverlay" aria-hidden="true">
     <div class="countdown-panel">
@@ -1230,11 +1233,19 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "obsidian-node-status-v14";
+    const STORAGE_KEY = "obsidian-node-status-v15";
     const SHARED_PROGRESS_KEY = "obsidianNodeProgress";
     const ADMIN_MODE_KEY = "obsidian-admin-mode";
     const ADMIN_QUERY_PARAM = "admin";
+
+    /*
+      PRE-LIVE / LIVE SWITCH
+      ----------------------
+      Set this to true only when you intentionally want admin mode available.
+      For hunt go-live, leave it false.
+    */
     const ADMIN_ENABLED = false;
+
     const MASTER_NODE_IDS = ["node-g", "node-h"];
     const BASE_NODE_IDS = ["node-a", "node-b", "node-c", "node-d", "node-e", "node-f"];
     const FINAL_REDIRECT_URL = "final_step.html";
@@ -1289,37 +1300,52 @@
     let countdownInterval = null;
     let countdownTimeout = null;
 
+    function isAdminAvailable() {
+      return ADMIN_ENABLED === true;
+    }
+
+    function clearAdminArtifacts() {
+      document.body.classList.remove("admin-mode");
+      document.body.classList.add("admin-disabled");
+      localStorage.removeItem(ADMIN_MODE_KEY);
+    }
+
     function isAdminModeEnabled() {
-  if (!ADMIN_ENABLED) {
-    return false;
-  }
+      if (!isAdminAvailable()) {
+        return false;
+      }
 
-  const params = new URLSearchParams(window.location.search);
-  const adminFromUrl = params.get(ADMIN_QUERY_PARAM);
+      const params = new URLSearchParams(window.location.search);
+      const adminFromUrl = params.get(ADMIN_QUERY_PARAM);
 
-  if (adminFromUrl === "1") {
-    localStorage.setItem(ADMIN_MODE_KEY, "true");
-    return true;
-  }
+      if (adminFromUrl === "1") {
+        localStorage.setItem(ADMIN_MODE_KEY, "true");
+        return true;
+      }
 
-  return localStorage.getItem(ADMIN_MODE_KEY) === "true";
-}
+      return localStorage.getItem(ADMIN_MODE_KEY) === "true";
+    }
 
     function applyAdminMode() {
+      if (!isAdminAvailable()) {
+        clearAdminArtifacts();
+        return;
+      }
+
+      document.body.classList.remove("admin-disabled");
       document.body.classList.toggle("admin-mode", isAdminModeEnabled());
     }
 
     function toggleAdminMode() {
-  if (!ADMIN_ENABLED) {
-    document.body.classList.remove("admin-mode");
-    localStorage.removeItem(ADMIN_MODE_KEY);
-    return;
-  }
+      if (!isAdminAvailable()) {
+        clearAdminArtifacts();
+        return;
+      }
 
-  const enabled = localStorage.getItem(ADMIN_MODE_KEY) === "true";
-  localStorage.setItem(ADMIN_MODE_KEY, enabled ? "false" : "true");
-  document.body.classList.toggle("admin-mode", !enabled);
-}
+      const enabled = localStorage.getItem(ADMIN_MODE_KEY) === "true";
+      localStorage.setItem(ADMIN_MODE_KEY, enabled ? "false" : "true");
+      document.body.classList.toggle("admin-mode", !enabled);
+    }
 
     function loadState() {
       try {
@@ -1385,8 +1411,10 @@
         stateBadge.textContent = isResolved ? "Resolved" : "Pending";
       }
 
-      toggleButton.textContent = isResolved ? "Mark Incomplete" : "Mark Completed";
-      toggleButton.setAttribute("aria-pressed", isResolved ? "true" : "false");
+      if (toggleButton) {
+        toggleButton.textContent = isResolved ? "Mark Incomplete" : "Mark Completed";
+        toggleButton.setAttribute("aria-pressed", isResolved ? "true" : "false");
+      }
     }
 
     function setFeedback(node, message, type = "") {
@@ -1415,7 +1443,8 @@
 
       input.disabled = locked;
       verifyButton.disabled = locked;
-      toggleButton.disabled = locked;
+      if (toggleButton) toggleButton.disabled = locked;
+
       link.setAttribute("tabindex", locked ? "-1" : "0");
       link.setAttribute("aria-disabled", locked ? "true" : "false");
 
@@ -1661,14 +1690,6 @@
           }
         });
 
-        if (ADMIN_ENABLED) {
-  document.addEventListener("keydown", (event) => {
-    if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "x") {
-      toggleAdminMode();
-    }
-  });
-}
-
         verifyButton.addEventListener("click", async () => {
           if (verifyButton.disabled) return;
 
@@ -1729,61 +1750,78 @@
           }
         });
 
-        toggleButton.addEventListener("click", () => {
-          if (toggleButton.disabled) return;
+        if (toggleButton) {
+          toggleButton.addEventListener("click", () => {
+            if (!isAdminAvailable() || toggleButton.disabled) return;
 
-          const currentState = loadState();
-          const nextResolved = !node.classList.contains("resolved");
+            const currentState = loadState();
+            const nextResolved = !node.classList.contains("resolved");
 
-          currentState[nodeId] = currentState[nodeId] || { value: "", resolved: false };
-          currentState[nodeId].value = input.value;
-          currentState[nodeId].resolved = nextResolved;
-          saveState(currentState);
+            currentState[nodeId] = currentState[nodeId] || { value: "", resolved: false };
+            currentState[nodeId].value = input.value;
+            currentState[nodeId].resolved = nextResolved;
+            saveState(currentState);
 
-          setNodeResolved(node, nextResolved);
-          setSharedNodeProgress(nodeId, nextResolved);
-          setFeedback(node, nextResolved ? "Marked manually" : "");
+            setNodeResolved(node, nextResolved);
+            setSharedNodeProgress(nodeId, nextResolved);
+            setFeedback(node, nextResolved ? "Marked manually" : "");
 
-          if (nextResolved && MASTER_NODE_IDS.includes(nodeId)) {
-            triggerRedFlash();
-          }
+            if (nextResolved && MASTER_NODE_IDS.includes(nodeId)) {
+              triggerRedFlash();
+            }
 
-          updateProgress();
-        });
+            updateProgress();
+          });
+        }
       });
 
       updateProgress();
     }
 
-    resetAllButton.addEventListener("click", () => {
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.setItem(SHARED_PROGRESS_KEY, JSON.stringify(DEFAULT_PROGRESS));
-      stopCountdown();
+    function attachAdminShortcut() {
+      if (!isAdminAvailable()) return;
 
-      nodes.forEach(node => {
-        const input = node.querySelector(".node-input");
-        input.value = "";
-        setNodeResolved(node, false);
-        setFeedback(node, "");
+      document.addEventListener("keydown", (event) => {
+        if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "x") {
+          toggleAdminMode();
+        }
       });
+    }
 
-      updateProgress();
-    });
-
-    document.addEventListener("keydown", (event) => {
-      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "x") {
-        toggleAdminMode();
+    function attachResetHandler() {
+      if (!isAdminAvailable()) {
+        if (resetAllButton) {
+          resetAllButton.style.display = "none";
+          resetAllButton.disabled = true;
+        }
+        return;
       }
-    });
 
-if (!ADMIN_ENABLED) {
-  document.body.classList.remove("admin-mode");
-  localStorage.removeItem(ADMIN_MODE_KEY);
-}
+      resetAllButton.addEventListener("click", () => {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.setItem(SHARED_PROGRESS_KEY, JSON.stringify(DEFAULT_PROGRESS));
+        stopCountdown();
 
-applyAdminMode();
-initializeNodes();
-syncSharedProgressFromState();
+        nodes.forEach(node => {
+          const input = node.querySelector(".node-input");
+          input.value = "";
+          setNodeResolved(node, false);
+          setFeedback(node, "");
+        });
+
+        updateProgress();
+      });
+    }
+
+    if (!isAdminAvailable()) {
+      clearAdminArtifacts();
+    }
+
+    applyAdminMode();
+    attachAdminShortcut();
+    attachResetHandler();
+    initializeNodes();
+    syncSharedProgressFromState();
   </script>
 </body>
 </html>
