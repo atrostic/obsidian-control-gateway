@@ -1234,6 +1234,7 @@
     const SHARED_PROGRESS_KEY = "obsidianNodeProgress";
     const ADMIN_MODE_KEY = "obsidian-admin-mode";
     const ADMIN_QUERY_PARAM = "admin";
+    const ADMIN_ENABLED = false;
     const MASTER_NODE_IDS = ["node-g", "node-h"];
     const BASE_NODE_IDS = ["node-a", "node-b", "node-c", "node-d", "node-e", "node-f"];
     const FINAL_REDIRECT_URL = "final_step.html";
@@ -1289,26 +1290,36 @@
     let countdownTimeout = null;
 
     function isAdminModeEnabled() {
-      const params = new URLSearchParams(window.location.search);
-      const adminFromUrl = params.get(ADMIN_QUERY_PARAM);
+  if (!ADMIN_ENABLED) {
+    return false;
+  }
 
-      if (adminFromUrl === "1") {
-        localStorage.setItem(ADMIN_MODE_KEY, "true");
-        return true;
-      }
+  const params = new URLSearchParams(window.location.search);
+  const adminFromUrl = params.get(ADMIN_QUERY_PARAM);
 
-      return localStorage.getItem(ADMIN_MODE_KEY) === "true";
-    }
+  if (adminFromUrl === "1") {
+    localStorage.setItem(ADMIN_MODE_KEY, "true");
+    return true;
+  }
+
+  return localStorage.getItem(ADMIN_MODE_KEY) === "true";
+}
 
     function applyAdminMode() {
       document.body.classList.toggle("admin-mode", isAdminModeEnabled());
     }
 
     function toggleAdminMode() {
-      const enabled = localStorage.getItem(ADMIN_MODE_KEY) === "true";
-      localStorage.setItem(ADMIN_MODE_KEY, enabled ? "false" : "true");
-      document.body.classList.toggle("admin-mode", !enabled);
-    }
+  if (!ADMIN_ENABLED) {
+    document.body.classList.remove("admin-mode");
+    localStorage.removeItem(ADMIN_MODE_KEY);
+    return;
+  }
+
+  const enabled = localStorage.getItem(ADMIN_MODE_KEY) === "true";
+  localStorage.setItem(ADMIN_MODE_KEY, enabled ? "false" : "true");
+  document.body.classList.toggle("admin-mode", !enabled);
+}
 
     function loadState() {
       try {
@@ -1650,11 +1661,13 @@
           }
         });
 
-        input.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" && !verifyButton.disabled) {
-            verifyButton.click();
-          }
-        });
+        if (ADMIN_ENABLED) {
+  document.addEventListener("keydown", (event) => {
+    if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "x") {
+      toggleAdminMode();
+    }
+  });
+}
 
         verifyButton.addEventListener("click", async () => {
           if (verifyButton.disabled) return;
@@ -1763,9 +1776,14 @@
       }
     });
 
-    applyAdminMode();
-    initializeNodes();
-    syncSharedProgressFromState();
+if (!ADMIN_ENABLED) {
+  document.body.classList.remove("admin-mode");
+  localStorage.removeItem(ADMIN_MODE_KEY);
+}
+
+applyAdminMode();
+initializeNodes();
+syncSharedProgressFromState();
   </script>
 </body>
 </html>
