@@ -65,7 +65,6 @@ export async function onRequestPost(context) {
     return map[normalize(v)] || normalize(v);
   };
 
-  // For master nodes, normalize word.word.word / word-word-word / mixed separators
   const normalizeMasterDirective = (v) => {
     return normalize(v)
       .replace(/[.\s]+/g, "-")
@@ -73,7 +72,6 @@ export async function onRequestPost(context) {
       .replace(/^-|-$/g, "");
   };
 
-  // answers blow. Room is set to 123 - update with real room once checked in
   const ANSWERS = {
     "node-a": "blankets",
     "node-b": "3",
@@ -85,12 +83,10 @@ export async function onRequestPost(context) {
     "node-h": "function-origin-scale"
   };
 
-  // Map solved nodes to unlock cookies
+  // Only master nodes need server-side page unlock cookies
   const UNLOCK_COOKIES = {
-    "node-d": "unlock_location",
-    "node-f": "unlock_sequence",
-    "node-g": "unlock_alpha",
-    "node-h": "unlock_omega"
+    "node-g": "unlock_sequence",
+    "node-h": "unlock_location"
   };
 
   const safeNodeId = normalize(nodeId);
