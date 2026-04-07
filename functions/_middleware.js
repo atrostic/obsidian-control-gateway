@@ -3,9 +3,6 @@ export async function onRequest(context) {
   const url = new URL(request.url);
   const path = url.pathname;
 
-  // -----------------------------
-  // GLOBAL PAUSE SETTINGS
-  // -----------------------------
   const MANUAL_PAUSE = env.HUNT_PAUSED === "true";
 
   const now = Date.now();
@@ -22,18 +19,18 @@ export async function onRequest(context) {
 
   const isPaused = MANUAL_PAUSE || withinPauseWindow;
 
-  // Allow locked page and verify endpoint while paused
-  if (isPaused && path !== "/locked.html" && path !== "/verify") {
-    return Response.redirect(`${url.origin}/locked.html`, 302);
+  if (isPaused && path !== "/locked" && path !== "/locked.html" && path !== "/verify") {
+    return Response.redirect(`${url.origin}/locked`, 302);
   }
 
-  // -----------------------------
-  // ROUTE PROTECTION MAP
-  // -----------------------------
-  // Only protect the real pages in your current flow
   const protectedRoutes = {
+    "/sequence": ["unlock_sequence"],
     "/sequence.html": ["unlock_sequence"],
+
+    "/location": ["unlock_location"],
     "/location.html": ["unlock_location"],
+
+    "/final_step": ["unlock_sequence", "unlock_location"],
     "/final_step.html": ["unlock_sequence", "unlock_location"]
   };
 
@@ -48,12 +45,12 @@ export async function onRequest(context) {
     const value = cookies[requiredCookie];
 
     if (!value) {
-      return Response.redirect(`${url.origin}/locked.html`, 302);
+      return Response.redirect(`${url.origin}/locked`, 302);
     }
 
     const valid = await verifySignedValue(value, env.HUNT_SIGNING_SECRET, requiredCookie);
     if (!valid) {
-      return Response.redirect(`${url.origin}/locked.html`, 302);
+      return Response.redirect(`${url.origin}/locked`, 302);
     }
   }
 
