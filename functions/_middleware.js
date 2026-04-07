@@ -8,10 +8,6 @@ export async function onRequest(context) {
   // -----------------------------
   const MANUAL_PAUSE = env.HUNT_PAUSED === "true";
 
-  // Optional timed pause window in UTC
-  // Example:
-  // env.HUNT_PAUSE_START = "2026-04-12T02:00:00Z"
-  // env.HUNT_PAUSE_END   = "2026-04-13T12:00:00Z"
   const now = Date.now();
   const pauseStart = env.HUNT_PAUSE_START ? Date.parse(env.HUNT_PAUSE_START) : null;
   const pauseEnd = env.HUNT_PAUSE_END ? Date.parse(env.HUNT_PAUSE_END) : null;
@@ -26,21 +22,19 @@ export async function onRequest(context) {
 
   const isPaused = MANUAL_PAUSE || withinPauseWindow;
 
-  // Let the locked page itself load
-  if (isPaused && path !== "/locked.html" && !path.startsWith("/api/")) {
+  // Allow locked page and verify endpoint while paused
+  if (isPaused && path !== "/locked.html" && path !== "/verify") {
     return Response.redirect(`${url.origin}/locked.html`, 302);
   }
 
   // -----------------------------
   // ROUTE PROTECTION MAP
   // -----------------------------
-  // Each page can require one or more signed unlock cookies
+  // Only protect the real pages in your current flow
   const protectedRoutes = {
-    "/location.html": ["unlock_location"],
     "/sequence.html": ["unlock_sequence"],
-    "/alpha.html": ["unlock_alpha"],
-    "/omega.html": ["unlock_omega"],
-    "/final_step.html": ["unlock_alpha", "unlock_omega"]
+    "/location.html": ["unlock_location"],
+    "/final_step.html": ["unlock_sequence", "unlock_location"]
   };
 
   const requiredCookies = protectedRoutes[path];
