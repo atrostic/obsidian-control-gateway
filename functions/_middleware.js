@@ -39,8 +39,6 @@ export async function onRequest(context) {
     return next();
   }
 
-  /** NOTHING TO SEE HERE **/
-
   const cookies = parseCookies(request.headers.get("Cookie") || "");
 
   for (const requiredCookie of requiredCookies) {
