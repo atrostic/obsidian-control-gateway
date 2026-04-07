@@ -86,13 +86,8 @@ export async function onRequestPost(context) {
   };
 
   // Map solved nodes to unlock cookies
-  // Adjust these based on which pages each solve should unlock
   const UNLOCK_COOKIES = {
-    "node-a": "unlock_access",
-    "node-b": "unlock_stability",
-    "node-c": "unlock_function",
     "node-d": "unlock_location",
-    "node-e": "unlock_scale",
     "node-f": "unlock_sequence",
     "node-g": "unlock_alpha",
     "node-h": "unlock_omega"
