@@ -1414,12 +1414,9 @@
   }
 
   function areBaseNodesResolved() {
-    return BASE_NODE_IDS.every(nodeId => {
-      const node = document.querySelector(`.node[data-node-id="${nodeId}"]`);
-      return node && node.classList.contains("resolved");
-    });
-  }
-
+  const state = loadState();
+  return BASE_NODE_IDS.every(nodeId => Boolean(state[nodeId]?.resolved));
+}
   function sanitizePersistedState() {
     const state = loadState();
 
