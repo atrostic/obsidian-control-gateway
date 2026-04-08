@@ -83,8 +83,13 @@ export async function onRequestPost(context) {
     "node-h": "function-origin-scale"
   };
 
-  // Only master nodes need server-side page unlock cookies
   const UNLOCK_COOKIES = {
+    "node-a": "base_a",
+    "node-b": "base_b",
+    "node-c": "base_c",
+    "node-d": "base_d",
+    "node-e": "base_e",
+    "node-f": "base_f",
     "node-g": "unlock_sequence",
     "node-h": "unlock_location"
   };
