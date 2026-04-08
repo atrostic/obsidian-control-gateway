@@ -8,29 +8,23 @@
     :root {
       --bg: #020402;
       --panel: #071107;
-      --panel-2: #0c180c;
       --border: #1d441d;
       --gold: #d8ff72;
-      --gold-soft: rgba(216, 255, 114, 0.12);
       --text: #b8ffb8;
       --text-dim: #73b773;
       --text-bright: #ecffec;
-      --success: #a7ff4d;
-      --danger: #ff7272;
       --shadow: rgba(120, 255, 120, 0.12);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html, body {
       margin: 0;
       padding: 0;
       min-height: 100%;
       background:
-        radial-gradient(circle at top, rgba(180, 255, 120, 0.08), transparent 30%),
-        radial-gradient(circle at bottom, rgba(90, 255, 90, 0.05), transparent 35%),
+        radial-gradient(circle at top, rgba(180,255,120,0.08), transparent 30%),
+        radial-gradient(circle at bottom, rgba(90,255,90,0.05), transparent 35%),
         linear-gradient(180deg, #010201 0%, #020402 100%);
       color: var(--text);
       font-family: "Courier New", Courier, monospace;
@@ -64,8 +58,7 @@
       position: fixed;
       inset: 0;
       pointer-events: none;
-      background:
-        radial-gradient(circle at center, rgba(216, 255, 114, 0.04), transparent 55%);
+      background: radial-gradient(circle at center, rgba(216,255,114,0.04), transparent 55%);
       animation: glowPulse 4s ease-in-out infinite;
       z-index: 0;
     }
@@ -73,7 +66,7 @@
     .shell {
       position: relative;
       z-index: 1;
-      max-width: 1100px;
+      max-width: 1080px;
       margin: 0 auto;
       border: 1px solid var(--border);
       background: linear-gradient(180deg, rgba(6,16,6,0.96), rgba(3,8,3,0.98));
@@ -96,8 +89,7 @@
       text-transform: uppercase;
     }
 
-    .topbar-left,
-    .topbar-right {
+    .topbar-left, .topbar-right {
       display: flex;
       gap: 18px;
       align-items: center;
@@ -116,10 +108,9 @@
     }
 
     .hero {
-      padding: 34px 24px 24px;
+      padding: 36px 24px 24px;
       border-bottom: 1px solid var(--border);
-      background:
-        radial-gradient(circle at top center, rgba(216,255,114,0.06), transparent 45%);
+      background: radial-gradient(circle at top center, rgba(216,255,114,0.06), transparent 45%);
     }
 
     .eyebrow {
@@ -180,7 +171,7 @@
     .card h2 {
       margin: 0 0 12px;
       color: var(--text-bright);
-      font-size: 20px;
+      font-size: 19px;
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
@@ -188,60 +179,11 @@
     .card p {
       margin: 0;
       color: var(--text-dim);
-      line-height: 1.7;
+      line-height: 1.8;
       font-size: 15px;
     }
 
-    .checklist {
-      display: grid;
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .check-item {
-      display: grid;
-      grid-template-columns: 30px 1fr;
-      gap: 12px;
-      align-items: start;
-      padding: 12px 14px;
-      border: 1px solid rgba(120,255,120,0.15);
-      background: rgba(120,255,120,0.04);
-    }
-
-    .check-icon {
-      width: 24px;
-      height: 24px;
-      border: 1px solid rgba(216,255,114,0.45);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--gold);
-      font-weight: bold;
-      box-shadow: 0 0 10px rgba(216,255,114,0.08);
-    }
-
-    .check-copy strong {
-      display: block;
-      color: var(--text-bright);
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      font-size: 14px;
-    }
-
-    .check-copy span {
-      color: var(--text-dim);
-      font-size: 14px;
-      line-height: 1.65;
-    }
-
-    .two-col {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 18px;
-    }
-
-    .final-callout {
+    .transmission {
       border: 1px solid rgba(216,255,114,0.38);
       background: linear-gradient(180deg, rgba(36,52,12,0.42), rgba(12,18,5,0.60));
       box-shadow:
@@ -249,16 +191,45 @@
         0 0 24px rgba(216,255,114,0.08);
     }
 
-    .final-callout p {
-      color: #efffc8;
-    }
-
-    .quote {
+    .transmission-label {
       color: var(--gold);
-      font-size: 14px;
-      letter-spacing: 0.1em;
+      font-size: 13px;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       margin-bottom: 10px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .list {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .list-item {
+      padding: 12px 14px;
+      border: 1px solid rgba(120,255,120,0.15);
+      background: rgba(120,255,120,0.04);
+    }
+
+    .list-item strong {
+      display: block;
+      color: var(--text-bright);
+      margin-bottom: 5px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .list-item span {
+      color: var(--text-dim);
+      font-size: 14px;
+      line-height: 1.7;
     }
 
     .celebrate-wrap {
@@ -286,6 +257,19 @@
       transform: translateY(-1px);
       box-shadow: 0 0 18px rgba(216,255,114,0.12);
       background: linear-gradient(180deg, rgba(52,74,16,0.94), rgba(20,30,8,0.98));
+    }
+
+    .status-line {
+      color: var(--text-bright);
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .blink::after {
+      content: "_";
+      margin-left: 4px;
+      animation: blink 1s steps(1, end) infinite;
+      color: var(--text-bright);
     }
 
     .burst {
@@ -316,13 +300,6 @@
 
     .footer-line {
       margin-top: 6px;
-    }
-
-    .blink::after {
-      content: "_";
-      margin-left: 4px;
-      animation: blink 1s steps(1, end) infinite;
-      color: var(--text-bright);
     }
 
     @keyframes blink {
@@ -361,9 +338,7 @@
         padding: 14px;
       }
 
-      .hero,
-      .content,
-      .footer {
+      .hero, .content, .footer {
         padding-left: 16px;
         padding-right: 16px;
       }
@@ -386,106 +361,59 @@
     </div>
 
     <section class="hero">
-      <div class="eyebrow">Mission Complete</div>
-      <h1>Final Intercept Achieved</h1>
+      <div class="eyebrow">Closing Transmission</div>
+      <h1>Well Done, Operators</h1>
       <div class="subtitle">
-        You did it. The system is cracked, the route is known, and the final destination has been identified.
-        All that remains is to make the journey, bring what you recovered, and complete the handoff.
+        The signal has resolved. The path is no longer obscured. The last barrier was never meant to remain standing once all fragments were brought into alignment.
       </div>
       <div class="hero-banner">
-        Authorization confirmed // destination sequence reconstructed // operator victory acknowledged
+        RECOVERY COMPLETE // DESTINATION ALIGNED // FINAL HANDOFF AUTHORIZED
       </div>
     </section>
 
     <main class="content">
-      <section class="card final-callout">
-        <div class="quote">A final word from the system</div>
+      <section class="card transmission">
+        <div class="transmission-label">Final system message</div>
         <p>
-          The fragments are no longer fragments. The directives are no longer hidden. You now possess everything
-          needed to reach the final site. Gather your findings, travel to the destination, and present yourselves
-          at the proper door.
+          You have done what the system required. The triad is known. The ordered designation is known. The recording survived. The credential remained concealed until the proper moment. Nothing essential is missing now.
         </p>
       </section>
 
       <div class="two-col">
         <section class="card">
-          <h2>What You Know</h2>
-          <div class="checklist">
-            <div class="check-item">
-              <div class="check-icon">01</div>
-              <div class="check-copy">
-                <strong>The location</strong>
-                <span>You have the just-three-words destination for the hotel, in the correct order.</span>
-              </div>
+          <h2>What Has Been Recovered</h2>
+          <div class="list">
+            <div class="list-item">
+              <strong>The Locator</strong>
+              <span>The three-part destination phrase has already been assembled. Preserve its order.</span>
             </div>
-
-            <div class="check-item">
-              <div class="check-icon">02</div>
-              <div class="check-copy">
-                <strong>The room sequence</strong>
-                <span>You have the number sequence for the hotel room, in the correct order.</span>
-              </div>
+            <div class="list-item">
+              <strong>The Designation</strong>
+              <span>The numeric sequence has already been assembled. Preserve its order as well.</span>
             </div>
           </div>
         </section>
 
         <section class="card">
-          <h2>What To Bring</h2>
-          <div class="checklist">
-            <div class="check-item">
-              <div class="check-icon">A</div>
-              <div class="check-copy">
-                <strong>Chicago audio clue</strong>
-                <span>Bring the Chicago audio clue with you. It is part of the final handoff.</span>
-              </div>
+          <h2>What Must Accompany You</h2>
+          <div class="list">
+            <div class="list-item">
+              <strong>The Recording</strong>
+              <span>The recovered audio should travel with you. It still has a role to play.</span>
             </div>
-
-            <div class="check-item">
-              <div class="check-icon">B</div>
-              <div class="check-copy">
-                <strong>Key card</strong>
-                <span>Bring the key card recovered from the back of the painting on the location path.</span>
-              </div>
+            <div class="list-item">
+              <strong>The Credential</strong>
+              <span>The concealed access token should not be left behind.</span>
             </div>
           </div>
         </section>
       </div>
 
       <section class="card">
-        <h2>Final Instructions</h2>
-        <div class="checklist">
-          <div class="check-item">
-            <div class="check-icon">✓</div>
-            <div class="check-copy">
-              <strong>Travel to the hotel</strong>
-              <span>Use the three-word destination exactly as recovered.</span>
-            </div>
-          </div>
-
-          <div class="check-item">
-            <div class="check-icon">✓</div>
-            <div class="check-copy">
-              <strong>Go to the room</strong>
-              <span>Use the number sequence exactly as recovered.</span>
-            </div>
-          </div>
-
-          <div class="check-item">
-            <div class="check-icon">✓</div>
-            <div class="check-copy">
-              <strong>Present the recovered items</strong>
-              <span>Have the Chicago audio clue and the key card from the painting with you.</span>
-            </div>
-          </div>
-
-          <div class="check-item">
-            <div class="check-icon">✓</div>
-            <div class="check-copy">
-              <strong>Proceed with confidence</strong>
-              <span>You have solved the system. The final prize now awaits.</span>
-            </div>
-          </div>
-        </div>
+        <h2>From Here</h2>
+        <p>
+          There is very little left for the system to say. Follow what you have already uncovered. Trust the order in which the fragments revealed themselves. Bring forward the pieces that endured. The rest will make sense at the threshold.
+        </p>
 
         <div class="celebrate-wrap">
           <button class="celebrate-btn" id="celebrateBtn" type="button">Celebrate Victory</button>
@@ -495,15 +423,15 @@
 
       <section class="card">
         <h2>Operator Status</h2>
-        <p class="blink">
-          Recovery complete. Destination known. Room identified. Final prize pending arrival
-        </p>
+        <div class="status-line blink">
+          Route known. Chamber known. Artifacts retained. Prize pending arrival
+        </div>
       </section>
     </main>
 
     <footer class="footer">
-      <div>&gt; advisory: the system acknowledges a successful recovery operation</div>
-      <div class="footer-line">&gt; directive: gather the final clues, travel to the destination, and complete the intercept</div>
+      <div>&gt; advisory: successful recovery operation acknowledged</div>
+      <div class="footer-line">&gt; directive: proceed and complete the final handoff</div>
       <div class="footer-line">&gt; status: celebration authorized</div>
     </footer>
   </div>
@@ -536,7 +464,6 @@
         }
 
         burstLayer.appendChild(p);
-
         setTimeout(() => p.remove(), 1500);
       }
     }
