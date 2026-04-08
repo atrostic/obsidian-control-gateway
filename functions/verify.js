@@ -126,6 +126,17 @@ export async function onRequestPost(context) {
     }
   }
 
+  if (!isCorrect) {
+  const cookieName = UNLOCK_COOKIES[safeNodeId];
+
+  if (cookieName) {
+    headers.append(
+      "Set-Cookie",
+      `${cookieName}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`
+    );
+  }
+}
+
   return new Response(
     JSON.stringify({
       correct: isCorrect
