@@ -113,29 +113,23 @@ export async function onRequestPost(context) {
     "Content-Type": "application/json"
   });
 
-  if (isCorrect) {
-    const cookieName = UNLOCK_COOKIES[safeNodeId];
+  const cookieName = UNLOCK_COOKIES[safeNodeId];
 
-    if (cookieName) {
+  if (cookieName) {
+    if (isCorrect) {
       const signedValue = await createSignedValue(cookieName, env.HUNT_SIGNING_SECRET);
 
       headers.append(
         "Set-Cookie",
         `${cookieName}=${signedValue}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=172800`
       );
+    } else {
+      headers.append(
+        "Set-Cookie",
+        `${cookieName}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT`
+      );
     }
   }
-
-  if (!isCorrect) {
-  const cookieName = UNLOCK_COOKIES[safeNodeId];
-
-  if (cookieName) {
-    headers.append(
-      "Set-Cookie",
-      `${cookieName}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`
-    );
-  }
-}
 
   return new Response(
     JSON.stringify({
