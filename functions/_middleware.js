@@ -23,12 +23,21 @@ export async function onRequest(context) {
     return Response.redirect(`${url.origin}/locked`, 302);
   }
 
-  const protectedRoutes = {
-    "/sequence": ["unlock_sequence"],
-    "/sequence.html": ["unlock_sequence"],
+  const BASE_UNLOCK_COOKIES = [
+    "base_a",
+    "base_b",
+    "base_c",
+    "base_d",
+    "base_e",
+    "base_f"
+  ];
 
-    "/location": ["unlock_location"],
-    "/location.html": ["unlock_location"],
+  const protectedRoutes = {
+    "/sequence": BASE_UNLOCK_COOKIES,
+    "/sequence.html": BASE_UNLOCK_COOKIES,
+
+    "/location": BASE_UNLOCK_COOKIES,
+    "/location.html": BASE_UNLOCK_COOKIES,
 
     "/final_step": ["unlock_sequence", "unlock_location"],
     "/final_step.html": ["unlock_sequence", "unlock_location"]
