@@ -1,5 +1,1242 @@
-<script>
-  const STORAGE_KEY = "obsidian-node-status-v17";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Obsidian Control Gateway</title>
+  <style>
+    :root {
+      --bg: #020402;
+      --panel: #071107;
+      --panel-2: #0a170a;
+      --border: #173417;
+      --border-active: #2d6b2d;
+      --text: #9cff9c;
+      --text-dim: #5cab5c;
+      --text-bright: #d7ffd7;
+      --warn: #a7ff4d;
+      --danger: #ff6b6b;
+      --shadow: rgba(80, 255, 80, 0.08);
+      --resolved-bg: rgba(120, 255, 120, 0.07);
+
+      --master-border: #5f7f2a;
+      --master-border-active: #c2ff5b;
+      --master-glow: rgba(194, 255, 91, 0.20);
+      --master-bg: rgba(167,255,77,0.06);
+      --master-text: #efffbe;
+
+      --alert-red: #ff3b3b;
+      --alert-red-soft: rgba(255, 59, 59, 0.12);
+      --alert-red-mid: rgba(255, 59, 59, 0.20);
+      --alert-red-strong: rgba(255, 59, 59, 0.30);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top, rgba(0, 255, 120, 0.05), transparent 35%),
+        linear-gradient(180deg, #010201 0%, #020402 100%);
+      color: var(--text);
+      font-family: "Courier New", Courier, monospace;
+    }
+
+    body {
+      padding: 24px;
+      overflow-x: hidden;
+      transition: background 0.3s ease;
+      position: relative;
+    }
+
+    body.master-active {
+      background:
+        radial-gradient(circle at top, rgba(167, 255, 77, 0.08), transparent 38%),
+        radial-gradient(circle at center, rgba(140, 255, 140, 0.04), transparent 50%),
+        linear-gradient(180deg, #010201 0%, #030603 100%);
+    }
+
+    body.master-unlocked {
+      background:
+        radial-gradient(circle at top, rgba(194, 255, 91, 0.10), transparent 42%),
+        radial-gradient(circle at center, rgba(120,255,120,0.05), transparent 58%),
+        linear-gradient(180deg, #020502 0%, #050a05 100%);
+      animation: unlockedPulse 2.5s ease-in-out infinite;
+    }
+
+    body.alert-flash::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at center, transparent 28%, rgba(255, 0, 0, 0.12) 100%),
+        rgba(255, 40, 40, 0.05);
+      mix-blend-mode: screen;
+      z-index: 998;
+      animation: redFlash 0.55s ease-out;
+    }
+
+    body.master-unlocked.alert-mode::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg,
+          transparent 0%,
+          rgba(255, 0, 0, 0.04) 25%,
+          transparent 50%,
+          rgba(255, 0, 0, 0.04) 75%,
+          transparent 100%);
+      z-index: 997;
+      animation: sirenSweep 1.8s linear infinite;
+    }
+
+    .scanlines::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.02) 0px,
+        rgba(255,255,255,0.02) 1px,
+        transparent 2px,
+        transparent 4px
+      );
+      opacity: 0.18;
+      mix-blend-mode: screen;
+      z-index: 999;
+    }
+
+    .shell {
+      max-width: 1320px;
+      margin: 0 auto;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(5,15,5,0.95), rgba(3,8,3,0.96));
+      box-shadow:
+        0 0 0 1px rgba(60, 255, 60, 0.05) inset,
+        0 0 30px var(--shadow);
+      position: relative;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    }
+
+    body.master-active .shell {
+      box-shadow:
+        0 0 0 1px rgba(90, 255, 90, 0.06) inset,
+        0 0 34px rgba(120,255,120,0.10);
+    }
+
+    body.master-unlocked .shell {
+      border-color: #4d7d2e;
+      box-shadow:
+        0 0 0 1px rgba(140, 255, 140, 0.08) inset,
+        0 0 42px rgba(194,255,91,0.14);
+    }
+
+    body.master-unlocked.alert-mode .shell {
+      animation: shellAlertJitter 0.18s linear infinite;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #0d180d, #091009);
+      color: var(--text-dim);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      gap: 12px;
+      flex-wrap: wrap;
+      transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease;
+    }
+
+    body.master-active .topbar {
+      border-bottom-color: #365736;
+      color: #7fbd7f;
+    }
+
+    body.master-unlocked .topbar {
+      border-bottom-color: #7a2f2f;
+      color: #ffe0e0;
+      background: linear-gradient(180deg, #241010, #150a0a);
+      box-shadow: inset 0 0 18px rgba(255, 0, 0, 0.08);
+    }
+
+    .topbar-left,
+    .topbar-right {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--warn);
+      box-shadow: 0 0 10px rgba(167, 255, 77, 0.7);
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    .status-dot.alert {
+      background: #ff5c5c;
+      box-shadow: 0 0 12px rgba(255, 92, 92, 0.95);
+      animation: alertBlink 0.8s steps(1, end) infinite;
+    }
+
+    .header {
+      padding: 28px 22px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: border-color 0.3s ease;
+    }
+
+    body.master-unlocked .header {
+      border-bottom-color: #7a2f2f;
+    }
+
+    .bootline {
+      color: var(--text-dim);
+      font-size: 14px;
+      margin-bottom: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.3s ease;
+    }
+
+    body.master-unlocked .bootline {
+      color: #ffaaaa;
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 50px);
+      line-height: 1.05;
+      color: var(--text-bright);
+      text-shadow: 0 0 12px rgba(156, 255, 156, 0.2);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    body.master-unlocked .title {
+      text-shadow:
+        0 0 8px rgba(255, 180, 180, 0.20),
+        0 0 20px rgba(255, 80, 80, 0.18);
+    }
+
+    .subtitle {
+      margin-top: 12px;
+      color: var(--text-dim);
+      font-size: 15px;
+      line-height: 1.6;
+      max-width: 980px;
+      transition: color 0.3s ease;
+    }
+
+    body.master-unlocked .subtitle {
+      color: #d8a4a4;
+    }
+
+    .master-banner {
+      display: none;
+      margin-top: 18px;
+      padding: 12px 14px;
+      border: 1px solid var(--master-border);
+      background: linear-gradient(180deg, rgba(45,60,18,0.50), rgba(18,28,8,0.55));
+      color: var(--master-text);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      box-shadow: 0 0 18px rgba(194,255,91,0.08);
+    }
+
+    body.master-active .master-banner {
+      display: block;
+    }
+
+    body.master-unlocked .master-banner {
+      border-color: rgba(255, 92, 92, 0.45);
+      background: linear-gradient(180deg, rgba(70,18,18,0.55), rgba(24,8,8,0.70));
+      color: #ffd4d4;
+      box-shadow: 0 0 18px rgba(255, 59, 59, 0.12);
+    }
+
+    .status-panel {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .terminal-log,
+    .progress-panel {
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(10,23,10,0.9), rgba(5,10,5,0.95));
+      padding: 14px;
+      min-height: 100%;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    }
+
+    body.master-unlocked .terminal-log,
+    body.master-unlocked .progress-panel {
+      border-color: #7a2f2f;
+      box-shadow: 0 0 18px rgba(255,59,59,0.08);
+      background: linear-gradient(180deg, rgba(28,12,12,0.94), rgba(13,6,6,0.98));
+    }
+
+    .terminal-log {
+      color: var(--text-dim);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .terminal-log .line {
+      display: block;
+      white-space: pre-wrap;
+    }
+
+    .terminal-log .ok {
+      color: var(--warn);
+    }
+
+    .terminal-log .attention {
+      color: var(--text-bright);
+    }
+
+    .terminal-log .master {
+      color: #ffd0d0;
+    }
+
+    .terminal-log .alert {
+      color: #ff8f8f;
+    }
+
+    .progress-title {
+      margin: 0 0 12px;
+      color: var(--text-dim);
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .progress-stats {
+      display: grid;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    body.master-unlocked .progress-title,
+    body.master-unlocked .progress-stats {
+      color: #e3b7b7;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      border: 1px solid var(--border);
+      background: #041004;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body.master-unlocked .progress-bar {
+      border-color: #7a2f2f;
+      background: #180707;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(90,255,90,0.35), rgba(167,255,77,0.75));
+      transition: width 0.2s ease;
+    }
+
+    body.master-unlocked .progress-fill {
+      background: linear-gradient(90deg, rgba(255,110,110,0.52), rgba(255,59,59,0.90));
+    }
+
+    .grid-wrap {
+      padding: 22px;
+    }
+
+    .grid-title {
+      margin: 0 0 14px;
+      font-size: 14px;
+      color: var(--text-dim);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    body.master-unlocked .grid-title {
+      color: #e0b0b0;
+    }
+
+    .node-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .node {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 18px;
+      min-height: 330px;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(10, 23, 10, 0.95), rgba(5, 11, 5, 0.98));
+      box-shadow:
+        0 0 0 1px rgba(100,255,100,0.03) inset,
+        0 0 20px rgba(0,255,0,0.03);
+      position: relative;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+    }
+
+    .node:hover {
+      transform: translateY(-2px);
+      border-color: #2b5a2b;
+      box-shadow:
+        0 0 0 1px rgba(130,255,130,0.06) inset,
+        0 0 28px rgba(0,255,0,0.08);
+    }
+
+    .node::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(156,255,156,0.03), transparent 45%);
+    }
+
+    .node.resolved {
+      border-color: var(--border-active);
+      background:
+        linear-gradient(180deg, rgba(18, 34, 18, 0.98), rgba(8, 18, 8, 0.99)),
+        var(--resolved-bg);
+      box-shadow:
+        0 0 0 1px rgba(130,255,130,0.08) inset,
+        0 0 28px rgba(80,255,80,0.10);
+    }
+
+    .node.master-node {
+      border-color: var(--master-border);
+      background:
+        linear-gradient(180deg, rgba(18, 26, 8, 0.96), rgba(9, 13, 4, 0.98));
+      box-shadow:
+        0 0 0 1px rgba(194,255,91,0.05) inset,
+        0 0 26px rgba(194,255,91,0.08);
+    }
+
+    .node.master-node:hover {
+      border-color: #9dcc44;
+      box-shadow:
+        0 0 0 1px rgba(215,255,138,0.08) inset,
+        0 0 34px rgba(194,255,91,0.14);
+    }
+
+    .node.master-node::after {
+      background: linear-gradient(135deg, rgba(215,255,138,0.05), transparent 48%);
+    }
+
+    .node.master-node.resolved {
+      border-color: #ff7373;
+      background:
+        linear-gradient(180deg, rgba(40, 12, 12, 0.98), rgba(18, 5, 5, 0.99));
+      box-shadow:
+        0 0 0 1px rgba(255,180,180,0.10) inset,
+        0 0 34px rgba(255, 59, 59, 0.18);
+    }
+
+    .node.locked {
+      opacity: 0.86;
+    }
+
+    .node.locked:hover {
+      transform: none;
+      box-shadow:
+        0 0 0 1px rgba(194,255,91,0.04) inset,
+        0 0 18px rgba(194,255,91,0.05);
+    }
+
+    .node.locked .node-link,
+    .node.locked .verify-button,
+    .node.locked .toggle-button,
+    .node.locked .node-input {
+      pointer-events: none;
+      opacity: 0.55;
+      filter: grayscale(0.15);
+    }
+
+    .node.locked .node-input {
+      cursor: not-allowed;
+    }
+
+    .master-lock-overlay {
+      display: none;
+      position: absolute;
+      inset: 68px 18px 18px 18px;
+      z-index: 3;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .node.locked .master-lock-overlay {
+      display: flex;
+    }
+
+    .master-lock-box {
+      width: 100%;
+      max-width: 270px;
+      text-align: center;
+      padding: 18px 16px;
+      border: 1px solid rgba(255, 92, 92, 0.45);
+      background: linear-gradient(180deg, rgba(45, 10, 10, 0.82), rgba(18, 5, 5, 0.90));
+      box-shadow:
+        0 0 0 1px rgba(255, 180, 180, 0.08) inset,
+        0 0 24px rgba(255, 59, 59, 0.14);
+      backdrop-filter: blur(2px);
+    }
+
+    .master-lock-title {
+      color: #ffe3e3;
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .master-lock-copy {
+      color: #d7a3a3;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.5;
+    }
+
+    .node.locked h2,
+    .node.locked p,
+    .node.locked .node-actions {
+      opacity: 0.34;
+    }
+
+    .node.locked .node-head {
+      opacity: 0.92;
+    }
+
+    .node-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .node-tag {
+      color: var(--text-dim);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .node.master-node .node-tag {
+      color: #ffd0d0;
+    }
+
+    .node-state {
+      font-size: 12px;
+      color: var(--warn);
+      border: 1px solid rgba(167,255,77,0.25);
+      padding: 4px 8px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(167,255,77,0.06);
+    }
+
+    .node.resolved .node-state {
+      color: var(--text-bright);
+      border-color: rgba(140,255,140,0.30);
+      background: rgba(120,255,120,0.12);
+    }
+
+    .node.master-node .node-state {
+      color: #ffe3e3;
+      border-color: rgba(255, 92, 92, 0.35);
+      background: rgba(255, 92, 92, 0.08);
+    }
+
+    .node.master-node.locked .node-state {
+      color: #fff0f0;
+      border-color: rgba(255, 92, 92, 0.48);
+      background: rgba(70, 10, 10, 0.58);
+    }
+
+    .node.master-node.resolved .node-state {
+      color: #fff1f1;
+      border-color: rgba(255, 140, 140, 0.55);
+      background: rgba(255, 92, 92, 0.14);
+    }
+
+    .master-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border: 1px solid rgba(255, 92, 92, 0.35);
+      background: rgba(255, 92, 92, 0.08);
+      color: #ffd8d8;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      width: fit-content;
+    }
+
+    .node h2 {
+      margin: 0;
+      font-size: 22px;
+      color: var(--text-bright);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .node.master-node h2 {
+      color: #fff0f0;
+      text-shadow: 0 0 12px rgba(255,120,120,0.12);
+    }
+
+    .node p {
+      margin: 0;
+      color: var(--text-dim);
+      font-size: 14px;
+      line-height: 1.6;
+      flex-grow: 0;
+    }
+
+    .node.master-node p {
+      color: #e0abab;
+    }
+
+    .node-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+      margin-top: auto;
+    }
+
+    .node-link,
+    .verify-button,
+    .toggle-button,
+    .reset-button {
+      display: inline-block;
+      width: 100%;
+      text-decoration: none;
+      color: var(--text-bright);
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      background: linear-gradient(180deg, rgba(8,18,8,0.9), rgba(5,10,5,0.95));
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 13px;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+      font-family: inherit;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .node-link:hover,
+    .verify-button:hover,
+    .toggle-button:hover,
+    .reset-button:hover {
+      background: rgba(167,255,77,0.08);
+      border-color: #3f7a3f;
+      color: #f0fff0;
+    }
+
+    .node.master-node .node-link,
+    .node.master-node .verify-button,
+    .node.master-node .toggle-button {
+      border-color: rgba(255, 92, 92, 0.35);
+      background: linear-gradient(180deg, rgba(30,12,12,0.94), rgba(14,4,4,0.98));
+      color: #fff0f0;
+    }
+
+    .node.master-node .node-link:hover,
+    .node.master-node .verify-button:hover,
+    .node.master-node .toggle-button:hover {
+      background: rgba(255, 92, 92, 0.10);
+      border-color: #ff9b9b;
+      color: #fff;
+      box-shadow: 0 0 16px rgba(255,92,92,0.10);
+    }
+
+    .toggle-button {
+      background: linear-gradient(180deg, rgba(10,22,10,0.96), rgba(6,12,6,0.98));
+      display: none;
+    }
+
+    body.admin-mode .toggle-button {
+      display: inline-block;
+    }
+
+    body.admin-mode .node.locked .toggle-button {
+      display: none;
+    }
+
+    body.admin-disabled .toggle-button,
+    body.admin-disabled #resetAllButton {
+      display: none !important;
+    }
+
+    .node-input {
+      width: 100%;
+      background: rgba(4, 16, 4, 0.95);
+      border: 1px solid var(--border);
+      color: var(--text-bright);
+      padding: 11px 12px;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .node.master-node .node-input {
+      background: rgba(16, 6, 6, 0.96);
+      border-color: rgba(255, 92, 92, 0.34);
+      color: #fff3f3;
+    }
+
+    .node-input::placeholder {
+      color: #4f7a4f;
+      text-transform: uppercase;
+    }
+
+    .node.master-node .node-input::placeholder {
+      color: #a26a6a;
+    }
+
+    .node-input:focus {
+      border-color: #3f7a3f;
+      box-shadow: 0 0 0 1px rgba(130,255,130,0.08) inset;
+    }
+
+    .node.master-node .node-input:focus {
+      border-color: #ff8a8a;
+      box-shadow: 0 0 0 1px rgba(255,92,92,0.12) inset;
+    }
+
+    .verify-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    body.admin-mode .verify-row {
+      grid-template-columns: 1fr auto;
+    }
+
+    .verify-button {
+      width: 100%;
+      min-width: 100px;
+    }
+
+    body.admin-mode .verify-button {
+      width: auto;
+    }
+
+    .node-feedback {
+      min-height: 18px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .node-feedback.success {
+      color: var(--warn);
+    }
+
+    .node-feedback.error {
+      color: var(--danger);
+    }
+
+    .node.master-node .node-feedback.success {
+      color: #ffd4d4;
+    }
+
+    .footer {
+      padding: 18px 22px 26px;
+      border-top: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 13px;
+      line-height: 1.7;
+      transition: border-color 0.3s ease, color 0.3s ease;
+    }
+
+    body.master-unlocked .footer {
+      border-top-color: #7a2f2f;
+      color: #d7a2a2;
+    }
+
+    .master-hint {
+      margin-top: 10px;
+      color: #4f7a4f;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    body.master-active .master-hint {
+      color: #7c9b7c;
+    }
+
+    body.master-unlocked .master-hint {
+      color: #b68989;
+    }
+
+    .cursor::after {
+      content: "_";
+      display: inline-block;
+      margin-left: 3px;
+      animation: blink 1s steps(1, end) infinite;
+      color: var(--text-bright);
+    }
+
+    .glitch {
+      position: relative;
+      display: inline-block;
+    }
+
+    .glitch:hover::before,
+    .glitch:hover::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .glitch:hover::before {
+      transform: translate(-1px, 0);
+      color: rgba(255, 0, 0, 0.45);
+      clip-path: inset(0 0 55% 0);
+    }
+
+    .glitch:hover::after {
+      transform: translate(1px, 0);
+      color: rgba(0, 255, 255, 0.35);
+      clip-path: inset(45% 0 0 0);
+    }
+
+    .countdown-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1200;
+      background:
+        radial-gradient(circle at center, rgba(60, 0, 0, 0.30), rgba(0, 0, 0, 0.84));
+      backdrop-filter: blur(2px);
+      padding: 24px;
+    }
+
+    .countdown-overlay.active {
+      display: flex;
+      animation: overlayFlash 0.6s ease-out;
+    }
+
+    .countdown-panel {
+      width: min(700px, 100%);
+      border: 1px solid rgba(255, 92, 92, 0.50);
+      background: linear-gradient(180deg, rgba(25, 7, 7, 0.96), rgba(8, 2, 2, 0.98));
+      box-shadow:
+        0 0 0 1px rgba(255, 160, 160, 0.10) inset,
+        0 0 36px rgba(255, 59, 59, 0.20);
+      padding: 28px 24px;
+      text-align: center;
+      animation: panelPulse 1.2s ease-in-out infinite;
+    }
+
+    .countdown-label {
+      color: #ffbcbc;
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .countdown-title {
+      margin: 0 0 12px;
+      color: #fff3f3;
+      font-size: clamp(28px, 5vw, 52px);
+      line-height: 1.05;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 14px rgba(255, 92, 92, 0.24);
+    }
+
+    .countdown-copy {
+      margin: 0 0 18px;
+      color: #e0b0b0;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .countdown-number {
+      font-size: clamp(54px, 10vw, 112px);
+      color: #fff;
+      line-height: 1;
+      text-shadow:
+        0 0 12px rgba(255, 92, 92, 0.20),
+        0 0 30px rgba(255, 59, 59, 0.20);
+      margin: 6px 0 14px;
+    }
+
+    .countdown-subtext {
+      color: #ff9999;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    @keyframes unlockedPulse {
+      0%, 100% {
+        background-position: center top, center center, center center;
+      }
+      50% {
+        filter: saturate(1.08);
+      }
+    }
+
+    @keyframes redFlash {
+      0% { opacity: 0; }
+      30% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    @keyframes sirenSweep {
+      0% { transform: translateX(-20%); opacity: 0.35; }
+      50% { opacity: 0.7; }
+      100% { transform: translateX(20%); opacity: 0.35; }
+    }
+
+    @keyframes alertBlink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0.35; }
+    }
+
+    @keyframes shellAlertJitter {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(0.3px, -0.4px); }
+      50% { transform: translate(-0.4px, 0.3px); }
+      75% { transform: translate(0.2px, 0.4px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    @keyframes overlayFlash {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes panelPulse {
+      0%, 100% { box-shadow: 0 0 36px rgba(255, 59, 59, 0.20); }
+      50% { box-shadow: 0 0 48px rgba(255, 59, 59, 0.30); }
+    }
+
+    @media (max-width: 1100px) {
+      .node-grid {
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+      }
+
+      .status-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .node-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .verify-row {
+        grid-template-columns: 1fr;
+      }
+
+      body.admin-mode .verify-row {
+        grid-template-columns: 1fr;
+      }
+
+      .verify-button,
+      body.admin-mode .verify-button {
+        width: 100%;
+      }
+
+      .countdown-panel {
+        padding: 22px 18px;
+      }
+    }
+  </style>
+</head>
+
+/** Nothing here... 
+  ...(but smart to check...) **/
+  
+<body class="scanlines">
+  <div class="countdown-overlay" id="countdownOverlay" aria-hidden="true">
+    <div class="countdown-panel">
+      <div class="countdown-label">Master Authorization Complete</div>
+      <h2 class="countdown-title">Interception Window Opening</h2>
+      <p class="countdown-copy">
+        Alpha and Omega directives have been synchronized. Final route handoff will begin automatically.
+      </p>
+      <div class="countdown-number" id="countdownNumber">10</div>
+      <div class="countdown-subtext">Redirecting to final_step.html</div>
+    </div>
+  </div>
+
+  <div class="shell">
+    <div class="topbar">
+      <div class="topbar-left">
+        <span id="sessionStatus"><span class="status-dot" id="statusDot"></span>SECURE SESSION ACTIVE</span>
+        <span>OBSIDIAN CONTROL GATEWAY</span>
+      </div>
+      <div class="topbar-right">
+        <span id="accessTier">ACCESS TIER: INTERNAL</span>
+        <span id="modeStatus">MODE: FRAGMENT RECOVERY</span>
+      </div>
+    </div>
+
+    <header class="header">
+      <div class="bootline" id="bootlineText">Initializing Easter asset recovery environment...</div>
+      <h1 class="title glitch" data-text="System Access Matrix">System Access Matrix</h1>
+      <div class="subtitle" id="subtitleText">
+        Distributed recovery fragments have been isolated across multiple system nodes. Resolve each node, preserve all outputs,
+        and reconstruct the concealed destination sequence.
+      </div>
+      <div class="master-banner" id="masterBanner">
+        MASTER DIRECTIVE ACTIVITY DETECTED // ALPHA AND OMEGA CHANNELS ARE NOW MODIFYING GLOBAL SYSTEM STATE
+      </div>
+    </header>
+
+    <section class="status-panel">
+      <div class="terminal-log" aria-label="terminal output" id="terminalLog">
+        <span class="line">&gt; boot sequence .................... <span class="ok">complete</span></span>
+        <span class="line">&gt; fragment isolation ............... <span class="ok">complete</span></span>
+        <span class="line">&gt; route masking .................... <span class="ok">enabled</span></span>
+        <span class="line">&gt; recovery nodes ................... <span class="attention">8 detected</span></span>
+        <span class="line">&gt; sequence state ................... <span class="attention">obscured</span></span>
+        <span class="line cursor" id="terminalCursor">&gt; awaiting operator input</span>
+      </div>
+
+      <div class="progress-panel">
+        <h2 class="progress-title" id="progressTitle">Recovery Status</h2>
+        <div class="progress-stats">
+          <div>Resolved Nodes: <span id="resolvedCount">0</span> / <span id="resolvedTotal">8</span></div>
+          <div>System Recovery: <span id="progressPercent">0</span>%</div>
+          <div>Master Nodes: <span id="masterStatus">0</span> / 2</div>
+          <div class="progress-bar" aria-hidden="true">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <button class="reset-button" id="resetAllButton" type="button">Reset All Node Status</button>
+        </div>
+      </div>
+    </section>
+
+    <main class="grid-wrap">
+      <h2 class="grid-title">Available Access Nodes</h2>
+
+      <div class="node-grid">
+        <section class="node" data-node-id="node-a">
+          <div class="node-head">
+            <div class="node-tag">Node A</div>
+            <div class="node-state">Pending</div>
+          </div>
+          <h2>Origin</h2>
+          <p>Audit upstream source records and recover the concealed fragment embedded near the point of initial transfer.</p>
+          <div class="node-actions">
+            <a class="node-link" href="origin.html">Initialize Node</a>
+            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <div class="verify-row">
+              <button class="verify-button" type="button">Verify</button>
+              <button class="toggle-button" type="button">Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="node" data-node-id="node-b">
+          <div class="node-head">
+            <div class="node-tag">Node B</div>
+            <div class="node-state">Pending</div>
+          </div>
+          <h2>Stability</h2>
+          <p>Review the disruption field and isolate the retained fragment that remains after volatility filtering.</p>
+          <div class="node-actions">
+            <a class="node-link" href="stability.html">Initialize Node</a>
+            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <div class="verify-row">
+              <button class="verify-button" type="button">Verify</button>
+              <button class="toggle-button" type="button">Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="node" data-node-id="node-c">
+          <div class="node-head">
+            <div class="node-tag">Node C</div>
+            <div class="node-state">Pending</div>
+          </div>
+          <h2>Function</h2>
+          <p>Restore auxiliary support pathways and extract the fragment required to continue route reconstruction.</p>
+          <div class="node-actions">
+            <a class="node-link" href="function.html">Initialize Node</a>
+            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <div class="verify-row">
+              <button class="verify-button" type="button">Verify</button>
+              <button class="toggle-button" type="button">Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="node" data-node-id="node-d">
+          <div class="node-head">
+            <div class="node-tag">Node D</div>
+            <div class="node-state">Pending</div>
+          </div>
+          <h2>Infrastructure</h2>
+          <p>Inspect hardened physical assets for embedded recovery data hidden within the backbone layer.</p>
+          <div class="node-actions">
+            <a class="node-link" href="infrastructure.html">Initialize Node</a>
+            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <div class="verify-row">
+              <button class="verify-button" type="button">Verify</button>
+              <button class="toggle-button" type="button">Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="node" data-node-id="node-e">
+          <div class="node-head">
+            <div class="node-tag">Node E</div>
+            <div class="node-state">Pending</div>
+          </div>
+          <h2>Scale</h2>
+          <p>Resolve nested holdings and determine the valid output concealed within recursive containment.</p>
+          <div class="node-actions">
+            <a class="node-link" href="scale.html">Initialize Node</a>
+            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <div class="verify-row">
+              <button class="verify-button" type="button">Verify</button>
+              <button class="toggle-button" type="button">Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="node" data-node-id="node-f">
+          <div class="node-head">
+            <div class="node-tag">Node F</div>
+            <div class="node-state">Pending</div>
+          </div>
+          <h2>Access</h2>
+          <p>Reassemble terminal credentials and recover the gated fragment required for physical environment entry.</p>
+          <div class="node-actions">
+            <a class="node-link" href="access.html">Initialize Node</a>
+            <input class="node-input" type="text" placeholder="Enter recovered fragment" />
+            <div class="verify-row">
+              <button class="verify-button" type="button">Verify</button>
+              <button class="toggle-button" type="button">Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="node master-node locked" data-node-id="node-g" data-master-node="true">
+          <div class="node-head">
+            <div>
+              <div class="node-tag">Master Node Alpha</div>
+              <div class="master-badge">Sequence Directive</div>
+            </div>
+            <div class="node-state">Locked</div>
+          </div>
+          <h2>Alpha</h2>
+          <p>Recover the concealed sequence directive and determine the exact ordered fragment required to align the destination pathway.</p>
+
+          <div class="master-lock-overlay">
+            <div class="master-lock-box">
+              <div class="master-lock-title">Master Node Locked</div>
+              <div class="master-lock-copy">Resolve Nodes A-F to unlock</div>
+            </div>
+          </div>
+
+          <div class="node-actions">
+            <a class="node-link" href="sequence.html">Initialize Master Node</a>
+            <input class="node-input" type="text" placeholder="Enter sequence directive" disabled />
+            <div class="verify-row">
+              <button class="verify-button" type="button" disabled>Verify</button>
+              <button class="toggle-button" type="button" disabled>Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite">Awaiting subordinate node completion</div>
+          </div>
+        </section>
+
+        <section class="node master-node locked" data-node-id="node-h" data-master-node="true">
+          <div class="node-head">
+            <div>
+              <div class="node-tag">Master Node Omega</div>
+              <div class="master-badge">Location Directive</div>
+            </div>
+            <div class="node-state">Locked</div>
+          </div>
+          <h2>Omega</h2>
+          <p>Recover the final location directive and identify the exact reference required to authorize interception.</p>
+
+          <div class="master-lock-overlay">
+            <div class="master-lock-box">
+              <div class="master-lock-title">Master Node Locked</div>
+              <div class="master-lock-copy">Resolve Nodes A-F to unlock</div>
+            </div>
+          </div>
+
+          <div class="node-actions">
+            <a class="node-link" href="location.html">Initialize Master Node</a>
+            <input class="node-input" type="text" placeholder="Enter location directive" disabled />
+            <div class="verify-row">
+              <button class="verify-button" type="button" disabled>Verify</button>
+              <button class="toggle-button" type="button" disabled>Mark Completed</button>
+            </div>
+            <div class="node-feedback" aria-live="polite">Awaiting subordinate node completion</div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div id="footerLine1">&gt; advisory: recovered fragments may appear unrelated until properly assembled</div>
+      <div id="footerLine2">&gt; directive: resolve all eight nodes before attempting interception</div>
+      <div class="master-hint" id="masterHint">&gt; input note: master directives may require delimiter-preserved entry formats (example: word-word-word)</div>
+    </footer>
+  </div>
+
+  <script>
+  const STORAGE_KEY = "obsidian-node-status-v16";
   const SHARED_PROGRESS_KEY = "obsidianNodeProgress";
   const ADMIN_MODE_KEY = "obsidian-admin-mode";
   const ADMIN_QUERY_PARAM = "admin";
@@ -26,20 +1263,6 @@
     "node-f": "f",
     "node-g": "alpha",
     "node-h": "omega"
-  };
-
-  const BASE_COOKIE_MAP = {
-    "node-a": "base_a",
-    "node-b": "base_b",
-    "node-c": "base_c",
-    "node-d": "base_d",
-    "node-e": "base_e",
-    "node-f": "base_f"
-  };
-
-  const MASTER_COOKIE_MAP = {
-    "node-g": "unlock_sequence",
-    "node-h": "unlock_location"
   };
 
   const DEFAULT_PROGRESS = {
@@ -157,20 +1380,6 @@
     localStorage.setItem(SHARED_PROGRESS_KEY, JSON.stringify(progress));
   }
 
-  function getCookieMap() {
-    return document.cookie.split(";").reduce((acc, part) => {
-      const [rawKey, ...rawValue] = part.trim().split("=");
-      if (!rawKey) return acc;
-      acc[rawKey] = rawValue.join("=");
-      return acc;
-    }, {});
-  }
-
-  function hasCookie(name) {
-    const cookies = getCookieMap();
-    return Boolean(cookies[name]);
-  }
-
   function setSharedNodeProgress(nodeId, resolved) {
     const progress = getSharedProgress();
     const mappedKey = NODE_PROGRESS_MAP[nodeId];
@@ -205,34 +1414,24 @@
   }
 
   function areBaseNodesResolved() {
-    if (isAdminModeEnabled()) {
-      const state = loadState();
-      return BASE_NODE_IDS.every(nodeId => Boolean(state[nodeId]?.resolved));
-    }
-
-    return BASE_NODE_IDS.every(nodeId => hasCookie(BASE_COOKIE_MAP[nodeId]));
-  }
-
-  function syncStateFromCookies() {
+  const state = loadState();
+  return BASE_NODE_IDS.every(nodeId => Boolean(state[nodeId]?.resolved));
+}
+  function sanitizePersistedState() {
     const state = loadState();
 
     BASE_NODE_IDS.forEach(nodeId => {
       state[nodeId] = state[nodeId] || { value: "", resolved: false };
-
-      if (!isAdminModeEnabled()) {
-        state[nodeId].resolved = hasCookie(BASE_COOKIE_MAP[nodeId]);
-      }
     });
 
     MASTER_NODE_IDS.forEach(nodeId => {
       state[nodeId] = state[nodeId] || { value: "", resolved: false };
-
-      if (!isAdminModeEnabled()) {
-        state[nodeId].resolved = hasCookie(MASTER_COOKIE_MAP[nodeId]);
-      }
     });
 
-    if (!areBaseNodesResolved() && !isAdminModeEnabled()) {
+    const baseResolved =
+      BASE_NODE_IDS.every(nodeId => Boolean(state[nodeId]?.resolved));
+
+    if (!baseResolved) {
       MASTER_NODE_IDS.forEach(nodeId => {
         state[nodeId].resolved = false;
       });
@@ -241,10 +1440,6 @@
     saveState(state);
     syncSharedProgressFromState(state);
     return state;
-  }
-
-  function sanitizePersistedState() {
-    return syncStateFromCookies();
   }
 
   function syncSharedProgressFromState(state = loadState()) {
@@ -401,7 +1596,6 @@
   }
 
   function renderSystemState() {
-    syncStateFromCookies();
     reconcileIllegalMasterState();
 
     const baseUnlocked = updateMasterLockState();
@@ -490,7 +1684,6 @@
   }
 
   function updateProgress() {
-    syncStateFromCookies();
     reconcileIllegalMasterState();
 
     const resolvedNodes = nodes.filter(node => node.classList.contains("resolved"));
@@ -538,7 +1731,20 @@
   }
 
   function initializeNodes() {
-    let state = sanitizePersistedState();
+    const state = sanitizePersistedState();
+    // HARD SYNC: ensure UI and state can NEVER drift
+const baseResolved =
+  ["node-a","node-b","node-c","node-d","node-e","node-f"]
+    .every(id => state[id]?.resolved);
+
+if (!baseResolved) {
+  ["node-g","node-h"].forEach(id => {
+    state[id] = state[id] || { value: "", resolved: false };
+    state[id].resolved = false;
+  });
+
+  saveState(state);
+}
 
     nodes.forEach(node => {
       const nodeId = node.dataset.nodeId;
@@ -612,12 +1818,8 @@
           if (result.correct) {
             currentState[nodeId].resolved = true;
             saveState(currentState);
-
-            syncStateFromCookies();
-            const refreshedState = loadState();
-
-            setNodeResolved(node, Boolean(refreshedState[nodeId]?.resolved));
-            setSharedNodeProgress(nodeId, Boolean(refreshedState[nodeId]?.resolved));
+            setNodeResolved(node, true);
+            setSharedNodeProgress(nodeId, true);
             setFeedback(node, "Accepted", "success");
 
             if (MASTER_NODE_IDS.includes(nodeId)) {
@@ -694,7 +1896,6 @@
     document.addEventListener("keydown", (event) => {
       if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "x") {
         toggleAdminMode();
-        updateProgress();
       }
     });
   }
@@ -733,3 +1934,5 @@
   attachResetHandler();
   initializeNodes();
 </script>
+</body>
+</html>
