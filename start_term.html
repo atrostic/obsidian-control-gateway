@@ -1235,8 +1235,8 @@
     </footer>
   </div>
 
-  <script>
-  const STORAGE_KEY = "obsidian-node-status-v16";
+<script>
+  const STORAGE_KEY = "obsidian-node-status-v18";
   const SHARED_PROGRESS_KEY = "obsidianNodeProgress";
   const ADMIN_MODE_KEY = "obsidian-admin-mode";
   const ADMIN_QUERY_PARAM = "admin";
@@ -1414,9 +1414,10 @@
   }
 
   function areBaseNodesResolved() {
-  const state = loadState();
-  return BASE_NODE_IDS.every(nodeId => Boolean(state[nodeId]?.resolved));
-}
+    const state = loadState();
+    return BASE_NODE_IDS.every(nodeId => Boolean(state[nodeId]?.resolved));
+  }
+
   function sanitizePersistedState() {
     const state = loadState();
 
@@ -1428,8 +1429,7 @@
       state[nodeId] = state[nodeId] || { value: "", resolved: false };
     });
 
-    const baseResolved =
-      BASE_NODE_IDS.every(nodeId => Boolean(state[nodeId]?.resolved));
+    const baseResolved = BASE_NODE_IDS.every(nodeId => Boolean(state[nodeId]?.resolved));
 
     if (!baseResolved) {
       MASTER_NODE_IDS.forEach(nodeId => {
@@ -1731,20 +1731,7 @@
   }
 
   function initializeNodes() {
-    const state = sanitizePersistedState();
-    // HARD SYNC: ensure UI and state can NEVER drift
-const baseResolved =
-  ["node-a","node-b","node-c","node-d","node-e","node-f"]
-    .every(id => state[id]?.resolved);
-
-if (!baseResolved) {
-  ["node-g","node-h"].forEach(id => {
-    state[id] = state[id] || { value: "", resolved: false };
-    state[id].resolved = false;
-  });
-
-  saveState(state);
-}
+    let state = sanitizePersistedState();
 
     nodes.forEach(node => {
       const nodeId = node.dataset.nodeId;
@@ -1818,6 +1805,7 @@ if (!baseResolved) {
           if (result.correct) {
             currentState[nodeId].resolved = true;
             saveState(currentState);
+
             setNodeResolved(node, true);
             setSharedNodeProgress(nodeId, true);
             setFeedback(node, "Accepted", "success");
@@ -1896,6 +1884,7 @@ if (!baseResolved) {
     document.addEventListener("keydown", (event) => {
       if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "x") {
         toggleAdminMode();
+        updateProgress();
       }
     });
   }
