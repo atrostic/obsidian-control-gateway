@@ -1236,595 +1236,693 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "obsidian-node-status-v15";
-    const SHARED_PROGRESS_KEY = "obsidianNodeProgress";
-    const ADMIN_MODE_KEY = "obsidian-admin-mode";
-    const ADMIN_QUERY_PARAM = "admin";
+  const STORAGE_KEY = "obsidian-node-status-v16";
+  const SHARED_PROGRESS_KEY = "obsidianNodeProgress";
+  const ADMIN_MODE_KEY = "obsidian-admin-mode";
+  const ADMIN_QUERY_PARAM = "admin";
 
-    /*
-      PRE-LIVE / LIVE SWITCH
-      ----------------------
-      Set this to true only when you intentionally want admin mode available.
-      For hunt go-live, leave it false.
-    */
-    const ADMIN_ENABLED = true;
+  /*
+    PRE-LIVE / LIVE SWITCH
+    ----------------------
+    Set this to true only when you intentionally want admin mode available.
+    For hunt go-live, leave it false.
+  */
+  const ADMIN_ENABLED = true;
 
-    const MASTER_NODE_IDS = ["node-g", "node-h"];
-    const BASE_NODE_IDS = ["node-a", "node-b", "node-c", "node-d", "node-e", "node-f"];
-    const FINAL_REDIRECT_URL = "final_step.html";
-    const FINAL_COUNTDOWN_SECONDS = 10;
+  const MASTER_NODE_IDS = ["node-g", "node-h"];
+  const BASE_NODE_IDS = ["node-a", "node-b", "node-c", "node-d", "node-e", "node-f"];
+  const FINAL_REDIRECT_URL = "final_step.html";
+  const FINAL_COUNTDOWN_SECONDS = 10;
 
-    const NODE_PROGRESS_MAP = {
-      "node-a": "a",
-      "node-b": "b",
-      "node-c": "c",
-      "node-d": "d",
-      "node-e": "e",
-      "node-f": "f",
-      "node-g": "alpha",
-      "node-h": "omega"
-    };
+  const NODE_PROGRESS_MAP = {
+    "node-a": "a",
+    "node-b": "b",
+    "node-c": "c",
+    "node-d": "d",
+    "node-e": "e",
+    "node-f": "f",
+    "node-g": "alpha",
+    "node-h": "omega"
+  };
 
-    const DEFAULT_PROGRESS = {
-      a: false,
-      b: false,
-      c: false,
-      d: false,
-      e: false,
-      f: false,
-      alpha: false,
-      omega: false
-    };
+  const DEFAULT_PROGRESS = {
+    a: false,
+    b: false,
+    c: false,
+    d: false,
+    e: false,
+    f: false,
+    alpha: false,
+    omega: false
+  };
 
-    const nodes = Array.from(document.querySelectorAll(".node"));
-    const TOTAL_NODE_COUNT = nodes.length;
+  const nodes = Array.from(document.querySelectorAll(".node"));
+  const TOTAL_NODE_COUNT = nodes.length;
 
-    const resolvedCountEl = document.getElementById("resolvedCount");
-    const resolvedTotalEl = document.getElementById("resolvedTotal");
-    const progressPercentEl = document.getElementById("progressPercent");
-    const progressFillEl = document.getElementById("progressFill");
-    const resetAllButton = document.getElementById("resetAllButton");
-    const masterStatusEl = document.getElementById("masterStatus");
+  const resolvedCountEl = document.getElementById("resolvedCount");
+  const resolvedTotalEl = document.getElementById("resolvedTotal");
+  const progressPercentEl = document.getElementById("progressPercent");
+  const progressFillEl = document.getElementById("progressFill");
+  const resetAllButton = document.getElementById("resetAllButton");
+  const masterStatusEl = document.getElementById("masterStatus");
 
-    const modeStatusEl = document.getElementById("modeStatus");
-    const accessTierEl = document.getElementById("accessTier");
-    const sessionStatusEl = document.getElementById("sessionStatus");
-    const terminalLogEl = document.getElementById("terminalLog");
-    const progressTitleEl = document.getElementById("progressTitle");
-    const bootlineTextEl = document.getElementById("bootlineText");
-    const subtitleTextEl = document.getElementById("subtitleText");
-    const footerLine1El = document.getElementById("footerLine1");
-    const footerLine2El = document.getElementById("footerLine2");
+  const modeStatusEl = document.getElementById("modeStatus");
+  const accessTierEl = document.getElementById("accessTier");
+  const sessionStatusEl = document.getElementById("sessionStatus");
+  const terminalLogEl = document.getElementById("terminalLog");
+  const progressTitleEl = document.getElementById("progressTitle");
+  const bootlineTextEl = document.getElementById("bootlineText");
+  const subtitleTextEl = document.getElementById("subtitleText");
+  const footerLine1El = document.getElementById("footerLine1");
+  const footerLine2El = document.getElementById("footerLine2");
 
-    const countdownOverlayEl = document.getElementById("countdownOverlay");
-    const countdownNumberEl = document.getElementById("countdownNumber");
+  const countdownOverlayEl = document.getElementById("countdownOverlay");
+  const countdownNumberEl = document.getElementById("countdownNumber");
 
-    let countdownStarted = false;
-    let countdownInterval = null;
-    let countdownTimeout = null;
+  let countdownStarted = false;
+  let countdownInterval = null;
+  let countdownTimeout = null;
 
-    function isAdminAvailable() {
-      return ADMIN_ENABLED === true;
+  function isAdminAvailable() {
+    return ADMIN_ENABLED === true;
+  }
+
+  function clearAdminArtifacts() {
+    document.body.classList.remove("admin-mode");
+    document.body.classList.add("admin-disabled");
+    localStorage.removeItem(ADMIN_MODE_KEY);
+  }
+
+  function isAdminModeEnabled() {
+    if (!isAdminAvailable()) return false;
+
+    const params = new URLSearchParams(window.location.search);
+    const adminFromUrl = params.get(ADMIN_QUERY_PARAM);
+
+    if (adminFromUrl === "1") {
+      localStorage.setItem(ADMIN_MODE_KEY, "true");
+      return true;
     }
 
-    function clearAdminArtifacts() {
-      document.body.classList.remove("admin-mode");
-      document.body.classList.add("admin-disabled");
-      localStorage.removeItem(ADMIN_MODE_KEY);
+    return localStorage.getItem(ADMIN_MODE_KEY) === "true";
+  }
+
+  function applyAdminMode() {
+    if (!isAdminAvailable()) {
+      clearAdminArtifacts();
+      return;
     }
 
-    function isAdminModeEnabled() {
-      if (!isAdminAvailable()) {
-        return false;
-      }
+    document.body.classList.remove("admin-disabled");
+    document.body.classList.toggle("admin-mode", isAdminModeEnabled());
+  }
 
-      const params = new URLSearchParams(window.location.search);
-      const adminFromUrl = params.get(ADMIN_QUERY_PARAM);
-
-      if (adminFromUrl === "1") {
-        localStorage.setItem(ADMIN_MODE_KEY, "true");
-        return true;
-      }
-
-      return localStorage.getItem(ADMIN_MODE_KEY) === "true";
+  function toggleAdminMode() {
+    if (!isAdminAvailable()) {
+      clearAdminArtifacts();
+      return;
     }
 
-    function applyAdminMode() {
-      if (!isAdminAvailable()) {
-        clearAdminArtifacts();
-        return;
-      }
+    const enabled = localStorage.getItem(ADMIN_MODE_KEY) === "true";
+    localStorage.setItem(ADMIN_MODE_KEY, enabled ? "false" : "true");
+    document.body.classList.toggle("admin-mode", !enabled);
+  }
 
-      document.body.classList.remove("admin-disabled");
-      document.body.classList.toggle("admin-mode", isAdminModeEnabled());
+  function loadState() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch {
+      return {};
     }
+  }
 
-    function toggleAdminMode() {
-      if (!isAdminAvailable()) {
-        clearAdminArtifacts();
-        return;
-      }
+  function saveState(state) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
 
-      const enabled = localStorage.getItem(ADMIN_MODE_KEY) === "true";
-      localStorage.setItem(ADMIN_MODE_KEY, enabled ? "false" : "true");
-      document.body.classList.toggle("admin-mode", !enabled);
-    }
-
-    function loadState() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-      } catch (error) {
-        return {};
-      }
-    }
-
-    function saveState(state) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    function getSharedProgress() {
-      try {
-        const raw = localStorage.getItem(SHARED_PROGRESS_KEY);
-        if (!raw) {
-          localStorage.setItem(SHARED_PROGRESS_KEY, JSON.stringify(DEFAULT_PROGRESS));
-          return { ...DEFAULT_PROGRESS };
-        }
-
-        const parsed = JSON.parse(raw);
-        return { ...DEFAULT_PROGRESS, ...parsed };
-      } catch (error) {
+  function getSharedProgress() {
+    try {
+      const raw = localStorage.getItem(SHARED_PROGRESS_KEY);
+      if (!raw) {
         localStorage.setItem(SHARED_PROGRESS_KEY, JSON.stringify(DEFAULT_PROGRESS));
         return { ...DEFAULT_PROGRESS };
       }
+
+      const parsed = JSON.parse(raw);
+      return { ...DEFAULT_PROGRESS, ...parsed };
+    } catch {
+      localStorage.setItem(SHARED_PROGRESS_KEY, JSON.stringify(DEFAULT_PROGRESS));
+      return { ...DEFAULT_PROGRESS };
+    }
+  }
+
+  function saveSharedProgress(progress) {
+    localStorage.setItem(SHARED_PROGRESS_KEY, JSON.stringify(progress));
+  }
+
+  function setSharedNodeProgress(nodeId, resolved) {
+    const progress = getSharedProgress();
+    const mappedKey = NODE_PROGRESS_MAP[nodeId];
+    if (!mappedKey) return;
+
+    progress[mappedKey] = Boolean(resolved);
+    saveSharedProgress(progress);
+  }
+
+  function setFeedback(node, message, type = "") {
+    const feedback = node.querySelector(".node-feedback");
+    feedback.textContent = message;
+    feedback.className = `node-feedback${type ? " " + type : ""}`;
+  }
+
+  function setNodeResolved(node, isResolved) {
+    const stateBadge = node.querySelector(".node-state");
+    const toggleButton = node.querySelector(".toggle-button");
+
+    node.classList.toggle("resolved", isResolved);
+
+    if (node.classList.contains("locked")) {
+      stateBadge.textContent = "Locked";
+    } else {
+      stateBadge.textContent = isResolved ? "Resolved" : "Pending";
     }
 
-    function saveSharedProgress(progress) {
-      localStorage.setItem(SHARED_PROGRESS_KEY, JSON.stringify(progress));
+    if (toggleButton) {
+      toggleButton.textContent = isResolved ? "Mark Incomplete" : "Mark Completed";
+      toggleButton.setAttribute("aria-pressed", isResolved ? "true" : "false");
     }
+  }
 
-    function setSharedNodeProgress(nodeId, resolved) {
-      const progress = getSharedProgress();
-      const mappedKey = NODE_PROGRESS_MAP[nodeId];
-      if (!mappedKey) return;
+  function areBaseNodesResolved() {
+    return BASE_NODE_IDS.every(nodeId => {
+      const node = document.querySelector(`.node[data-node-id="${nodeId}"]`);
+      return node && node.classList.contains("resolved");
+    });
+  }
 
-      progress[mappedKey] = Boolean(resolved);
-      saveSharedProgress(progress);
-    }
+  function sanitizePersistedState() {
+    const state = loadState();
 
-    function syncSharedProgressFromState() {
-      const state = loadState();
-      const progress = { ...DEFAULT_PROGRESS };
+    BASE_NODE_IDS.forEach(nodeId => {
+      state[nodeId] = state[nodeId] || { value: "", resolved: false };
+    });
 
-      Object.entries(NODE_PROGRESS_MAP).forEach(([nodeId, progressKey]) => {
-        progress[progressKey] = Boolean(state[nodeId]?.resolved);
-      });
+    MASTER_NODE_IDS.forEach(nodeId => {
+      state[nodeId] = state[nodeId] || { value: "", resolved: false };
+    });
 
-      saveSharedProgress(progress);
-    }
+    const baseResolved =
+      BASE_NODE_IDS.every(nodeId => Boolean(state[nodeId]?.resolved));
 
-    function setNodeResolved(node, isResolved) {
-      const stateBadge = node.querySelector(".node-state");
-      const toggleButton = node.querySelector(".toggle-button");
-
-      node.classList.toggle("resolved", isResolved);
-
-      if (node.classList.contains("locked")) {
-        stateBadge.textContent = "Locked";
-      } else {
-        stateBadge.textContent = isResolved ? "Resolved" : "Pending";
-      }
-
-      if (toggleButton) {
-        toggleButton.textContent = isResolved ? "Mark Incomplete" : "Mark Completed";
-        toggleButton.setAttribute("aria-pressed", isResolved ? "true" : "false");
-      }
-    }
-
-    function setFeedback(node, message, type = "") {
-      const feedback = node.querySelector(".node-feedback");
-      feedback.textContent = message;
-      feedback.className = `node-feedback${type ? " " + type : ""}`;
-    }
-
-    function areBaseNodesResolved() {
-      return BASE_NODE_IDS.every(nodeId => {
-        const node = document.querySelector(`.node[data-node-id="${nodeId}"]`);
-        return node && node.classList.contains("resolved");
-      });
-    }
-
-    function setMasterNodeLocked(node, locked) {
-      const input = node.querySelector(".node-input");
-      const verifyButton = node.querySelector(".verify-button");
-      const toggleButton = node.querySelector(".toggle-button");
-      const link = node.querySelector(".node-link");
-      const stateBadge = node.querySelector(".node-state");
-      const wasLocked = node.classList.contains("locked");
-      const feedback = node.querySelector(".node-feedback");
-
-      node.classList.toggle("locked", locked);
-
-      input.disabled = locked;
-      verifyButton.disabled = locked;
-      if (toggleButton) toggleButton.disabled = locked;
-
-      link.setAttribute("tabindex", locked ? "-1" : "0");
-      link.setAttribute("aria-disabled", locked ? "true" : "false");
-
-      if (node.classList.contains("resolved")) {
-        stateBadge.textContent = "Resolved";
-      } else if (locked) {
-        stateBadge.textContent = "Locked";
-      } else {
-        stateBadge.textContent = "Pending";
-      }
-
-      if (locked && !node.classList.contains("resolved")) {
-        setFeedback(node, "Awaiting subordinate node completion");
-      } else if (!locked && wasLocked && !node.classList.contains("resolved")) {
-        if (!feedback.textContent || feedback.textContent === "Awaiting subordinate node completion") {
-          setFeedback(node, "Master node unlocked");
-        }
-      }
-    }
-
-    function updateMasterLockState() {
-      const unlocked = areBaseNodesResolved();
-
+    if (!baseResolved) {
       MASTER_NODE_IDS.forEach(nodeId => {
-        const node = document.querySelector(`.node[data-node-id="${nodeId}"]`);
-        if (!node) return;
-        setMasterNodeLocked(node, !unlocked);
+        state[nodeId].resolved = false;
       });
-
-      return unlocked;
     }
 
-    function getMasterResolvedCount() {
-      return nodes.filter(node =>
-        MASTER_NODE_IDS.includes(node.dataset.nodeId) &&
-        node.classList.contains("resolved")
-      ).length;
+    saveState(state);
+    syncSharedProgressFromState(state);
+    return state;
+  }
+
+  function syncSharedProgressFromState(state = loadState()) {
+    const progress = { ...DEFAULT_PROGRESS };
+
+    Object.entries(NODE_PROGRESS_MAP).forEach(([nodeId, progressKey]) => {
+      progress[progressKey] = Boolean(state[nodeId]?.resolved);
+    });
+
+    saveSharedProgress(progress);
+  }
+
+  function reconcileIllegalMasterState() {
+    const baseResolved = areBaseNodesResolved();
+    if (baseResolved) return false;
+
+    const state = loadState();
+    let changed = false;
+
+    MASTER_NODE_IDS.forEach(nodeId => {
+      state[nodeId] = state[nodeId] || { value: "", resolved: false };
+
+      if (state[nodeId].resolved) {
+        state[nodeId].resolved = false;
+        changed = true;
+      }
+
+      const node = document.querySelector(`.node[data-node-id="${nodeId}"]`);
+      if (node && node.classList.contains("resolved")) {
+        setNodeResolved(node, false);
+        setSharedNodeProgress(nodeId, false);
+        changed = true;
+      }
+    });
+
+    if (changed) {
+      saveState(state);
+      syncSharedProgressFromState(state);
+      stopCountdown();
     }
 
-    function triggerRedFlash() {
+    return changed;
+  }
+
+  function setMasterNodeLocked(node, locked) {
+    const input = node.querySelector(".node-input");
+    const verifyButton = node.querySelector(".verify-button");
+    const toggleButton = node.querySelector(".toggle-button");
+    const link = node.querySelector(".node-link");
+    const stateBadge = node.querySelector(".node-state");
+    const wasLocked = node.classList.contains("locked");
+    const feedback = node.querySelector(".node-feedback");
+
+    node.classList.toggle("locked", locked);
+
+    input.disabled = locked;
+    verifyButton.disabled = locked;
+    if (toggleButton) toggleButton.disabled = locked;
+
+    link.setAttribute("tabindex", locked ? "-1" : "0");
+    link.setAttribute("aria-disabled", locked ? "true" : "false");
+
+    if (node.classList.contains("resolved")) {
+      stateBadge.textContent = "Resolved";
+    } else if (locked) {
+      stateBadge.textContent = "Locked";
+    } else {
+      stateBadge.textContent = "Pending";
+    }
+
+    if (locked && !node.classList.contains("resolved")) {
+      setFeedback(node, "Awaiting subordinate node completion");
+    } else if (!locked && wasLocked && !node.classList.contains("resolved")) {
+      if (!feedback.textContent || feedback.textContent === "Awaiting subordinate node completion") {
+        setFeedback(node, "Master node unlocked");
+      }
+    }
+  }
+
+  function updateMasterLockState() {
+    const unlocked = areBaseNodesResolved();
+
+    MASTER_NODE_IDS.forEach(nodeId => {
+      const node = document.querySelector(`.node[data-node-id="${nodeId}"]`);
+      if (!node) return;
+      setMasterNodeLocked(node, !unlocked);
+    });
+
+    return unlocked;
+  }
+
+  function getMasterResolvedCount() {
+    return nodes.filter(node =>
+      MASTER_NODE_IDS.includes(node.dataset.nodeId) &&
+      node.classList.contains("resolved")
+    ).length;
+  }
+
+  function triggerRedFlash() {
+    document.body.classList.remove("alert-flash");
+    void document.body.offsetWidth;
+    document.body.classList.add("alert-flash");
+    setTimeout(() => {
       document.body.classList.remove("alert-flash");
-      void document.body.offsetWidth;
-      document.body.classList.add("alert-flash");
-      setTimeout(() => {
-        document.body.classList.remove("alert-flash");
-      }, 650);
+    }, 650);
+  }
+
+  function stopCountdown() {
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
     }
 
-    function stopCountdown() {
-      if (countdownInterval) {
+    if (countdownTimeout) {
+      clearTimeout(countdownTimeout);
+      countdownTimeout = null;
+    }
+
+    countdownStarted = false;
+    countdownOverlayEl.classList.remove("active");
+    countdownOverlayEl.setAttribute("aria-hidden", "true");
+    countdownNumberEl.textContent = FINAL_COUNTDOWN_SECONDS;
+    document.body.classList.remove("alert-mode");
+  }
+
+  function startFinalCountdown() {
+    if (countdownStarted) return;
+
+    countdownStarted = true;
+    document.body.classList.add("alert-mode");
+    countdownOverlayEl.classList.add("active");
+    countdownOverlayEl.setAttribute("aria-hidden", "false");
+
+    let remaining = FINAL_COUNTDOWN_SECONDS;
+    countdownNumberEl.textContent = remaining;
+
+    countdownInterval = setInterval(() => {
+      remaining -= 1;
+
+      if (remaining >= 0) {
+        countdownNumberEl.textContent = remaining;
+        triggerRedFlash();
+      }
+
+      if (remaining <= 0) {
         clearInterval(countdownInterval);
         countdownInterval = null;
       }
+    }, 1000);
 
-      if (countdownTimeout) {
-        clearTimeout(countdownTimeout);
-        countdownTimeout = null;
+    countdownTimeout = setTimeout(() => {
+      window.location.href = FINAL_REDIRECT_URL;
+    }, FINAL_COUNTDOWN_SECONDS * 1000);
+  }
+
+  function renderSystemState() {
+    reconcileIllegalMasterState();
+
+    const baseUnlocked = updateMasterLockState();
+    const masterResolved = getMasterResolvedCount();
+    const bothMastersResolved = masterResolved === 2;
+
+    masterStatusEl.textContent = masterResolved;
+
+    document.body.classList.toggle("master-active", masterResolved >= 1);
+    document.body.classList.toggle("master-unlocked", bothMastersResolved);
+
+    if (bothMastersResolved) {
+      modeStatusEl.textContent = "MODE: INTERCEPT WINDOW OPEN";
+      accessTierEl.textContent = "ACCESS TIER: MASTER OVERRIDE";
+      sessionStatusEl.innerHTML = '<span class="status-dot alert"></span>MASTER ROUTE AUTHORIZED';
+
+      bootlineTextEl.textContent = "Alpha and Omega directives confirmed. Destination reconstruction authorized.";
+      subtitleTextEl.textContent = "Sequence and location directives are now synchronized. Remaining fragments may be used to reconstruct the concealed destination and intercept the transfer pathway.";
+
+      progressTitleEl.textContent = "Master Recovery Status";
+
+      terminalLogEl.innerHTML = `
+        <span class="line">&gt; boot sequence .................... <span class="ok">complete</span></span>
+        <span class="line">&gt; fragment isolation ............... <span class="ok">complete</span></span>
+        <span class="line">&gt; subordinate nodes ............... <span class="ok">resolved</span></span>
+        <span class="line">&gt; master node alpha ............... <span class="master">confirmed</span></span>
+        <span class="line">&gt; master node omega ............... <span class="master">confirmed</span></span>
+        <span class="line">&gt; route masking .................... <span class="alert">collapsing</span></span>
+        <span class="line">&gt; destination model ................ <span class="master">reconstructable</span></span>
+        <span class="line cursor">&gt; interception countdown initiated</span>
+      `;
+
+      footerLine1El.textContent = "> advisory: final destination indicators are now aligned";
+      footerLine2El.textContent = "> directive: proceed to physical interception using reconstructed alpha and omega directives";
+
+      startFinalCountdown();
+    } else if (masterResolved === 1) {
+      modeStatusEl.textContent = "MODE: MASTER DIRECTIVE PARTIAL";
+      accessTierEl.textContent = "ACCESS TIER: INTERNAL+";
+      sessionStatusEl.innerHTML = '<span class="status-dot alert"></span>MASTER NODE ACTIVITY DETECTED';
+
+      bootlineTextEl.textContent = "Master directive activity detected...";
+      subtitleTextEl.textContent = "At least one master directive has been recovered. Additional system behavior is now influenced by Alpha and Omega channels.";
+
+      progressTitleEl.textContent = "Recovery Status // Master Activity";
+
+      terminalLogEl.innerHTML = `
+        <span class="line">&gt; boot sequence .................... <span class="ok">complete</span></span>
+        <span class="line">&gt; fragment isolation ............... <span class="ok">complete</span></span>
+        <span class="line">&gt; subordinate lock state ........... <span class="ok">${baseUnlocked ? "released" : "engaged"}</span></span>
+        <span class="line">&gt; route masking .................... <span class="attention">destabilizing</span></span>
+        <span class="line">&gt; alpha/omega presence ............. <span class="master">detected</span></span>
+        <span class="line">&gt; destination model ................ <span class="attention">partial</span></span>
+        <span class="line cursor">&gt; awaiting remaining master authorization</span>
+      `;
+
+      footerLine1El.textContent = "> advisory: alpha and omega directives are beginning to influence system output";
+      footerLine2El.textContent = "> directive: recover remaining master node before attempting final reconstruction";
+
+      stopCountdown();
+    } else {
+      modeStatusEl.textContent = "MODE: FRAGMENT RECOVERY";
+      accessTierEl.textContent = "ACCESS TIER: INTERNAL";
+      sessionStatusEl.innerHTML = '<span class="status-dot"></span>SECURE SESSION ACTIVE';
+
+      bootlineTextEl.textContent = "Initializing Easter asset recovery environment...";
+      subtitleTextEl.textContent = "Distributed recovery fragments have been isolated across multiple system nodes. Resolve each node, preserve all outputs, and reconstruct the concealed destination sequence.";
+
+      progressTitleEl.textContent = "Recovery Status";
+
+      terminalLogEl.innerHTML = `
+        <span class="line">&gt; boot sequence .................... <span class="ok">complete</span></span>
+        <span class="line">&gt; fragment isolation ............... <span class="ok">complete</span></span>
+        <span class="line">&gt; route masking .................... <span class="ok">enabled</span></span>
+        <span class="line">&gt; subordinate lock state ........... <span class="attention">${baseUnlocked ? "released" : "engaged"}</span></span>
+        <span class="line">&gt; recovery nodes ................... <span class="attention">8 detected</span></span>
+        <span class="line">&gt; sequence state ................... <span class="attention">obscured</span></span>
+        <span class="line cursor">&gt; awaiting operator input</span>
+      `;
+
+      footerLine1El.textContent = "> advisory: recovered fragments may appear unrelated until properly assembled";
+      footerLine2El.textContent = "> directive: resolve all eight nodes before attempting interception";
+
+      stopCountdown();
+    }
+  }
+
+  function updateProgress() {
+    reconcileIllegalMasterState();
+
+    const resolvedNodes = nodes.filter(node => node.classList.contains("resolved"));
+    const resolvedCount = resolvedNodes.length;
+    const percent = Math.round((resolvedCount / TOTAL_NODE_COUNT) * 100);
+
+    resolvedCountEl.textContent = resolvedCount;
+    resolvedTotalEl.textContent = TOTAL_NODE_COUNT;
+    progressPercentEl.textContent = percent;
+    progressFillEl.style.width = `${percent}%`;
+
+    renderSystemState();
+  }
+
+  async function verifyNodeAnswer(nodeId, answer) {
+    const response = await fetch("/verify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        nodeId,
+        answer
+      })
+    });
+
+    let data = {};
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+
+    if (response.status === 423 || data.paused) {
+      const pausedError = new Error("Hunt paused");
+      pausedError.paused = true;
+      throw pausedError;
+    }
+
+    if (!response.ok) {
+      throw new Error(`Verification failed with status ${response.status}`);
+    }
+
+    return data;
+  }
+
+  function initializeNodes() {
+    const state = sanitizePersistedState();
+
+    nodes.forEach(node => {
+      const nodeId = node.dataset.nodeId;
+      const toggleButton = node.querySelector(".toggle-button");
+      const verifyButton = node.querySelector(".verify-button");
+      const input = node.querySelector(".node-input");
+
+      const savedValue = state[nodeId]?.value || "";
+      const isResolved = Boolean(state[nodeId]?.resolved);
+
+      input.value = savedValue;
+      setNodeResolved(node, isResolved);
+      setSharedNodeProgress(nodeId, isResolved);
+
+      if (isResolved) {
+        setFeedback(node, "Accepted", "success");
       }
 
-      countdownStarted = false;
-      countdownOverlayEl.classList.remove("active");
-      countdownOverlayEl.setAttribute("aria-hidden", "true");
-      countdownNumberEl.textContent = FINAL_COUNTDOWN_SECONDS;
-      document.body.classList.remove("alert-mode");
-    }
+      input.addEventListener("input", () => {
+        const currentState = loadState();
+        currentState[nodeId] = currentState[nodeId] || { value: "", resolved: false };
+        currentState[nodeId].value = input.value;
+        saveState(currentState);
 
-    function startFinalCountdown() {
-      if (countdownStarted) return;
-
-      countdownStarted = true;
-      document.body.classList.add("alert-mode");
-      countdownOverlayEl.classList.add("active");
-      countdownOverlayEl.setAttribute("aria-hidden", "false");
-
-      let remaining = FINAL_COUNTDOWN_SECONDS;
-      countdownNumberEl.textContent = remaining;
-
-      countdownInterval = setInterval(() => {
-        remaining -= 1;
-
-        if (remaining >= 0) {
-          countdownNumberEl.textContent = remaining;
-          triggerRedFlash();
+        if (!node.classList.contains("resolved") && !node.classList.contains("locked")) {
+          setFeedback(node, "");
         }
-
-        if (remaining <= 0) {
-          clearInterval(countdownInterval);
-          countdownInterval = null;
-        }
-      }, 1000);
-
-      countdownTimeout = setTimeout(() => {
-        window.location.href = FINAL_REDIRECT_URL;
-      }, FINAL_COUNTDOWN_SECONDS * 1000);
-    }
-
-    function renderSystemState() {
-      const baseUnlocked = updateMasterLockState();
-      const masterResolved = getMasterResolvedCount();
-      const bothMastersResolved = masterResolved === 2;
-
-      masterStatusEl.textContent = masterResolved;
-
-      document.body.classList.toggle("master-active", masterResolved >= 1);
-      document.body.classList.toggle("master-unlocked", bothMastersResolved);
-
-      if (bothMastersResolved) {
-        modeStatusEl.textContent = "MODE: INTERCEPT WINDOW OPEN";
-        accessTierEl.textContent = "ACCESS TIER: MASTER OVERRIDE";
-        sessionStatusEl.innerHTML = '<span class="status-dot alert"></span>MASTER ROUTE AUTHORIZED';
-
-        bootlineTextEl.textContent = "Alpha and Omega directives confirmed. Destination reconstruction authorized.";
-        subtitleTextEl.textContent = "Sequence and location directives are now synchronized. Remaining fragments may be used to reconstruct the concealed destination and intercept the transfer pathway.";
-
-        progressTitleEl.textContent = "Master Recovery Status";
-
-        terminalLogEl.innerHTML = `
-          <span class="line">&gt; boot sequence .................... <span class="ok">complete</span></span>
-          <span class="line">&gt; fragment isolation ............... <span class="ok">complete</span></span>
-          <span class="line">&gt; subordinate nodes ............... <span class="ok">resolved</span></span>
-          <span class="line">&gt; master node alpha ............... <span class="master">confirmed</span></span>
-          <span class="line">&gt; master node omega ............... <span class="master">confirmed</span></span>
-          <span class="line">&gt; route masking .................... <span class="alert">collapsing</span></span>
-          <span class="line">&gt; destination model ................ <span class="master">reconstructable</span></span>
-          <span class="line cursor">&gt; interception countdown initiated</span>
-        `;
-
-        footerLine1El.textContent = "> advisory: final destination indicators are now aligned";
-        footerLine2El.textContent = "> directive: proceed to physical interception using reconstructed alpha and omega directives";
-
-        startFinalCountdown();
-      } else if (masterResolved === 1) {
-        modeStatusEl.textContent = "MODE: MASTER DIRECTIVE PARTIAL";
-        accessTierEl.textContent = "ACCESS TIER: INTERNAL+";
-        sessionStatusEl.innerHTML = '<span class="status-dot alert"></span>MASTER NODE ACTIVITY DETECTED';
-
-        bootlineTextEl.textContent = "Master directive activity detected...";
-        subtitleTextEl.textContent = "At least one master directive has been recovered. Additional system behavior is now influenced by Alpha and Omega channels.";
-
-        progressTitleEl.textContent = "Recovery Status // Master Activity";
-
-        terminalLogEl.innerHTML = `
-          <span class="line">&gt; boot sequence .................... <span class="ok">complete</span></span>
-          <span class="line">&gt; fragment isolation ............... <span class="ok">complete</span></span>
-          <span class="line">&gt; subordinate lock state ........... <span class="ok">${baseUnlocked ? "released" : "engaged"}</span></span>
-          <span class="line">&gt; route masking .................... <span class="attention">destabilizing</span></span>
-          <span class="line">&gt; alpha/omega presence ............. <span class="master">detected</span></span>
-          <span class="line">&gt; destination model ................ <span class="attention">partial</span></span>
-          <span class="line cursor">&gt; awaiting remaining master authorization</span>
-        `;
-
-        footerLine1El.textContent = "> advisory: alpha and omega directives are beginning to influence system output";
-        footerLine2El.textContent = "> directive: recover remaining master node before attempting final reconstruction";
-
-        stopCountdown();
-      } else {
-        modeStatusEl.textContent = "MODE: FRAGMENT RECOVERY";
-        accessTierEl.textContent = "ACCESS TIER: INTERNAL";
-        sessionStatusEl.innerHTML = '<span class="status-dot"></span>SECURE SESSION ACTIVE';
-
-        bootlineTextEl.textContent = "Initializing Easter asset recovery environment...";
-        subtitleTextEl.textContent = "Distributed recovery fragments have been isolated across multiple system nodes. Resolve each node, preserve all outputs, and reconstruct the concealed destination sequence.";
-
-        progressTitleEl.textContent = "Recovery Status";
-
-        terminalLogEl.innerHTML = `
-          <span class="line">&gt; boot sequence .................... <span class="ok">complete</span></span>
-          <span class="line">&gt; fragment isolation ............... <span class="ok">complete</span></span>
-          <span class="line">&gt; route masking .................... <span class="ok">enabled</span></span>
-          <span class="line">&gt; subordinate lock state ........... <span class="attention">${baseUnlocked ? "released" : "engaged"}</span></span>
-          <span class="line">&gt; recovery nodes ................... <span class="attention">8 detected</span></span>
-          <span class="line">&gt; sequence state ................... <span class="attention">obscured</span></span>
-          <span class="line cursor">&gt; awaiting operator input</span>
-        `;
-
-        footerLine1El.textContent = "> advisory: recovered fragments may appear unrelated until properly assembled";
-        footerLine2El.textContent = "> directive: resolve all eight nodes before attempting interception";
-
-        stopCountdown();
-      }
-    }
-
-    function updateProgress() {
-      const resolvedNodes = nodes.filter(node => node.classList.contains("resolved"));
-      const resolvedCount = resolvedNodes.length;
-      const percent = Math.round((resolvedCount / TOTAL_NODE_COUNT) * 100);
-
-      resolvedCountEl.textContent = resolvedCount;
-      resolvedTotalEl.textContent = TOTAL_NODE_COUNT;
-      progressPercentEl.textContent = percent;
-      progressFillEl.style.width = `${percent}%`;
-
-      renderSystemState();
-    }
-
-    async function verifyNodeAnswer(nodeId, answer) {
-      const response = await fetch("/verify", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          nodeId,
-          answer
-        })
       });
 
-      if (!response.ok) {
-        throw new Error(`Verification failed with status ${response.status}`);
-      }
-
-      return response.json();
-    }
-
-    function initializeNodes() {
-      const state = loadState();
-
-      nodes.forEach(node => {
-        const nodeId = node.dataset.nodeId;
-        const toggleButton = node.querySelector(".toggle-button");
-        const verifyButton = node.querySelector(".verify-button");
-        const input = node.querySelector(".node-input");
-
-        const savedValue = state[nodeId]?.value || "";
-        const isResolved = Boolean(state[nodeId]?.resolved);
-
-        input.value = savedValue;
-        setNodeResolved(node, isResolved);
-        setSharedNodeProgress(nodeId, isResolved);
-
-        if (isResolved) {
-          setFeedback(node, "Accepted", "success");
-        }
-
-        input.addEventListener("input", () => {
-          const currentState = loadState();
-          currentState[nodeId] = currentState[nodeId] || { value: "", resolved: false };
-          currentState[nodeId].value = input.value;
-          saveState(currentState);
-
-          if (!node.classList.contains("resolved") && !node.classList.contains("locked")) {
-            setFeedback(node, "");
+      const link = node.querySelector(".node-link");
+      if (link && MASTER_NODE_IDS.includes(nodeId)) {
+        link.addEventListener("click", (event) => {
+          if (!areBaseNodesResolved()) {
+            event.preventDefault();
+            window.location.href = "/locked";
           }
         });
+      }
 
-        verifyButton.addEventListener("click", async () => {
-          if (verifyButton.disabled) return;
+      verifyButton.addEventListener("click", async () => {
+        if (verifyButton.disabled) return;
 
-          const currentState = loadState();
-          const enteredRaw = input.value;
+        if (MASTER_NODE_IDS.includes(nodeId) && !areBaseNodesResolved()) {
+          setFeedback(node, "Awaiting subordinate node completion", "error");
+          updateProgress();
+          return;
+        }
 
-          currentState[nodeId] = currentState[nodeId] || { value: "", resolved: false };
-          currentState[nodeId].value = enteredRaw;
+        const currentState = loadState();
+        const enteredRaw = input.value;
 
-          if (!enteredRaw.trim()) {
+        currentState[nodeId] = currentState[nodeId] || { value: "", resolved: false };
+        currentState[nodeId].value = enteredRaw;
+
+        if (!enteredRaw.trim()) {
+          currentState[nodeId].resolved = false;
+          saveState(currentState);
+          setNodeResolved(node, false);
+          setSharedNodeProgress(nodeId, false);
+          setFeedback(node, "No entry detected", "error");
+          updateProgress();
+          return;
+        }
+
+        verifyButton.disabled = true;
+        verifyButton.textContent = "Checking...";
+
+        try {
+          const result = await verifyNodeAnswer(nodeId, enteredRaw);
+
+          if (result.correct) {
+            currentState[nodeId].resolved = true;
+            saveState(currentState);
+            setNodeResolved(node, true);
+            setSharedNodeProgress(nodeId, true);
+            setFeedback(node, "Accepted", "success");
+
+            if (MASTER_NODE_IDS.includes(nodeId)) {
+              triggerRedFlash();
+            }
+          } else {
             currentState[nodeId].resolved = false;
             saveState(currentState);
             setNodeResolved(node, false);
             setSharedNodeProgress(nodeId, false);
-            setFeedback(node, "No entry detected", "error");
-            updateProgress();
+            setFeedback(node, "Invalid entry", "error");
+          }
+
+          updateProgress();
+        } catch (error) {
+          currentState[nodeId].resolved = false;
+          saveState(currentState);
+          setNodeResolved(node, false);
+          setSharedNodeProgress(nodeId, false);
+
+          if (error.paused) {
+            setFeedback(node, "Hunt paused", "error");
+            window.location.href = "/locked";
+          } else {
+            setFeedback(node, "Verification error", "error");
+          }
+
+          updateProgress();
+        } finally {
+          verifyButton.textContent = "Verify";
+          updateMasterLockState();
+          if (!node.classList.contains("locked")) {
+            verifyButton.disabled = false;
+          }
+        }
+      });
+
+      if (toggleButton) {
+        toggleButton.addEventListener("click", () => {
+          if (!isAdminAvailable() || toggleButton.disabled) return;
+
+          if (MASTER_NODE_IDS.includes(nodeId) && !areBaseNodesResolved()) {
+            setFeedback(node, "Awaiting subordinate node completion", "error");
             return;
           }
 
-          verifyButton.disabled = true;
-          verifyButton.textContent = "Checking...";
+          const currentState = loadState();
+          const nextResolved = !node.classList.contains("resolved");
 
-          try {
-            const result = await verifyNodeAnswer(nodeId, enteredRaw);
+          currentState[nodeId] = currentState[nodeId] || { value: "", resolved: false };
+          currentState[nodeId].value = input.value;
+          currentState[nodeId].resolved = nextResolved;
+          saveState(currentState);
 
-            if (result.correct) {
-              currentState[nodeId].resolved = true;
-              saveState(currentState);
-              setNodeResolved(node, true);
-              setSharedNodeProgress(nodeId, true);
-              setFeedback(node, "Accepted", "success");
+          setNodeResolved(node, nextResolved);
+          setSharedNodeProgress(nodeId, nextResolved);
+          setFeedback(node, nextResolved ? "Marked manually" : "");
 
-              if (MASTER_NODE_IDS.includes(nodeId)) {
-                triggerRedFlash();
-              }
-            } else {
-              currentState[nodeId].resolved = false;
-              saveState(currentState);
-              setNodeResolved(node, false);
-              setSharedNodeProgress(nodeId, false);
-              setFeedback(node, "Invalid entry", "error");
-            }
-
-            updateProgress();
-          } catch (error) {
-            currentState[nodeId].resolved = false;
-            saveState(currentState);
-            setNodeResolved(node, false);
-            setSharedNodeProgress(nodeId, false);
-            setFeedback(node, "Verification error", "error");
-            updateProgress();
-          } finally {
-            verifyButton.textContent = "Verify";
-            updateMasterLockState();
-            if (!node.classList.contains("locked")) {
-              verifyButton.disabled = false;
-            }
+          if (nextResolved && MASTER_NODE_IDS.includes(nodeId)) {
+            triggerRedFlash();
           }
+
+          updateProgress();
         });
+      }
+    });
 
-        if (toggleButton) {
-          toggleButton.addEventListener("click", () => {
-            if (!isAdminAvailable() || toggleButton.disabled) return;
+    updateProgress();
+  }
 
-            const currentState = loadState();
-            const nextResolved = !node.classList.contains("resolved");
+  function attachAdminShortcut() {
+    if (!isAdminAvailable()) return;
 
-            currentState[nodeId] = currentState[nodeId] || { value: "", resolved: false };
-            currentState[nodeId].value = input.value;
-            currentState[nodeId].resolved = nextResolved;
-            saveState(currentState);
+    document.addEventListener("keydown", (event) => {
+      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "x") {
+        toggleAdminMode();
+      }
+    });
+  }
 
-            setNodeResolved(node, nextResolved);
-            setSharedNodeProgress(nodeId, nextResolved);
-            setFeedback(node, nextResolved ? "Marked manually" : "");
+  function attachResetHandler() {
+    if (!isAdminAvailable()) {
+      if (resetAllButton) {
+        resetAllButton.style.display = "none";
+        resetAllButton.disabled = true;
+      }
+      return;
+    }
 
-            if (nextResolved && MASTER_NODE_IDS.includes(nodeId)) {
-              triggerRedFlash();
-            }
+    resetAllButton.addEventListener("click", () => {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.setItem(SHARED_PROGRESS_KEY, JSON.stringify(DEFAULT_PROGRESS));
+      stopCountdown();
 
-            updateProgress();
-          });
-        }
+      nodes.forEach(node => {
+        const input = node.querySelector(".node-input");
+        input.value = "";
+        setNodeResolved(node, false);
+        setFeedback(node, "");
       });
 
       updateProgress();
-    }
+    });
+  }
 
-    function attachAdminShortcut() {
-      if (!isAdminAvailable()) return;
+  if (!isAdminAvailable()) {
+    clearAdminArtifacts();
+  }
 
-      document.addEventListener("keydown", (event) => {
-        if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "x") {
-          toggleAdminMode();
-        }
-      });
-    }
-
-    function attachResetHandler() {
-      if (!isAdminAvailable()) {
-        if (resetAllButton) {
-          resetAllButton.style.display = "none";
-          resetAllButton.disabled = true;
-        }
-        return;
-      }
-
-      resetAllButton.addEventListener("click", () => {
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.setItem(SHARED_PROGRESS_KEY, JSON.stringify(DEFAULT_PROGRESS));
-        stopCountdown();
-
-        nodes.forEach(node => {
-          const input = node.querySelector(".node-input");
-          input.value = "";
-          setNodeResolved(node, false);
-          setFeedback(node, "");
-        });
-
-        updateProgress();
-      });
-    }
-
-    if (!isAdminAvailable()) {
-      clearAdminArtifacts();
-    }
-
-    applyAdminMode();
-    attachAdminShortcut();
-    attachResetHandler();
-    initializeNodes();
-    syncSharedProgressFromState();
-  </script>
+  applyAdminMode();
+  attachAdminShortcut();
+  attachResetHandler();
+  initializeNodes();
+</script>
 </body>
 </html>
