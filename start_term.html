@@ -1735,6 +1735,19 @@
 
   function initializeNodes() {
     const state = sanitizePersistedState();
+    // HARD SYNC: ensure UI and state can NEVER drift
+const baseResolved =
+  ["node-a","node-b","node-c","node-d","node-e","node-f"]
+    .every(id => state[id]?.resolved);
+
+if (!baseResolved) {
+  ["node-g","node-h"].forEach(id => {
+    state[id] = state[id] || { value: "", resolved: false };
+    state[id].resolved = false;
+  });
+
+  saveState(state);
+}
 
     nodes.forEach(node => {
       const nodeId = node.dataset.nodeId;
