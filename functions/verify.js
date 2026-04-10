@@ -83,6 +83,19 @@ export async function onRequestPost(context) {
     "node-h": "function-origin-scale"
   };
 
+  const MASTER_ALIASES = {
+    "node-g": [ // SEQUENCE
+      "infrastructure-access-stability",
+      "d-f-b",
+      "1-2-3"
+    ],
+    "node-h": [ // LOCATION
+      "function-origin-scale",
+      "c-a-e",
+      "happy-blankets-factory"
+    ]
+  };
+
   const UNLOCK_COOKIES = {
     "node-a": "base_a",
     "node-b": "base_b",
@@ -96,18 +109,22 @@ export async function onRequestPost(context) {
 
   const safeNodeId = normalize(nodeId);
 
-  let input = normalize(answer);
-  let correct = normalize(ANSWERS[safeNodeId] || "");
+  let isCorrect = false;
 
   if (safeNodeId === "node-g" || safeNodeId === "node-h") {
-    input = normalizeMasterDirective(input);
-    correct = normalizeMasterDirective(correct);
-  } else {
-    input = normalizeNumber(input);
-    correct = normalizeNumber(correct);
-  }
+    const input = normalizeMasterDirective(answer);
 
-  const isCorrect = Boolean(correct) && input === correct;
+    const accepted = [
+      ANSWERS[safeNodeId],
+      ...(MASTER_ALIASES[safeNodeId] || [])
+    ].map(normalizeMasterDirective);
+
+    isCorrect = accepted.includes(input);
+  } else {
+    const input = normalizeNumber(answer);
+    const correct = normalizeNumber(ANSWERS[safeNodeId] || "");
+    isCorrect = Boolean(correct) && input === correct;
+  }
 
   const headers = new Headers({
     "Content-Type": "application/json"
