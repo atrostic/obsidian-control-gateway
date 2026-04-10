@@ -2,40 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Location Node</title>
 
   <style>
     :root {
       --bg: #020402;
+      --bg-top: #010201;
       --panel: #071107;
       --border: #173417;
       --text: #9cff9c;
       --text-dim: #5cab5c;
       --text-bright: #e5ffe5;
       --accent: #a7ff4d;
-      --shadow: rgba(80, 255, 80, 0.08);
+      --shadow: rgba(80,255,80,0.08);
+      --space-2: 14px;
+      --space-3: 18px;
+      --space-4: 22px;
+      --space-5: 26px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      min-height: 100%;
-      background:
-        radial-gradient(circle at top, rgba(0, 255, 120, 0.05), transparent 35%),
-        linear-gradient(180deg, #010201 0%, #020402 100%);
-      color: var(--text);
-      font-family: "Courier New", Courier, monospace;
-    }
+    * { box-sizing: border-box; }
 
     body {
+      margin: 0;
       padding: 24px;
-      overflow-x: hidden;
-      position: relative;
+      background:
+        radial-gradient(circle at top, rgba(0,255,120,0.05), transparent 35%),
+        linear-gradient(180deg, var(--bg-top), var(--bg));
+      color: var(--text);
+      font-family: "Courier New", monospace;
     }
 
     .scanlines::before {
@@ -51,13 +47,12 @@
         transparent 4px
       );
       opacity: 0.18;
-      mix-blend-mode: screen;
       z-index: 999;
     }
 
     .shell {
-      max-width: 1100px;
-      margin: 0 auto;
+      max-width: 1180px;
+      margin: auto;
       border: 1px solid var(--border);
       background: linear-gradient(180deg, rgba(5,15,5,0.95), rgba(3,8,3,0.96));
       box-shadow:
@@ -68,9 +63,6 @@
     .topbar {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
       padding: 10px 14px;
       border-bottom: 1px solid var(--border);
       background: linear-gradient(180deg, #0d180d, #091009);
@@ -83,7 +75,7 @@
     .status-dot {
       width: 8px;
       height: 8px;
-      border-radius: 999px;
+      border-radius: 50%;
       background: var(--accent);
       box-shadow: 0 0 10px rgba(167,255,77,0.7);
       display: inline-block;
@@ -91,134 +83,76 @@
     }
 
     .content {
-      padding: 26px 22px 28px;
+      padding: var(--space-5) var(--space-4) 28px;
       display: grid;
-      gap: 22px;
+      gap: var(--space-4);
     }
 
-    .header-block {
+    .header-block,
+    .panel {
       border: 1px solid var(--border);
       background: linear-gradient(180deg, rgba(10,23,10,0.9), rgba(5,10,5,0.95));
-      padding: 18px;
+      padding: var(--space-3);
+      box-shadow: inset 0 0 10px rgba(0,255,100,0.03);
     }
 
     .bootline {
       color: var(--text-dim);
       font-size: 13px;
       margin-bottom: 10px;
-      letter-spacing: 0.08em;
       text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
 
     h1 {
-      margin: 0 0 10px;
+      margin: 0;
       font-size: clamp(28px, 5vw, 44px);
       color: var(--text-bright);
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      text-shadow: 0 0 12px rgba(156,255,156,0.18);
     }
 
-    .subtitle {
-      color: var(--text-dim);
-      font-size: 15px;
-      line-height: 1.7;
-      max-width: 900px;
-    }
-
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1.15fr 0.95fr;
-      gap: 20px;
-    }
-
-    .terminal-panel,
-    .clue-panel {
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(10,23,10,0.9), rgba(5,10,5,0.95));
-      padding: 18px;
-    }
-
-    .panel-title {
-      margin: 0 0 14px;
-      color: var(--text-dim);
-      font-size: 13px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .cipher-block {
-      white-space: pre-wrap;
-      color: var(--text-bright);
-      font-size: 18px;
-      line-height: 1.9;
-      min-height: 320px;
-    }
-
-    .clue-image {
-      border: 1px solid var(--border);
-      overflow: hidden;
-      margin-bottom: 14px;
-      background: #000;
-      box-shadow: 0 0 18px rgba(80,255,80,0.06);
-    }
-
-    .clue-image img {
-      width: 100%;
-      display: block;
-    }
-
-    .clue-text {
-      color: var(--text-bright);
+    .location-text {
+      white-space: pre-line;
       font-size: 20px;
+      line-height: 1.8;
+      color: var(--text-bright);
       text-align: center;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      line-height: 1.6;
     }
 
-    .footer {
-      border-top: 1px solid var(--border);
-      padding: 16px 22px 20px;
-      color: var(--text-dim);
-      font-size: 12px;
-      line-height: 1.7;
+    .image-panel {
+      border: 1px solid var(--border);
+      padding: 10px;
+      background: #000;
+      text-align: center;
     }
 
-    @media (max-width: 860px) {
-      .main-grid {
-        grid-template-columns: 1fr;
-      }
+    .image-panel img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: auto;
     }
   </style>
 </head>
 
 <body class="scanlines">
+  <div class="shell">
 
-<!-- The answer is hanging in plain sight. -->
+    <div class="topbar">
+      <div><span class="status-dot"></span>Location Node Active</div>
+      <div>Obsidian Control Gateway</div>
+    </div>
 
-<div class="shell">
-  <div class="topbar">
-    <div><span class="status-dot"></span>Recovery Node Active</div>
-    <div>Obsidian Control Gateway // Location Pathway</div>
-  </div>
+    <main class="content">
 
-  <main class="content">
+      <section class="header-block">
+        <div class="bootline">Obsidian Systems / Location Resolution</div>
+        <h1>Location Fragment</h1>
+      </section>
 
-    <section class="header-block">
-      <div class="bootline">Evaluating final location...</div>
-      <h1>Location Fragment</h1>
-      <div class="subtitle">
-        You’re not searching anymore — you’re choosing. One place fits everything you’ve found.
-        Trust it and go there.
-      </div>
-    </section>
-
-    <section class="main-grid">
-
-      <div class="terminal-panel">
-        <div class="panel-title">Recovered Location Notes</div>
-        <div class="cipher-block">
+      <section class="panel">
+        <div class="location-text">
 THE SYSTEM DOES NOT HIDE EVERYTHING
 
 SOME SIGNALS ARE LEFT
@@ -226,36 +160,21 @@ IN THE OPEN
 
 THE ANSWER HAS BEEN
 HANGING IN FRONT OF YOU
-
+          
 PLACED WITH INTENT
 
 BY A TRUSTED HAND
 
-YOU’VE ALREADY PASSED IT
-      </div>
-
-      <div class="clue-panel">
-        <div class="panel-title">Visual Reference</div>
-
-        <div class="clue-image">
-          <img src="images/painter.jpg" alt="Filtered painting clue for final location">
+YOU’VE ALREADY PASSED IT TODAY
         </div>
+      </section>
 
-        <div class="clue-text">
-          The answer is hanging in plain sight.
-        </div>
-      </div>
+      <!-- KEEP YOUR EXISTING IMAGE PATH EXACTLY -->
+      <section class="image-panel">
+        <img src="images/your-existing-image.jpg" alt="Location clue image">
+      </section>
 
-    </section>
-
-  </main>
-
-  <footer class="footer">
-    <div>&gt; advisory: the right place should already feel familiar</div>
-    <div>&gt; directive: trust the answer that fits everything</div>
-    <div>&gt; note: you have already seen what matters</div>
-  </footer>
-</div>
-
+    </main>
+  </div>
 </body>
 </html>
