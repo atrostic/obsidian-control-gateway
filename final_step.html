@@ -12,125 +12,28 @@
       --panel: #071107;
       --panel-2: #0a170a;
       --border: #173417;
-      --border-soft: rgba(167, 255, 77, 0.22);
       --text: #9cff9c;
       --text-dim: #5cab5c;
       --text-bright: #e5ffe5;
-      --accent: #a7ff4d;
       --gold: #d8ff72;
-      --shadow: rgba(80, 255, 80, 0.08);
-      --shadow-strong: rgba(80, 255, 80, 0.14);
-      --space-1: 10px;
-      --space-2: 14px;
-      --space-3: 18px;
       --space-4: 22px;
-      --space-5: 26px;
-      --alert-red: #ff3b3b;
     }
 
     * { box-sizing: border-box; }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      min-height: 100%;
-      background:
-        radial-gradient(circle at top, rgba(0, 255, 120, 0.05), transparent 35%),
-        linear-gradient(180deg, var(--bg-top) 0%, var(--bg) 100%);
-      color: var(--text);
-      font-family: "Courier New", Courier, monospace;
-    }
-
     body {
+      margin: 0;
       padding: 24px;
-      overflow-x: hidden;
-      position: relative;
-    }
-
-    .scanlines::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.02) 0px,
-        rgba(255,255,255,0.02) 1px,
-        transparent 2px,
-        transparent 4px
-      );
-      opacity: 0.18;
-      mix-blend-mode: screen;
-      z-index: 999;
-    }
-
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background: radial-gradient(circle at center, rgba(216,255,114,0.04), transparent 55%);
-      animation: glowPulse 4s ease-in-out infinite;
-      z-index: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Courier New", monospace;
     }
 
     .shell {
-      position: relative;
-      z-index: 1;
       max-width: 1180px;
       margin: 0 auto;
       border: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(5, 15, 5, 0.95), rgba(3, 8, 3, 0.96));
-      box-shadow:
-        0 0 0 1px rgba(60, 255, 60, 0.05) inset,
-        0 0 30px var(--shadow);
-      overflow: hidden;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(180deg, #0d180d, #091009);
-      color: var(--text-dim);
-      font-size: 13px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      display: inline-block;
-      border-radius: 999px;
-      margin-right: 8px;
-      background: var(--gold);
-      box-shadow: 0 0 12px rgba(216,255,114,0.9);
-      animation: pulseDot 1.4s ease-in-out infinite;
-    }
-
-    .header-block {
-      padding: var(--space-5) var(--space-4) var(--space-4);
-      border-bottom: 1px solid var(--border);
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(32px, 6vw, 60px);
-      text-transform: uppercase;
-      color: var(--text-bright);
-    }
-
-    .subtitle {
-      margin-top: 14px;
-      max-width: 900px;
-      color: var(--text-dim);
-      font-size: 16px;
-      line-height: 1.75;
+      background: #050f05;
     }
 
     .content {
@@ -141,23 +44,17 @@
 
     .card {
       border: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(10,23,10,0.9), rgba(5,10,5,0.95));
       padding: 18px;
+      background: #0a170a;
     }
 
     .card h2 {
       margin: 0 0 12px;
       color: var(--text-bright);
-      font-size: 19px;
       text-transform: uppercase;
     }
 
-    .card p {
-      margin: 0;
-      color: var(--text-dim);
-      line-height: 1.8;
-      font-size: 15px;
-    }
+    /* ===== HEIGHT FIX ===== */
 
     .two-col {
       display: grid;
@@ -181,94 +78,137 @@
     }
 
     .list-item {
-      padding: 12px 14px;
       border: 1px solid rgba(120,255,120,0.15);
-      background: rgba(120,255,120,0.04);
+      padding: 12px;
       flex: 1;
     }
 
-    .footer {
-      padding: 18px 22px 24px;
-      border-top: 1px solid var(--border);
-      color: var(--text-dim);
-      font-size: 13px;
+    /* ===== CELEBRATION ===== */
+
+    .burst {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 999;
     }
+
+    .particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: var(--gold);
+      opacity: 0;
+      animation: burst 1.4s ease-out forwards;
+    }
+
+    @keyframes burst {
+      0% { opacity: 1; transform: scale(0.4); }
+      100% { opacity: 0; transform: scale(1.3) translate(var(--dx), var(--dy)); }
+    }
+
+    .celebrate-btn {
+      margin-top: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 
-<body class="scanlines">
+<body>
 
-  <div class="shell">
+<div class="burst" id="burstLayer"></div>
 
-    <div class="topbar">
-      <span><span class="status-dot"></span>Intercept Window Confirmed</span>
-      <span>Final Approach</span>
+<div class="shell">
+  <main class="content">
+
+    <div class="two-col">
+
+      <section class="card">
+        <h2>What Has Been Recovered</h2>
+        <div class="list">
+
+          <div class="list-item">
+            <strong>The Locator</strong>
+            <div>
+              Three words. In the correct order, they define a single point.
+              There is a system built to understand them exactly as written.
+              Enter them there exactly as recovered, and it will reveal where you are meant to go.
+            </div>
+          </div>
+
+          <div class="list-item">
+            <strong>The Room</strong>
+            <div>
+              The numeric sequence has already been assembled. Preserve its order.
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>What Must Accompany You</h2>
+        <div class="list">
+
+          <div class="list-item">
+            <strong>The Recording</strong>
+            <div>You have an unused clue. It still has a role to play.</div>
+          </div>
+
+          <div class="list-item">
+            <strong>The Credential</strong>
+            <div>Access will not be granted without it.</div>
+          </div>
+
+        </div>
+      </section>
+
     </div>
 
-    <section class="header-block">
-      <h1>Well Done, Gentlemen</h1>
-      <div class="subtitle">
-        You’ve earned what comes next.
-      </div>
+    <section class="card">
+      <button class="celebrate-btn" id="celebrateBtn">Celebrate Victory</button>
     </section>
 
-    <main class="content">
+  </main>
+</div>
 
-      <div class="two-col">
+<script>
+const burstLayer = document.getElementById("burstLayer");
+const celebrateBtn = document.getElementById("celebrateBtn");
 
-        <section class="card">
-          <h2>What Has Been Recovered</h2>
-          <div class="list">
+function createBurst(count = 36) {
+  const centerX = window.innerWidth / 2;
+  const centerY = window.innerHeight / 2;
 
-            <div class="list-item">
-              <strong>The Locator</strong>
-              <span>
-                Three words. In the correct order, they define a single point.
-                There is a system built to understand them exactly as written.
-                Enter them there exactly as recovered, and it will reveal where you are meant to go.
-              </span>
-            </div>
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement("div");
+    p.className = "particle";
 
-            <div class="list-item">
-              <strong>The Room</strong>
-              <span>
-                The numeric sequence has already been assembled. Preserve its order.
-              </span>
-            </div>
+    const angle = (Math.PI * 2 * i) / count;
+    const distance = 120 + Math.random() * 220;
+    const dx = Math.cos(angle) * distance;
+    const dy = Math.sin(angle) * distance;
 
-          </div>
-        </section>
+    p.style.left = centerX + "px";
+    p.style.top = centerY + "px";
+    p.style.setProperty("--dx", dx + "px");
+    p.style.setProperty("--dy", dy + "px");
 
-        <section class="card">
-          <h2>What Must Accompany You</h2>
-          <div class="list">
+    burstLayer.appendChild(p);
+    setTimeout(() => p.remove(), 1500);
+  }
+}
 
-            <div class="list-item">
-              <strong>The Recording</strong>
-              <span>
-                You have an unused clue. It still has a role to play.
-              </span>
-            </div>
+celebrateBtn.addEventListener("click", () => {
+  createBurst(42);
+});
 
-            <div class="list-item">
-              <strong>The Credential</strong>
-              <span>
-                Access will not be granted without it.
-              </span>
-            </div>
-
-          </div>
-        </section>
-
-      </div>
-
-    </main>
-
-    <footer class="footer">
-      &gt; status: celebration authorized
-    </footer>
-
-  </div>
+window.addEventListener("load", () => {
+  setTimeout(() => createBurst(24), 300);
+});
+</script>
 
 </body>
 </html>
