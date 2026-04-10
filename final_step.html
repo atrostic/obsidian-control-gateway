@@ -74,19 +74,6 @@
       z-index: 0;
     }
 
-    body.alert-flash::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at center, transparent 28%, rgba(255, 0, 0, 0.12) 100%),
-        rgba(255, 40, 40, 0.05);
-      mix-blend-mode: screen;
-      z-index: 1201;
-      animation: redFlash 0.55s ease-out;
-    }
-
     .shell {
       position: relative;
       z-index: 1;
@@ -115,14 +102,6 @@
       text-transform: uppercase;
     }
 
-    .topbar-left,
-    .topbar-right {
-      display: flex;
-      gap: 18px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
     .status-dot {
       width: 8px;
       height: 8px;
@@ -137,28 +116,13 @@
     .header-block {
       padding: var(--space-5) var(--space-4) var(--space-4);
       border-bottom: 1px solid var(--border);
-      background:
-        radial-gradient(circle at top center, rgba(216,255,114,0.06), transparent 45%);
-    }
-
-    .bootline {
-      color: var(--gold);
-      font-size: 13px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
     }
 
     h1 {
       margin: 0;
       font-size: clamp(32px, 6vw, 60px);
-      line-height: 1.02;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
       color: var(--text-bright);
-      text-shadow:
-        0 0 10px rgba(216,255,114,0.18),
-        0 0 24px rgba(120,255,120,0.12);
     }
 
     .subtitle {
@@ -167,18 +131,6 @@
       color: var(--text-dim);
       font-size: 16px;
       line-height: 1.75;
-    }
-
-    .hero-banner {
-      margin-top: 20px;
-      padding: 14px 16px;
-      border: 1px solid rgba(216,255,114,0.35);
-      background: linear-gradient(180deg, rgba(50,70,18,0.38), rgba(18,28,8,0.50));
-      color: #f4ffd0;
-      font-size: 13px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      box-shadow: 0 0 18px rgba(216,255,114,0.08);
     }
 
     .content {
@@ -191,16 +143,12 @@
       border: 1px solid var(--border);
       background: linear-gradient(180deg, rgba(10,23,10,0.9), rgba(5,10,5,0.95));
       padding: 18px;
-      box-shadow:
-        inset 0 0 10px rgba(0,255,100,0.03),
-        0 0 20px rgba(0,255,0,0.03);
     }
 
     .card h2 {
       margin: 0 0 12px;
       color: var(--text-bright);
       font-size: 19px;
-      letter-spacing: 0.06em;
       text-transform: uppercase;
     }
 
@@ -211,111 +159,32 @@
       font-size: 15px;
     }
 
-    .transmission {
-      border: 1px solid rgba(216,255,114,0.38);
-      background: linear-gradient(180deg, rgba(36,52,12,0.42), rgba(12,18,5,0.60));
-      box-shadow:
-        0 0 0 1px rgba(216,255,114,0.08) inset,
-        0 0 24px rgba(216,255,114,0.08);
-    }
-
-    .transmission-label {
-      color: var(--gold);
-      font-size: 13px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-
     .two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 18px;
+      align-items: stretch;
+    }
+
+    .two-col > .card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
 
     .list {
-      display: grid;
+      display: flex;
+      flex-direction: column;
       gap: 12px;
       margin-top: 12px;
+      flex: 1;
     }
 
     .list-item {
       padding: 12px 14px;
       border: 1px solid rgba(120,255,120,0.15);
       background: rgba(120,255,120,0.04);
-    }
-
-    .list-item strong {
-      display: block;
-      color: var(--text-bright);
-      margin-bottom: 5px;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .list-item span {
-      color: var(--text-dim);
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .celebrate-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .celebrate-btn {
-      appearance: none;
-      border: 1px solid rgba(216,255,114,0.45);
-      background: linear-gradient(180deg, rgba(38,58,12,0.90), rgba(18,26,8,0.95));
-      color: #f5ffd7;
-      padding: 11px 16px;
-      font-family: inherit;
-      font-size: 13px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-    }
-
-    .celebrate-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 0 18px rgba(216,255,114,0.12);
-      background: linear-gradient(180deg, rgba(52,74,16,0.94), rgba(20,30,8,0.98));
-    }
-
-    .status-line {
-      color: var(--text-bright);
-      font-size: 15px;
-      line-height: 1.8;
-    }
-
-    .blink::after {
-      content: "_";
-      margin-left: 4px;
-      animation: blink 1s steps(1, end) infinite;
-      color: var(--text-bright);
-    }
-
-    .burst {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 1200;
-    }
-
-    .particle {
-      position: absolute;
-      width: 8px;
-      height: 8px;
-      opacity: 0;
-      background: var(--gold);
-      box-shadow: 0 0 8px rgba(216,255,114,0.8);
-      animation: burst 1.4s ease-out forwards;
+      flex: 1;
     }
 
     .footer {
@@ -323,107 +192,34 @@
       border-top: 1px solid var(--border);
       color: var(--text-dim);
       font-size: 13px;
-      line-height: 1.7;
-    }
-
-    .footer-line {
-      margin-top: 6px;
-    }
-
-    @keyframes blink {
-      50% { opacity: 0; }
-    }
-
-    @keyframes glowPulse {
-      0%, 100% { opacity: 0.65; }
-      50% { opacity: 1; }
-    }
-
-    @keyframes pulseDot {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.25); opacity: 0.8; }
-    }
-
-    @keyframes burst {
-      0% {
-        transform: translate(0, 0) scale(0.4) rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translate(var(--dx), var(--dy)) scale(1.3) rotate(180deg);
-        opacity: 0;
-      }
-    }
-
-    @keyframes redFlash {
-      0% { opacity: 0; }
-      20% { opacity: 1; }
-      100% { opacity: 0; }
-    }
-
-    @media (max-width: 860px) {
-      .two-col {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 640px) {
-      body {
-        padding: 14px;
-      }
-
-      .header-block,
-      .content,
-      .footer {
-        padding-left: 16px;
-        padding-right: 16px;
-      }
     }
   </style>
 </head>
+
 <body class="scanlines">
-  <div class="burst" id="burstLayer" aria-hidden="true"></div>
 
   <div class="shell">
+
     <div class="topbar">
-      <div class="topbar-left">
-        <span><span class="status-dot"></span>Intercept Window Confirmed</span>
-        <span>Obsidian Control Gateway</span>
-      </div>
-      <div class="topbar-right">
-        <span>Access Tier: Celebratory Override</span>
-        <span>Mode: Final Approach</span>
-      </div>
+      <span><span class="status-dot"></span>Intercept Window Confirmed</span>
+      <span>Final Approach</span>
     </div>
 
     <section class="header-block">
-      <div class="bootline">Closing Transmission</div>
       <h1>Well Done, Gentlemen</h1>
       <div class="subtitle">
-        You’ve done more than follow a path — you’ve uncovered it.  
-        Every fragment found its place because you found yours.  
-        What remains is not a puzzle… it’s an arrival.
-    </div>
-      
-      <div class="hero-banner">
-        Recovery Complete // Destination Aligned // Final Handoff Authorized
+        You’ve earned what comes next.
       </div>
     </section>
 
     <main class="content">
-      <section class="card transmission">
-        <div class="transmission-label">Final System Message</div>
-        <p>
-          The system is satisfied. Every fragment has been recovered, aligned, and understood.  
-          Nothing was given freely — and yet, you found everything that mattered.  
-          There is no further obstruction. Only the final step remains.
-        </p>
-      </section>
 
       <div class="two-col">
+
         <section class="card">
           <h2>What Has Been Recovered</h2>
           <div class="list">
+
             <div class="list-item">
               <strong>The Locator</strong>
               <span>
@@ -432,108 +228,47 @@
                 Enter them there exactly as recovered, and it will reveal where you are meant to go.
               </span>
             </div>
+
             <div class="list-item">
               <strong>The Room</strong>
-              <span>The numeric sequence has already been assembled. Preserve its order.</span>
+              <span>
+                The numeric sequence has already been assembled. Preserve its order.
+              </span>
             </div>
+
           </div>
         </section>
 
         <section class="card">
           <h2>What Must Accompany You</h2>
           <div class="list">
+
             <div class="list-item">
               <strong>The Recording</strong>
-              <span>You have an unused clue. It still has a role to play.</span>
+              <span>
+                You have an unused clue. It still has a role to play.
+              </span>
             </div>
+
             <div class="list-item">
               <strong>The Credential</strong>
-              <span>Access will not be granted without it.</span>
+              <span>
+                Access will not be granted without it.
+              </span>
             </div>
+
           </div>
         </section>
+
       </div>
 
-      <section class="card">
-        <h2>From Here</h2>
-        <p>
-          You’ve earned what comes next.
-        </p>
-
-        <div class="celebrate-wrap">
-          <button class="celebrate-btn" id="celebrateBtn" type="button">Celebrate Victory</button>
-          <button class="celebrate-btn" id="flashBtn" type="button">Signal Success</button>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>Operator Status</h2>
-        <div class="status-line blink">
-          Route known. Chamber known. Artifacts retained. Prize pending arrival
-        </div>
-      </section>
     </main>
 
     <footer class="footer">
-      <div>&gt; advisory: successful recovery operation acknowledged</div>
-      <div class="footer-line">&gt; directive: proceed and complete the final handoff</div>
-      <div class="footer-line">&gt; status: celebration authorized</div>
+      &gt; status: celebration authorized
     </footer>
+
   </div>
 
-  <script>
-    const burstLayer = document.getElementById("burstLayer");
-    const celebrateBtn = document.getElementById("celebrateBtn");
-    const flashBtn = document.getElementById("flashBtn");
-
-    function createBurst(count = 36) {
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-
-      for (let i = 0; i < count; i++) {
-        const p = document.createElement("div");
-        p.className = "particle";
-
-        const angle = (Math.PI * 2 * i) / count;
-        const distance = 120 + Math.random() * 220;
-        const dx = Math.cos(angle) * distance + (Math.random() * 30 - 15);
-        const dy = Math.sin(angle) * distance + (Math.random() * 30 - 15);
-
-        p.style.left = `${centerX}px`;
-        p.style.top = `${centerY}px`;
-        p.style.setProperty("--dx", `${dx}px`);
-        p.style.setProperty("--dy", `${dy}px`);
-
-        if (Math.random() > 0.5) {
-          p.style.borderRadius = "50%";
-        }
-
-        burstLayer.appendChild(p);
-        setTimeout(() => p.remove(), 1500);
-      }
-    }
-
-    function successFlash() {
-      document.body.classList.remove("alert-flash");
-      void document.body.offsetWidth;
-      document.body.classList.add("alert-flash");
-      setTimeout(() => {
-        document.body.classList.remove("alert-flash");
-      }, 700);
-    }
-
-    celebrateBtn.addEventListener("click", () => {
-      createBurst(42);
-    });
-
-    flashBtn.addEventListener("click", () => {
-      successFlash();
-      createBurst(24);
-    });
-
-    window.addEventListener("load", () => {
-      setTimeout(() => createBurst(26), 350);
-    });
-  </script>
 </body>
 </html>
