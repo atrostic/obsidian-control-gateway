@@ -117,6 +117,7 @@
       border: 1px solid var(--border);
       background: linear-gradient(180deg, rgba(10, 23, 10, 0.9), rgba(5, 10, 5, 0.95));
       padding: var(--space-3);
+      box-shadow: inset 0 0 10px rgba(0,255,100,0.03);
     }
 
     .bootline {
@@ -199,11 +200,35 @@
     .audio-panel {
       margin: 0 22px 22px;
       padding: 18px;
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(10, 23, 10, 0.9), rgba(5, 10, 5, 0.95));
+      border: 1px solid #00cc66;
+      background:
+        linear-gradient(180deg, rgba(16, 38, 16, 0.96), rgba(6, 14, 6, 0.98));
       box-shadow:
-        inset 0 0 10px rgba(0,255,100,0.03),
-        0 0 18px rgba(80,255,80,0.05);
+        inset 0 0 14px rgba(0,255,100,0.07),
+        0 0 10px rgba(0,255,100,0.18);
+      animation: audioContainerPulse 2.6s infinite ease-in-out;
+    }
+
+    @keyframes audioContainerPulse {
+      0% {
+        box-shadow:
+          inset 0 0 14px rgba(0,255,100,0.07),
+          0 0 6px rgba(0,255,100,0.15);
+        border-color: #00cc66;
+      }
+      50% {
+        box-shadow:
+          inset 0 0 18px rgba(0,255,100,0.10),
+          0 0 18px rgba(0,255,100,0.6);
+        border-color: #00ff88;
+        transform: scale(1.01);
+      }
+      100% {
+        box-shadow:
+          inset 0 0 14px rgba(0,255,100,0.07),
+          0 0 6px rgba(0,255,100,0.15);
+        border-color: #00cc66;
+      }
     }
 
     .flicker {
@@ -230,15 +255,16 @@
     }
 
     .audio-button {
-      padding: 10px 14px;
-      border: 1px solid rgba(167,255,77,0.30);
-      background: linear-gradient(180deg, rgba(10,23,10,0.9), rgba(5,10,5,0.95));
+      padding: 12px 16px;
+      border: 1px solid rgba(167,255,77,0.45);
+      background: transparent;
       color: var(--text-bright);
       font-family: "Courier New", Courier, monospace;
       font-size: 13px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       cursor: pointer;
+      animation: audioPulse 2.8s infinite ease-in-out;
       transition:
         border-color 160ms ease,
         box-shadow 160ms ease,
@@ -247,12 +273,34 @@
     }
 
     .audio-button:hover {
-      border-color: rgba(167,255,77,0.55);
-      box-shadow: 0 0 12px rgba(167,255,77,0.12);
+      border-color: rgba(167,255,77,0.65);
+      box-shadow: 0 0 14px rgba(167,255,77,0.20);
     }
 
     .audio-button:active {
       transform: translateY(1px);
+    }
+
+    @keyframes audioPulse {
+      50% {
+        box-shadow: 0 0 12px rgba(167,255,77,0.4);
+      }
+    }
+
+    .audio-status {
+      margin-top: 12px;
+      min-height: 18px;
+      color: var(--text-dim);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .audio-status.error {
+      color: #ff9f9f;
+    }
+
+    .audio-status.success {
+      color: var(--accent);
     }
 
     @keyframes flickerAnim {
@@ -308,7 +356,12 @@ NOW PUT THEM IN THE RIGHT ORDER</div>
         <div class="clue-panel">
           <div class="panel-title">External Signal</div>
           <div class="clue-video">
-            <iframe src="https://www.youtube.com/embed/-KRtN6-DgrY"></iframe>
+            <iframe
+              src="https://www.youtube.com/embed/-KRtN6-DgrY"
+              title="Sequence clue video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
           </div>
           <div class="clue-text">BINGO! The sequence has been delivered.</div>
         </div>
@@ -321,12 +374,14 @@ NOW PUT THEM IN THE RIGHT ORDER</div>
       <div class="audio-row">
         <div class="audio-copy">Of course, you'll need this too...</div>
 
-        <button id="playAudioBtn" class="audio-button">
+        <button id="playAudioBtn" class="audio-button" type="button">
           Initialize Sequence Audio
         </button>
       </div>
 
-      <audio id="player">
+      <div id="audioStatus" class="audio-status"></div>
+
+      <audio id="player" preload="auto">
         <source src="media/whatsnext.mp3" type="audio/mpeg" />
       </audio>
     </section>
@@ -335,10 +390,32 @@ NOW PUT THEM IN THE RIGHT ORDER</div>
 
   <script>
     const audio = document.getElementById("player");
-    document.getElementById("playAudioBtn").onclick = () => {
-      audio.currentTime = 0;
-      audio.play();
-    };
+    const playButton = document.getElementById("playAudioBtn");
+    const audioStatus = document.getElementById("audioStatus");
+
+    playButton.addEventListener("click", async () => {
+      audioStatus.textContent = "";
+      audioStatus.className = "audio-status";
+
+      try {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.load();
+
+        const playPromise = audio.play();
+
+        if (playPromise !== undefined) {
+          await playPromise;
+        }
+
+        audioStatus.textContent = "Audio trace initialized.";
+        audioStatus.classList.add("success");
+      } catch (error) {
+        audioStatus.textContent = "Audio launch failed. Check that media/whatsnext.mp3 is reachable from this page.";
+        audioStatus.classList.add("error");
+        console.error("Sequence audio failed to play:", error);
+      }
+    });
   </script>
 </body>
 </html>
