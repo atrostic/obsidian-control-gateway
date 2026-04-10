@@ -4,16 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Final Intercept</title>
+
   <style>
     :root {
       --bg: #020402;
+      --bg-top: #010201;
       --panel: #071107;
-      --border: #1d441d;
+      --panel-2: #0a170a;
+      --border: #173417;
+      --border-soft: rgba(167, 255, 77, 0.22);
+      --text: #9cff9c;
+      --text-dim: #5cab5c;
+      --text-bright: #e5ffe5;
+      --accent: #a7ff4d;
       --gold: #d8ff72;
-      --text: #b8ffb8;
-      --text-dim: #73b773;
-      --text-bright: #ecffec;
-      --shadow: rgba(120, 255, 120, 0.12);
+      --shadow: rgba(80, 255, 80, 0.08);
+      --shadow-strong: rgba(80, 255, 80, 0.14);
+      --space-1: 10px;
+      --space-2: 14px;
+      --space-3: 18px;
+      --space-4: 22px;
+      --space-5: 26px;
+      --alert-red: #ff3b3b;
     }
 
     * { box-sizing: border-box; }
@@ -23,9 +35,8 @@
       padding: 0;
       min-height: 100%;
       background:
-        radial-gradient(circle at top, rgba(180,255,120,0.08), transparent 30%),
-        radial-gradient(circle at bottom, rgba(90,255,90,0.05), transparent 35%),
-        linear-gradient(180deg, #010201 0%, #020402 100%);
+        radial-gradient(circle at top, rgba(0, 255, 120, 0.05), transparent 35%),
+        linear-gradient(180deg, var(--bg-top) 0%, var(--bg) 100%);
       color: var(--text);
       font-family: "Courier New", Courier, monospace;
     }
@@ -36,7 +47,7 @@
       position: relative;
     }
 
-    body::before {
+    .scanlines::before {
       content: "";
       position: fixed;
       inset: 0;
@@ -63,33 +74,49 @@
       z-index: 0;
     }
 
+    body.alert-flash::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at center, transparent 28%, rgba(255, 0, 0, 0.12) 100%),
+        rgba(255, 40, 40, 0.05);
+      mix-blend-mode: screen;
+      z-index: 1201;
+      animation: redFlash 0.55s ease-out;
+    }
+
     .shell {
       position: relative;
       z-index: 1;
-      max-width: 1080px;
+      max-width: 1180px;
       margin: 0 auto;
       border: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(6,16,6,0.96), rgba(3,8,3,0.98));
+      background: linear-gradient(180deg, rgba(5, 15, 5, 0.95), rgba(3, 8, 3, 0.96));
       box-shadow:
-        0 0 0 1px rgba(120,255,120,0.05) inset,
-        0 0 36px var(--shadow);
+        0 0 0 1px rgba(60, 255, 60, 0.05) inset,
+        0 0 30px var(--shadow);
+      overflow: hidden;
     }
 
     .topbar {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       gap: 12px;
       flex-wrap: wrap;
       padding: 10px 14px;
       border-bottom: 1px solid var(--border);
-      background: linear-gradient(180deg, #111d0b, #0a1207);
+      background: linear-gradient(180deg, #0d180d, #091009);
       color: var(--text-dim);
       font-size: 13px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
-    .topbar-left, .topbar-right {
+    .topbar-left,
+    .topbar-right {
       display: flex;
       gap: 18px;
       align-items: center;
@@ -107,13 +134,14 @@
       animation: pulseDot 1.4s ease-in-out infinite;
     }
 
-    .hero {
-      padding: 36px 24px 24px;
+    .header-block {
+      padding: var(--space-5) var(--space-4) var(--space-4);
       border-bottom: 1px solid var(--border);
-      background: radial-gradient(circle at top center, rgba(216,255,114,0.06), transparent 45%);
+      background:
+        radial-gradient(circle at top center, rgba(216,255,114,0.06), transparent 45%);
     }
 
-    .eyebrow {
+    .bootline {
       color: var(--gold);
       font-size: 13px;
       letter-spacing: 0.14em;
@@ -154,17 +182,17 @@
     }
 
     .content {
-      padding: 22px 24px 28px;
+      padding: var(--space-4);
       display: grid;
       gap: 18px;
     }
 
     .card {
       border: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(10,22,10,0.95), rgba(5,10,5,0.98));
+      background: linear-gradient(180deg, rgba(10,23,10,0.9), rgba(5,10,5,0.95));
       padding: 18px;
       box-shadow:
-        0 0 0 1px rgba(120,255,120,0.04) inset,
+        inset 0 0 10px rgba(0,255,100,0.03),
         0 0 20px rgba(0,255,0,0.03);
     }
 
@@ -291,7 +319,7 @@
     }
 
     .footer {
-      padding: 18px 24px 26px;
+      padding: 18px 22px 24px;
       border-top: 1px solid var(--border);
       color: var(--text-dim);
       font-size: 13px;
@@ -327,6 +355,12 @@
       }
     }
 
+    @keyframes redFlash {
+      0% { opacity: 0; }
+      20% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
     @media (max-width: 860px) {
       .two-col {
         grid-template-columns: 1fr;
@@ -338,42 +372,44 @@
         padding: 14px;
       }
 
-      .hero, .content, .footer {
+      .header-block,
+      .content,
+      .footer {
         padding-left: 16px;
         padding-right: 16px;
       }
     }
   </style>
 </head>
-<body>
+<body class="scanlines">
   <div class="burst" id="burstLayer" aria-hidden="true"></div>
 
   <div class="shell">
     <div class="topbar">
       <div class="topbar-left">
-        <span><span class="status-dot"></span>INTERCEPT WINDOW CONFIRMED</span>
-        <span>OBSIDIAN CONTROL GATEWAY</span>
+        <span><span class="status-dot"></span>Intercept Window Confirmed</span>
+        <span>Obsidian Control Gateway</span>
       </div>
       <div class="topbar-right">
-        <span>ACCESS TIER: CELEBRATORY OVERRIDE</span>
-        <span>MODE: FINAL APPROACH</span>
+        <span>Access Tier: Celebratory Override</span>
+        <span>Mode: Final Approach</span>
       </div>
     </div>
 
-    <section class="hero">
-      <div class="eyebrow">Closing Transmission</div>
+    <section class="header-block">
+      <div class="bootline">Closing Transmission</div>
       <h1>Well Done, Operators</h1>
       <div class="subtitle">
         The signal has resolved. The path is no longer obscured. The last barrier was never meant to remain standing once all fragments were brought into alignment.
       </div>
       <div class="hero-banner">
-        RECOVERY COMPLETE // DESTINATION ALIGNED // FINAL HANDOFF AUTHORIZED
+        Recovery Complete // Destination Aligned // Final Handoff Authorized
       </div>
     </section>
 
     <main class="content">
       <section class="card transmission">
-        <div class="transmission-label">Final system message</div>
+        <div class="transmission-label">Final System Message</div>
         <p>
           You have done what the system required. The triad is known. The ordered designation is known. The recording survived. The credential remained concealed until the proper moment. Nothing essential is missing now.
         </p>
