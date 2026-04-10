@@ -4,211 +4,498 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Final Intercept</title>
-
   <style>
     :root {
       --bg: #020402;
-      --bg-top: #010201;
       --panel: #071107;
-      --panel-2: #0a170a;
-      --border: #173417;
-      --text: #9cff9c;
-      --text-dim: #5cab5c;
-      --text-bright: #e5ffe5;
+      --border: #1d441d;
       --gold: #d8ff72;
-      --space-4: 22px;
+      --text: #b8ffb8;
+      --text-dim: #73b773;
+      --text-bright: #ecffec;
+      --shadow: rgba(120, 255, 120, 0.12);
     }
 
     * { box-sizing: border-box; }
 
-    body {
+    html, body {
       margin: 0;
-      padding: 24px;
-      background: var(--bg);
+      padding: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top, rgba(180,255,120,0.08), transparent 30%),
+        radial-gradient(circle at bottom, rgba(90,255,90,0.05), transparent 35%),
+        linear-gradient(180deg, #010201 0%, #020402 100%);
       color: var(--text);
-      font-family: "Courier New", monospace;
+      font-family: "Courier New", Courier, monospace;
+    }
+
+    body {
+      padding: 24px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.02) 0px,
+        rgba(255,255,255,0.02) 1px,
+        transparent 2px,
+        transparent 4px
+      );
+      opacity: 0.18;
+      mix-blend-mode: screen;
+      z-index: 999;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(216,255,114,0.04), transparent 55%);
+      animation: glowPulse 4s ease-in-out infinite;
+      z-index: 0;
     }
 
     .shell {
-      max-width: 1180px;
+      position: relative;
+      z-index: 1;
+      max-width: 1080px;
       margin: 0 auto;
       border: 1px solid var(--border);
-      background: #050f05;
+      background: linear-gradient(180deg, rgba(6,16,6,0.96), rgba(3,8,3,0.98));
+      box-shadow:
+        0 0 0 1px rgba(120,255,120,0.05) inset,
+        0 0 36px var(--shadow);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #111d0b, #0a1207);
+      color: var(--text-dim);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .topbar-left, .topbar-right {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      display: inline-block;
+      border-radius: 999px;
+      margin-right: 8px;
+      background: var(--gold);
+      box-shadow: 0 0 12px rgba(216,255,114,0.9);
+      animation: pulseDot 1.4s ease-in-out infinite;
+    }
+
+    .hero {
+      padding: 36px 24px 24px;
+      border-bottom: 1px solid var(--border);
+      background: radial-gradient(circle at top center, rgba(216,255,114,0.06), transparent 45%);
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 6vw, 60px);
+      line-height: 1.02;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-bright);
+      text-shadow:
+        0 0 10px rgba(216,255,114,0.18),
+        0 0 24px rgba(120,255,120,0.12);
+    }
+
+    .subtitle {
+      margin-top: 14px;
+      max-width: 900px;
+      color: var(--text-dim);
+      font-size: 16px;
+      line-height: 1.75;
+    }
+
+    .hero-banner {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border: 1px solid rgba(216,255,114,0.35);
+      background: linear-gradient(180deg, rgba(50,70,18,0.38), rgba(18,28,8,0.50));
+      color: #f4ffd0;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      box-shadow: 0 0 18px rgba(216,255,114,0.08);
     }
 
     .content {
-      padding: var(--space-4);
+      padding: 22px 24px 28px;
       display: grid;
       gap: 18px;
     }
 
     .card {
       border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(10,22,10,0.95), rgba(5,10,5,0.98));
       padding: 18px;
-      background: #0a170a;
+      box-shadow:
+        0 0 0 1px rgba(120,255,120,0.04) inset,
+        0 0 20px rgba(0,255,0,0.03);
     }
 
     .card h2 {
       margin: 0 0 12px;
       color: var(--text-bright);
+      font-size: 19px;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
     }
 
-    /* ===== HEIGHT FIX ===== */
+    .card p {
+      margin: 0;
+      color: var(--text-dim);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .transmission {
+      border: 1px solid rgba(216,255,114,0.38);
+      background: linear-gradient(180deg, rgba(36,52,12,0.42), rgba(12,18,5,0.60));
+      box-shadow:
+        0 0 0 1px rgba(216,255,114,0.08) inset,
+        0 0 24px rgba(216,255,114,0.08);
+    }
+
+    .transmission-label {
+      color: var(--gold);
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
 
     .two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 18px;
-      align-items: stretch;
-    }
-
-    .two-col > .card {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
     }
 
     .list {
-      display: flex;
-      flex-direction: column;
+      display: grid;
       gap: 12px;
       margin-top: 12px;
-      flex: 1;
     }
 
     .list-item {
+      padding: 12px 14px;
       border: 1px solid rgba(120,255,120,0.15);
-      padding: 12px;
-      flex: 1;
+      background: rgba(120,255,120,0.04);
     }
 
-    /* ===== CELEBRATION ===== */
+    .list-item strong {
+      display: block;
+      color: var(--text-bright);
+      margin-bottom: 5px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .list-item span {
+      color: var(--text-dim);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .celebrate-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .celebrate-btn {
+      appearance: none;
+      border: 1px solid rgba(216,255,114,0.45);
+      background: linear-gradient(180deg, rgba(38,58,12,0.90), rgba(18,26,8,0.95));
+      color: #f5ffd7;
+      padding: 11px 16px;
+      font-family: inherit;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .celebrate-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 18px rgba(216,255,114,0.12);
+      background: linear-gradient(180deg, rgba(52,74,16,0.94), rgba(20,30,8,0.98));
+    }
+
+    .status-line {
+      color: var(--text-bright);
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .blink::after {
+      content: "_";
+      margin-left: 4px;
+      animation: blink 1s steps(1, end) infinite;
+      color: var(--text-bright);
+    }
 
     .burst {
       position: fixed;
       inset: 0;
       pointer-events: none;
       overflow: hidden;
-      z-index: 999;
+      z-index: 1200;
     }
 
     .particle {
       position: absolute;
       width: 8px;
       height: 8px;
-      background: var(--gold);
       opacity: 0;
+      background: var(--gold);
+      box-shadow: 0 0 8px rgba(216,255,114,0.8);
       animation: burst 1.4s ease-out forwards;
     }
 
+    .footer {
+      padding: 18px 24px 26px;
+      border-top: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .footer-line {
+      margin-top: 6px;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { opacity: 0.65; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.25); opacity: 0.8; }
+    }
+
     @keyframes burst {
-      0% { opacity: 1; transform: scale(0.4); }
-      100% { opacity: 0; transform: scale(1.3) translate(var(--dx), var(--dy)); }
+      0% {
+        transform: translate(0, 0) scale(0.4) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--dx), var(--dy)) scale(1.3) rotate(180deg);
+        opacity: 0;
+      }
     }
 
-    .celebrate-btn {
-      margin-top: 12px;
-      padding: 10px 14px;
-      cursor: pointer;
+    @media (max-width: 860px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
     }
 
+    @media (max-width: 640px) {
+      body {
+        padding: 14px;
+      }
+
+      .hero, .content, .footer {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+    }
   </style>
 </head>
-
 <body>
+  <div class="burst" id="burstLayer" aria-hidden="true"></div>
 
-<div class="burst" id="burstLayer"></div>
-
-<div class="shell">
-  <main class="content">
-
-    <div class="two-col">
-
-      <section class="card">
-        <h2>What Has Been Recovered</h2>
-        <div class="list">
-
-          <div class="list-item">
-            <strong>The Locator</strong>
-            <div>
-              Three words. In the correct order, they define a single point.
-              There is a system built to understand them exactly as written.
-              Enter them there exactly as recovered, and it will reveal where you are meant to go.
-            </div>
-          </div>
-
-          <div class="list-item">
-            <strong>The Room</strong>
-            <div>
-              The numeric sequence has already been assembled. Preserve its order.
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>What Must Accompany You</h2>
-        <div class="list">
-
-          <div class="list-item">
-            <strong>The Recording</strong>
-            <div>You have an unused clue. It still has a role to play.</div>
-          </div>
-
-          <div class="list-item">
-            <strong>The Credential</strong>
-            <div>Access will not be granted without it.</div>
-          </div>
-
-        </div>
-      </section>
-
+  <div class="shell">
+    <div class="topbar">
+      <div class="topbar-left">
+        <span><span class="status-dot"></span>INTERCEPT WINDOW CONFIRMED</span>
+        <span>OBSIDIAN CONTROL GATEWAY</span>
+      </div>
+      <div class="topbar-right">
+        <span>ACCESS TIER: CELEBRATORY OVERRIDE</span>
+        <span>MODE: FINAL APPROACH</span>
+      </div>
     </div>
 
-    <section class="card">
-      <button class="celebrate-btn" id="celebrateBtn">Celebrate Victory</button>
+    <section class="hero">
+      <div class="eyebrow">Closing Transmission</div>
+      <h1>Well Done, Operators</h1>
+      <div class="subtitle">
+        The signal has resolved. The path is no longer obscured. The last barrier was never meant to remain standing once all fragments were brought into alignment.
+      </div>
+      <div class="hero-banner">
+        RECOVERY COMPLETE // DESTINATION ALIGNED // FINAL HANDOFF AUTHORIZED
+      </div>
     </section>
 
-  </main>
-</div>
+    <main class="content">
+      <section class="card transmission">
+        <div class="transmission-label">Final system message</div>
+        <p>
+          You have done what the system required. You deserve what is next.
+        </p>
+      </section>
 
-<script>
-const burstLayer = document.getElementById("burstLayer");
-const celebrateBtn = document.getElementById("celebrateBtn");
+      <div class="two-col">
+        <section class="card">
+          <h2>What Has Been Recovered</h2>
+          <div class="list">
+            <div class="list-item">
+              <strong>The Locator</strong>
+              <span>
+                Three words. In the correct order, they define a single point. 
+                There is a system built to understand them exactly as written. 
+                Enter them there exactly as recovered, and it will reveal where you are meant to go.
+              </span>
+            </div>
+            <div class="list-item">
+              <strong>The Room</strong>
+              <span>The numeric sequence has already been assembled. Preserve its order.</span>
+            </div>
+          </div>
+        </section>
 
-function createBurst(count = 36) {
-  const centerX = window.innerWidth / 2;
-  const centerY = window.innerHeight / 2;
+        <section class="card">
+          <h2>What Must Accompany You</h2>
+          <div class="list">
+            <div class="list-item">
+              <strong>The Recording</strong>
+              <span>
+                You have an unused clue. 
+                It still has a role to play.
+              </span>
+            </div>
+            <div class="list-item">
+              <strong>The Credential</strong>
+              <span>Access will not be granted without it.</span>
+            </div>
+          </div>
+        </section>
+      </div>
 
-  for (let i = 0; i < count; i++) {
-    const p = document.createElement("div");
-    p.className = "particle";
+      <section class="card">
+        <h2>From Here</h2>
+        <p>
+          There is very little left for the system to say. Follow what you have already uncovered. Trust the order in which the fragments revealed themselves. Bring forward the pieces that endured. The rest will make sense at the threshold.
+        </p>
 
-    const angle = (Math.PI * 2 * i) / count;
-    const distance = 120 + Math.random() * 220;
-    const dx = Math.cos(angle) * distance;
-    const dy = Math.sin(angle) * distance;
+        <div class="celebrate-wrap">
+          <button class="celebrate-btn" id="celebrateBtn" type="button">Celebrate Victory</button>
+          <button class="celebrate-btn" id="flashBtn" type="button">Signal Success</button>
+        </div>
+      </section>
 
-    p.style.left = centerX + "px";
-    p.style.top = centerY + "px";
-    p.style.setProperty("--dx", dx + "px");
-    p.style.setProperty("--dy", dy + "px");
+      <section class="card">
+        <h2>Operator Status</h2>
+        <div class="status-line blink">
+          Route known. Chamber known. Artifacts retained. Prize pending arrival
+        </div>
+      </section>
+    </main>
 
-    burstLayer.appendChild(p);
-    setTimeout(() => p.remove(), 1500);
-  }
-}
+    <footer class="footer">
+      <div>&gt; advisory: successful recovery operation acknowledged</div>
+      <div class="footer-line">&gt; directive: proceed and complete the final handoff</div>
+      <div class="footer-line">&gt; status: celebration authorized</div>
+    </footer>
+  </div>
 
-celebrateBtn.addEventListener("click", () => {
-  createBurst(42);
-});
+  <script>
+    const burstLayer = document.getElementById("burstLayer");
+    const celebrateBtn = document.getElementById("celebrateBtn");
+    const flashBtn = document.getElementById("flashBtn");
 
-window.addEventListener("load", () => {
-  setTimeout(() => createBurst(24), 300);
-});
-</script>
+    function createBurst(count = 36) {
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
 
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement("div");
+        p.className = "particle";
+
+        const angle = (Math.PI * 2 * i) / count;
+        const distance = 120 + Math.random() * 220;
+        const dx = Math.cos(angle) * distance + (Math.random() * 30 - 15);
+        const dy = Math.sin(angle) * distance + (Math.random() * 30 - 15);
+
+        p.style.left = `${centerX}px`;
+        p.style.top = `${centerY}px`;
+        p.style.setProperty("--dx", `${dx}px`);
+        p.style.setProperty("--dy", `${dy}px`);
+
+        if (Math.random() > 0.5) {
+          p.style.borderRadius = "50%";
+        }
+
+        burstLayer.appendChild(p);
+        setTimeout(() => p.remove(), 1500);
+      }
+    }
+
+    function successFlash() {
+      document.body.classList.remove("alert-flash");
+      void document.body.offsetWidth;
+      document.body.classList.add("alert-flash");
+      setTimeout(() => {
+        document.body.classList.remove("alert-flash");
+      }, 700);
+    }
+
+    celebrateBtn.addEventListener("click", () => {
+      createBurst(42);
+    });
+
+    flashBtn.addEventListener("click", () => {
+      successFlash();
+      createBurst(24);
+    });
+
+    window.addEventListener("load", () => {
+      setTimeout(() => createBurst(26), 350);
+    });
+  </script>
 </body>
 </html>
