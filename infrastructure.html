@@ -29,7 +29,6 @@
       overflow-x: hidden;
     }
 
-    /* CRT scanlines */
     body::before {
       content: "";
       position: fixed;
@@ -92,8 +91,6 @@
       text-transform: uppercase;
       letter-spacing: 0.1em;
     }
-
-    /* IMAGE + GLITCH */
 
     .image-box {
       border: 1px solid var(--border);
@@ -162,8 +159,6 @@
       margin-top: 14px;
     }
 
-    /* INPUTS */
-
     .entry-panel {
       display: grid;
       gap: 14px;
@@ -221,8 +216,6 @@
 
     .status.error { color: #ff8c8c; }
     .status.success { color: var(--accent); }
-
-    /* SUCCESS OVERLAY */
 
     .overlay {
       position: fixed;
@@ -314,13 +307,13 @@
       <div class="entry-panel">
 
         <div class="entry-row">
-          <label class="entry-label">Image One</label>
-          <input class="entry-input" id="clue1" placeholder="Enter first image">
+          <label class="entry-label">Keyword One</label>
+          <input class="entry-input" id="clue1" placeholder="Enter first keyword">
         </div>
 
         <div class="entry-row">
-          <label class="entry-label">Image Two</label>
-          <input class="entry-input" id="clue2" placeholder="Enter second image">
+          <label class="entry-label">Keyword Two</label>
+          <input class="entry-input" id="clue2" placeholder="Enter second keyword">
         </div>
 
         <button id="verifyBtn">Verify</button>
