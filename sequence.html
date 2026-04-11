@@ -182,11 +182,12 @@
       box-shadow: 0 0 18px rgba(80,255,80,0.06);
     }
 
-    .clue-video iframe {
+    .clue-video img {
       width: 100%;
       aspect-ratio: 16 / 9;
-      border: none;
+      object-fit: cover;
       display: block;
+      filter: contrast(1.1) brightness(0.82) saturate(0.75) hue-rotate(48deg);
     }
 
     .clue-text {
@@ -197,25 +198,21 @@
       margin-top: 14px;
     }
 
-.audio-panel {
-  margin: 18px var(--space-4) var(--space-4);
-  padding: 16px 18px;
-
-  border: 2px solid #00ff88;
-  background: linear-gradient(
-    180deg,
-    rgba(10, 25, 10, 0.92),
-    rgba(5, 12, 5, 0.96)
-  );
-
-  box-shadow:
-    inset 0 0 18px rgba(0, 255, 100, 0.08),
-    0 0 10px rgba(0, 255, 100, 0.18);
-
-  position: relative;
-
-  animation: audioContainerPulse 2.4s infinite ease-in-out;
-}
+    .audio-panel {
+      margin: 18px var(--space-4) var(--space-4);
+      padding: 16px 18px;
+      border: 2px solid #00ff88;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 25, 10, 0.92),
+        rgba(5, 12, 5, 0.96)
+      );
+      box-shadow:
+        inset 0 0 18px rgba(0, 255, 100, 0.08),
+        0 0 10px rgba(0, 255, 100, 0.18);
+      position: relative;
+      animation: audioContainerPulse 2.4s infinite ease-in-out;
+    }
 
     @keyframes audioContainerPulse {
       0% {
@@ -363,15 +360,25 @@ NOW PUT THEM IN THE RIGHT ORDER</div>
 
         <div class="clue-panel">
           <div class="panel-title">External Signal</div>
+
           <div class="clue-video">
-            <iframe
-              src="https://www.youtube.com/embed/-KRtN6-DgrY"
-              title="Sequence clue video"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-            ></iframe>
+            <img
+              src="images/bingo.jpg"
+              alt="Bingo card with marked numbers"
+            />
           </div>
-          <div class="clue-text">BINGO! The sequence has been delivered.</div>
+
+          <div class="clue-text">
+            NOT ALL CALLS MATTER<br><br>
+
+            SOME NUMBERS ARE ALREADY IN PLAY<br>
+            OTHERS MUST BE IGNORED<br><br>
+
+            WHEN THE BOARD IS COMPLETE<br>
+            THE PATTERN WILL REVEAL ITSELF<br><br>
+
+            <span style="color: var(--accent);">BINGO.</span>
+          </div>
         </div>
       </section>
     </main>
