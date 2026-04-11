@@ -74,20 +74,20 @@ export async function onRequestPost(context) {
 
   const ANSWERS = {
     "node-a": "blankets",
-    "node-b": "3",
+    "node-b": "4",
     "node-c": "happy",
     "node-d": "1",
     "node-e": "factory",
     "node-f": "2",
-    "node-g": "infrastructure-access-stability",
+    "node-g": "stability-access-infrastructure",
     "node-h": "function-origin-scale"
   };
 
   const MASTER_ALIASES = {
     "node-g": [ // SEQUENCE
-      "infrastructure-access-stability",
-      "d-f-b",
-      "1-2-3"
+      "stability-access-infrastructure",
+      "b-f-d",
+      "4-2-1"
     ],
     "node-h": [ // LOCATION
       "function-origin-scale",
