@@ -187,7 +187,13 @@
       aspect-ratio: 16 / 9;
       object-fit: cover;
       display: block;
-      filter: contrast(1.1) brightness(0.82) saturate(0.75) hue-rotate(48deg);
+      filter:
+        grayscale(1)
+        sepia(1)
+        hue-rotate(70deg)
+        saturate(3)
+        brightness(0.75)
+        contrast(1.2);
     }
 
     .clue-text {
@@ -351,11 +357,17 @@
       <section class="main-grid">
         <div class="terminal-panel">
           <div class="panel-title">Terminal Output</div>
-          <div class="cipher-block">ALL PARTS PRESENT
+          <div class="cipher-block">ALL NUMBERS HAVE BEEN CALLED
 
-YOU’VE ALREADY FOUND THEM
+THE BOARD IS IN FRONT OF YOU
 
-NOW PUT THEM IN THE RIGHT ORDER</div>
+PLAY THE GAME
+
+MARK WHAT MATTERS
+
+WHEN THE PATTERN IS COMPLETE
+
+YOU WILL KNOW</div>
         </div>
 
         <div class="clue-panel">
@@ -364,20 +376,21 @@ NOW PUT THEM IN THE RIGHT ORDER</div>
           <div class="clue-video">
             <img
               src="images/bingo.png"
-              alt="Bingo card with marked numbers"
+              alt="A terminal-green bingo scene with a player shouting bingo, flying bingo cards and bingo balls, and a bingo roller in the background"
             />
           </div>
 
           <div class="clue-text">
-            NOT ALL CALLS MATTER<br><br>
+            THE NUMBERS ARE NOT RANDOM<br><br>
 
-            SOME NUMBERS ARE ALREADY IN PLAY<br>
-            OTHERS MUST BE IGNORED<br><br>
+            SOME HAVE ALREADY BEEN CALLED<br>
+            SOME ARE STILL WAITING<br><br>
 
-            WHEN THE BOARD IS COMPLETE<br>
-            THE PATTERN WILL REVEAL ITSELF<br><br>
+            YOU MUST PLAY TO SEE IT<br><br>
 
-            <span style="color: var(--accent);">BINGO.</span>
+            COMPLETE THE BOARD<br><br>
+
+            <span style="color: var(--accent);">CALL IT.</span>
           </div>
         </div>
       </section>
